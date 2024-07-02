@@ -1,10 +1,87 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="EUC-KR">
-<title>Insert title here</title>
+<meta charset="UTF-8">
+<title>숙박 정보 조회</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
+    <button class="btn1" id="btn1">숙박 정보 조회</button>
 
+    <table>
+        <thead>
+            <tr>
+                <th>숙소 이름</th>
+                <th>주소</th>
+                <th>전화번호</th>
+            </tr>
+        </thead>
+        <tbody class="table_content" id="table1">
+
+        </tbody>
+    </table>
+
+    <div id="results"></div> <!-- 응답을 표시할 영역 -->
+
+    <script>
+        // 버튼 클릭 이벤트 리스너 설정
+        $("#btn1").click(function() {
+            // API URL과 파라미터 설정
+            var url = 'https://infuser.odcloud.kr/oas/docs?namespace=15096728/v1/';
+            var serviceKey = 'sCVR8i55Be+0NJN/ppE+ueXJETgq4dOQK69iVMxaOqaPJRzNhY8lcSEuIxVxNHphEOJQLznqIjoobuErnBQT3g=='; // 서비스 키
+			
+            //var name = "업체명";
+            
+            // jQuery를 이용한 AJAX GET 요청
+            $.ajax({
+                url: "https://api.odcloud.kr/api/15096728/v1/uddi:a7cfe5da-2d11-4416-b67f-aff99ee63bbe?page=1&perPage=10&serviceKey=sCVR8i55Be%2B0NJN%2FppE%2BueXJETgq4dOQK69iVMxaOqaPJRzNhY8lcSEuIxVxNHphEOJQLznqIjoobuErnBQT3g%3D%3D",
+                type: 'GET',
+                /*
+                data: {
+                    serviceKey: serviceKey,
+                    pageNo: 1,
+                    numOfRows: 10,
+                    responseType: 'json' // JSON 형식으로 응답 받기
+                },
+                */
+                success: function(response) {
+                    // JSON 응답을 파싱하여 표시
+                    var resultsDiv = $("#results");
+                    resultsDiv.empty(); // 이전 결과를 지우기
+                    
+                    console.log("응답: " + JSON.stringify(response));
+                    const array = response;
+                    
+                    console.log("확인: "+ array.data);
+                    
+                    if(response.data) {
+                        displayData(response.data);
+                        
+                    } else {
+                        resultsDiv.append("<p>데이터를 찾을 수 없습니다.</p>");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('오류 발생! 상태 코드: ' + xhr.status + '\n오류 메시지: ' + error);
+                }
+            });
+        });
+		
+        
+        // 데이터를 테이블에 표시하는 함수
+        function displayData(items) {
+            var tableContent = $("#table1");
+            tableContent.empty(); // 이전 내용 지우기
+
+            items.forEach(function(item) {
+                var row = $("<tr>");
+                row.append("<td>" + item.업체명 + "</td>");
+                row.append("<td>" + item.도로명 + "</td>");
+                row.append("<td>" + item.전화번호 + "</td>");
+                tableContent.append(row);
+            });
+        }
+        
+    </script>
 </body>
 </html>
