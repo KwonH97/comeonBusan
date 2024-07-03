@@ -29,9 +29,10 @@
     <table id="weather-table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Temperature (°C)</th>
-                <th>Weather</th>
+                <th>날   짜</th>
+                <th>최저온도(°C)</th>
+                <th>최고온도(°C)</th>
+                <th>날   씨</th>
             </tr>
         </thead>
         <tbody id="weather-body">
@@ -88,31 +89,37 @@
                     weatherForecast.forEach(forecast => {
                         const date = forecast.dt_txt.split(' ')[0];
                         const temp = (forecast.main.temp - 273.15).toFixed(2);
+                        const tempMin = (forecast.main.temp_min - 273.15).toFixed(2);
+                        const tempMax = (forecast.main.temp_max - 273.15).toFixed(2);
                         const description = forecast.weather[0].description;
                         const simplifiedDescription = weatherMapping[description] || '맑음';
                         const icon = weatherIcons[simplifiedDescription] || '☀️';
 
                         if (!days[date]) {
                             days[date] = {
-                                temps: [],
+                                tempsMin: [],
+                                tempsMax: [],
                                 descriptions: new Set(),
                                 icons: new Set()
                             };
                         }
-                        days[date].temps.push(parseFloat(temp));
+                        days[date].tempsMin.push(parseFloat(tempMin));
+                        days[date].tempsMax.push(parseFloat(tempMax));
                         days[date].descriptions.add(simplifiedDescription);
                         days[date].icons.add(icon);
                     });
 
                     for (const [date, data] of Object.entries(days)) {
-                        const avgTemp = (data.temps.reduce((sum, temp) => sum + temp, 0) / data.temps.length).toFixed(2);
+                        const minTemp = Math.min(...data.tempsMin).toFixed(2);
+                        const maxTemp = Math.max(...data.tempsMax).toFixed(2);
                         const description = Array.from(data.descriptions).join(', ');
                         const icons = Array.from(data.icons).join(' ');
 
                         tableContent += `
                             <tr>
                                 <td>${date}</td>
-                                <td>${avgTemp}</td>
+                                <td>${minTemp}</td>
+                                <td>${maxTemp}</td>
                                 <td>${icons} ${description}</td>
                             </tr>
                         `;
@@ -125,3 +132,4 @@
     </script>
 </body>
 </html>
+
