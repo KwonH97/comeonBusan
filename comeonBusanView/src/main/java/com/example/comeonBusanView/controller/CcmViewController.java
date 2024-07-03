@@ -25,5 +25,10 @@ public class CcmViewController {
 	public String roadView() {
 		return "roadView";
 	}
+	
+	@GetMapping("/rainInfo")
+	public String rainInfo() {
+		return "rainInfo";
+	}
 
 }
