@@ -19,4 +19,9 @@ public class TestController {
 		return "index";
 		
 	}
+	
+	@RequestMapping("/kibTest")
+	public String kibTest() {
+		return "kibTest";
+	}
 }
