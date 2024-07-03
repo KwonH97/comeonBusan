@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Street View and Map Integration</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #map {
+        height: 100%;
+        width: 100%;
+      }
+
+      #pano {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        height: 50%;
+        width: 50%;
+        z-index: 1;
+        border: 2px solid black;
+        border-radius: 8px;
+        background: white;
+      }
+    </style>
+    <script>
+      let map, panorama, streetViewService;
+
+      function initialize() {
+        const busan = { lat: 35.1796, lng: 129.0756 }; // 부산 중심 좌표
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: busan,
+          zoom: 12,
+        });
+
+        panorama = new google.maps.StreetViewPanorama(
+          document.getElementById("pano"),
+          {
+            pov: {
+              heading: 34,
+              pitch: 10,
+            },
+          }
+        );
+
+        streetViewService = new google.maps.StreetViewService();
+
+        map.addListener("click", (event) => {
+          getStreetView(event.latLng);
+        });
+
+        const streetViewLayer = new google.maps.StreetViewCoverageLayer();
+        streetViewLayer.setMap(map);
+      }
+
+      function getStreetView(latLng) {
+        streetViewService.getPanorama({
+          location: latLng,
+          radius: 50,
+        }, processStreetViewData);
+      }
+
+      function processStreetViewData(data, status) {
+        if (status === "OK") {
+          panorama.setPosition(data.location.latLng);
+          panorama.setPov({
+            heading: 34,
+            pitch: 10,
+          });
+          panorama.setVisible(true);
+        } else {
+          alert("Street View data not found for this location.");
+        }
+      }
+
+      window.initialize = initialize;
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="pano"></div>
+
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initialize&v=weekly"
+      defer
+    ></script>
+  </body>
+</html>
+
+
