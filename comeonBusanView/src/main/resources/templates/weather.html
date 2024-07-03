@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busan 5-Day Weather Forecast</title>
+    <style>
+        table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        img.weather-icon {
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">온나! 부산 관광 날씨</h1>
+    <table id="weather-table">
+        <thead>
+            <tr>
+                <th>날   짜</th>
+                <th>최저온도(°C)</th>
+                <th>최고온도(°C)</th>
+                <th>날   씨</th>
+            </tr>
+        </thead>
+        <tbody id="weather-body">
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const apiKey = '07ad361c368f829e92fb66148a3a35dc';
+            const cityName = 'Busan';
+            const url = `http://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}`;
+
+            const weatherMapping = {
+                'clear sky': '맑음',
+                'few clouds': '맑음',
+                'scattered clouds': '맑음',
+                'broken clouds': '흐림',
+                'overcast clouds': '흐림',
+                'light rain': '비',
+                'moderate rain': '비',
+                'heavy intensity rain': '비',
+                'shower rain': '비',
+                'rain': '비',
+                'thunderstorm': '비',
+                'snow': '눈',
+                'mist': '안개',
+                'fog': '안개',
+                'haze': '안개',
+                'smoke': '안개',
+                'dust': '안개',
+                'sand': '안개',
+                'ash': '안개',
+                'squalls': '비',
+                'tornado': '비'
+            };
+
+            const weatherIcons = {
+                '맑음': '☀️',
+                '흐림': '☁️',
+                '비': '🌧️',
+                '눈': '❄️',
+                '안개': '🌫️'
+            };
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const weatherForecast = data.list;
+                    const weatherBody = document.getElementById('weather-body');
+                    let tableContent = '';
+
+                    const days = {};
+
+                    weatherForecast.forEach(forecast => {
+                        const date = forecast.dt_txt.split(' ')[0];
+                        const temp = (forecast.main.temp - 273.15).toFixed(2);
+                        const tempMin = (forecast.main.temp_min - 273.15).toFixed(2);
+                        const tempMax = (forecast.main.temp_max - 273.15).toFixed(2);
+                        const description = forecast.weather[0].description;
+                        const simplifiedDescription = weatherMapping[description] || '맑음';
+                        const icon = weatherIcons[simplifiedDescription] || '☀️';
+
+                        if (!days[date]) {
+                            days[date] = {
+                                tempsMin: [],
+                                tempsMax: [],
+                                descriptions: new Set(),
+                                icons: new Set()
+                            };
+                        }
+                        days[date].tempsMin.push(parseFloat(tempMin));
+                        days[date].tempsMax.push(parseFloat(tempMax));
+                        days[date].descriptions.add(simplifiedDescription);
+                        days[date].icons.add(icon);
+                    });
+
+                    for (const [date, data] of Object.entries(days)) {
+                        const minTemp = Math.min(...data.tempsMin).toFixed(2);
+                        const maxTemp = Math.max(...data.tempsMax).toFixed(2);
+                        const description = Array.from(data.descriptions).join(', ');
+                        const icons = Array.from(data.icons).join(' ');
+
+                        tableContent += `
+                            <tr>
+                                <td>${date}</td>
+                                <td>${minTemp}</td>
+                                <td>${maxTemp}</td>
+                                <td>${icons} ${description}</td>
+                            </tr>
+                        `;
+                    }
+
+                    weatherBody.innerHTML = tableContent;
+                })
+                .catch(error => console.error('Error fetching weather data:', error));
+        });
+    </script>
+</body>
+</html>
+

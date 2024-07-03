@@ -1,15 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<style>
+#festivalList {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+.festival {
+    text-align: center;
+}
+</style>
+
 </head>
 <body>
 
-<h1>테스트페이지</h1>
+<h1>(축제)</h1>
+
+<div id="festivalList"></div>
+
+<script>
+
+    $(document).ready(function(){
+        $.ajax({
+            url: "http://apis.data.go.kr/6260000/FestivalService/getFestivalKr?serviceKey=gS%2Fgg5Okl%2BiENblgfTY4LW6GAxbDhZoC8eAjiF9qOHR3PiM%2FNwfq%2Bf5TxgaSO3onCSVo3mkUtZpVzPKS1kZyYg%3D%3D&numOfRows=35&pageNo=1",
+            type: "GET",
+            dataType: "xml",
+            success: function(response) {
+                console.log("응답: ", response);
+            	
+                var xmlString = new XMLSerializer().serializeToString(response);
+                console.log(xmlString);
+                $.ajax({
+                	url: "http://localhost:9002/khj/festival",
+                	type: "POST",
+                	contentType: "application/xml",
+                	data : xmlString,
+                	success: function(response){
+                		console.log("rest 서버 응답 :" , response);
+                	},
+                	error: function(xhr, status, error) {
+                        console.error("Error: " + error);
+                    }
+                });
+            }
+    });
+    });
+</script>
 
 </body>
 </html>
