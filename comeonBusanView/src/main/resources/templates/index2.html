@@ -7,11 +7,11 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-	<h1>부산 축제 정보</h1>
-	<button id="fetchData">데이터 가져오기</button>
-	<pre id="result"></pre>
+    <h1>부산 축제 정보</h1>
+    <button id="fetchData">데이터 가져오기</button>
+    <pre id="result"></pre>
 
-	<script>
+    <script>
         $(document).ready(function() {
             $('#fetchData').click(function() {
                 const serviceKey = 'sCVR8i55Be+0NJN/ppE+ueXJETgq4dOQK69iVMxaOqaPJRzNhY8lcSEuIxVxNHphEOJQLznqIjoobuErnBQT3g=='; // 여기에 서비스 키를 입력하세요
@@ -22,19 +22,15 @@
                     type: 'GET',
                     data: {
                         serviceKey: serviceKey,
-                        resultType: 'json'
+                        resultType: 'xml'
                     },
                     success: function(response) {
                         // 응답 데이터를 콘솔에 출력하여 확인합니다.
                         console.log(response);
 
-                        // JSON 데이터를 보기 좋게 출력
-                        const items = response?.response?.body?.items?.item;
-                        if (items) {
-                            $('#result').text(JSON.stringify(items, null, 2));
-                        } else {
-                            $('#result').text('응답 형식이 예상과 다릅니다: ' + JSON.stringify(response, null, 2));
-                        }
+                        // XML 데이터를 보기 좋게 출력
+                        const xmlString = new XMLSerializer().serializeToString(response);
+                        $('#result').text(formatXml(xmlString));
                     },
                     error: function(xhr, status, error) {
                         console.error('Error:', status, error);
@@ -42,6 +38,27 @@
                     }
                 });
             });
+
+            function formatXml(xml) {
+                const PADDING = ' '.repeat(2); // XML 포맷팅을 위한 패딩 설정
+                const reg = /(>)(<)(\/*)/g;
+                let pad = 0;
+                return xml.replace(reg, '$1\r\n$2$3').split('\r\n').map((node, index) => {
+                    let indent = 0;
+                    if (node.match(/.+<\/\w[^>]*>$/)) {
+                        indent = 0;
+                    } else if (node.match(/^<\/\w/) && pad > 0) {
+                        pad -= 1;
+                    } else if (node.match(/^<\w[^>]*[^\/]>.*$/)) {
+                        indent = 1;
+                    } else {
+                        indent = 0;
+                    }
+
+                    pad += indent;
+                    return PADDING.repeat(pad - indent) + node;
+                }).join('\r\n');
+            }
         });
     </script>
 </body>
