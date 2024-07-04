@@ -6,17 +6,47 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
+	<style>
+  .tour-item {
+  	width: 23%;
+  	margin: 1%;
+  	box-sizing: border-box;
+  	float: left;
+  	text-align: center;
+  }
+  .tour-title {
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  .tour-thumbnail {
+    width: 100%;
+    height: auto;
+  }
+  .pagination {
+    display: flex;
+    justify-content: center;
+    clear: both;
+    margin-top: 20px;
+  }
+  .pagination button {
+    margin: 0 5px;
+    padding: 5px 10px;
+  }
+	</style>	
 </head>
 <body>
 <h1>부산 관광지</h1>
 <hr>
-<input type="button" value="검색" onclick="find()">
-
 <div id="container"></div>
-
+<div class="pagination"></div>
 <script>
 	
 	$(document).ready(function(){
+		
+		const itemsPerPage = 12;
+		let currentPage = 1;
+		let tourData = [];
+		
         $.ajax({
             url: "http://localhost:9002/kibTest/tourList",
             type: 'GET',
@@ -24,11 +54,56 @@
             success: function(response) {
                 console.log(response);
                 console.log(response[0].maintitle);
+                
+                tourData = response;
+                renderPage(currentPage);
+                renderPagination(tourData.length, itemsPerPage);
             },
             error: function(xhr, status, error) {
                 console.error("Error: " + error);
             }
         });
+        
+        function renderPage(page) {
+        	$('#container').empty();
+        	
+        	const start = (page - 1) * itemsPerPage;
+        	const end = start + itemsPerPage;
+        	const items = tourData.slice(start, end);
+        	
+        	items.forEach(item => {
+        		const tourItem = `
+        			<div class="tour-item">
+        				<div class="tour-title">${item.maintitle}</div>
+        				<img class="tour-thumbnail" src="${item.main_img_thumb}" alt="${item.maintitle}">
+        			</div>
+        		`;
+        		$('#container').append(tourItem);
+        	});
+        }
+        
+        function renderPagination(totalItems, itemsPerPage) {
+        	$('.pagination').empty();
+        	const totalPages = Math.ceil(totalItems / itemsPerPage);
+        	
+        	const prevButton = `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo;</button>`;
+        	$('.pagination').append(prevButton);
+        	
+        	for(let i = 1; i <= totalPages; i++){
+        		const pageButton = `<button onclick="changePage(${i})" ${i === currentPage ? 'disabled' : ''}>${i}</button>`;
+        		$('.pagination').append(pageButton);
+        	}
+        	
+        	const nextButton = `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disable' : ''}>&raquo;</button>`;
+        	$('.pagination').append(nextButton);
+        }
+        
+        window.changePage = function(page){
+        	if(page < 1 || page > Math.ceil(tourData.length / itemsPerPage)) return;
+        	currentPage = page;
+        	renderPage(currentPage);
+        	renderPagination(tourData.length, itemsPerPage);
+        }
 	});
 </script>
 </body>
