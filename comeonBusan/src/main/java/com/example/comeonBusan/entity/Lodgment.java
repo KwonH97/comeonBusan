@@ -1,16 +1,16 @@
 package com.example.comeonBusan.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 public class Lodgment {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long lid; // 자동 증가 번호
 
@@ -41,4 +41,10 @@ public class Lodgment {
     private String 휠체어이동가능여부;
     private String 점자유도로유무;
     private LocalDate 등록일자;
+
+    @OneToMany(mappedBy = "lodgment", cascade = CascadeType.ALL)
+    private List<Likes> likes;
+    
+    @OneToMany(mappedBy = "lodgment", cascade = CascadeType.ALL)
+    private List<Views> views;
 }
