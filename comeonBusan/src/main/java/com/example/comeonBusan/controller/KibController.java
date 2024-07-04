@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.comeonBusan.entity.TourList;
-import com.example.comeonBusan.repository.ExRepository;
+import com.example.comeonBusan.repository.TourlistRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class KibController {
 	
 	@Autowired
-	ExRepository exRepo;
+	TourlistRepository tourRepo;
 	
 	
 	@GetMapping("/tourList")
@@ -97,9 +97,9 @@ public class KibController {
         }
 
         // 데이터베이스에 저장
-        exRepo.saveAll(entities);
+        tourRepo.saveAll(entities);
         
-        List<TourList> tourlist = exRepo.findAll();
+        List<TourList> tourlist = tourRepo.findAll();
 
         return ResponseEntity.ok(tourlist);
 	}
