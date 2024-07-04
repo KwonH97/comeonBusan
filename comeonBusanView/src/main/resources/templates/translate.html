@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="EUC-KR">
+    <title>메인 페이지</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .controls {
+            background-color: #fff;
+            border-radius: 2px;
+            border: 1px solid transparent;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            font-family: Roboto;
+            font-size: 15px;
+            font-weight: 300;
+            height: 40px;
+            margin: 10px 0;
+            padding: 0 11px;
+            width: 150px;
+        }
+        #language-select-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="language-select-container">
+        <label for="language-select"></label>
+        <select id="language-select" class="controls">
+            <option value="ko">한국어</option>
+            <option value="en">English</option>
+            <option value="jp">日本語</option>
+            <option value="zh">中文</option>
+        </select>
+    </div>
+
+    <h1 id="title">메인 페이지 입니다.</h1>
+
+    <script>
+        const translations = {
+            ko: {
+                title: "메인 페이지 입니다."
+            },
+            en: {
+                title: "This is the main page."
+            },
+            jp: {
+                title: "メインページです。"
+            },
+            zh: {
+                title: "这是主页。"
+            }
+        };
+
+        document.getElementById('language-select').addEventListener('change', function() {
+            const selectedLanguage = this.value;
+            document.getElementById('title').innerText = translations[selectedLanguage].title;
+        });
+    </script>
+</body>
+</html>

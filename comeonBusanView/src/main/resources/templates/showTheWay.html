@@ -8,6 +8,8 @@
     <style>
         #map {
             height: 100%;
+            width: 70%;
+            float: left;
         }
 
         html, body {
@@ -26,12 +28,11 @@
             font-size: 15px;
             font-weight: 300;
             height: 40px;
-            margin-left: 12px;
             margin-top: 10px;
             outline: none;
             padding: 0 11px 0 13px;
             text-overflow: ellipsis;
-            width: 400px;
+            width: 300px;
         }
 
         #reset-button {
@@ -49,59 +50,26 @@
             cursor: pointer;
         }
 
-        #floating-panel {
-            position: absolute;
-            top: 10px;
-            left: 25%;
-            z-index: 5;
-            background-color: #fff;
-            padding: 5px;
-            border: 1px solid #999;
-            text-align: center;
-            font-family: "Roboto", "sans-serif";
-            line-height: 30px;
-            padding-left: 10px;
-        }
-
-        #floating-panel {
-            background-color: #fff;
-            border: 0;
-            border-radius: 2px;
-            box-shadow: 0 1px 4px -1px rgba(0, 0, 0, 0.3);
-            margin: 10px;
-            padding: 0 0.5em;
-            font: 400 18px Roboto, Arial, sans-serif;
-            overflow: hidden;
-            padding: 5px;
-            font-size: 14px;
-            text-align: center;
-            line-height: 30px;
-            height: auto;
-        }
-
         #sidebar {
-            flex-basis: 15rem;
-            flex-grow: 1;
-            padding: 1rem;
-            max-width: 30rem;
             height: 100%;
+            width: 30%;
+            float: left;
             box-sizing: border-box;
             overflow: auto;
-        }
-
-        #map {
-            flex-basis: 0;
-            flex-grow: 4;
-            height: 100%;
-        }
-
-        #sidebar {
-            flex: 0 1 auto;
-            padding: 0;
+            padding: 10px;
+            border-left: 1px solid #ccc;
         }
 
         #sidebar > div {
             padding: 0.5rem;
+        }
+
+        #message {
+            font-family: Roboto;
+            font-size: 15px;
+            font-weight: 300;
+            margin-left: 12px;
+            margin-top: 10px;
         }
     </style>
     <script>
@@ -120,13 +88,18 @@
             directionsRenderer.setMap(map);
             directionsRenderer.setPanel(document.getElementById("sidebar"));
 
-            alert('현재 위치를 선택하세요.');
+            const message = document.createElement("div");
+            message.id = "message";
+            message.innerText = '현재 위치를 선택하세요.';
 
             const input = document.getElementById("pac-input");
             const searchBox = new google.maps.places.SearchBox(input);
             const resetButton = document.getElementById("reset-button");
 
             const controlsDiv = document.createElement('div');
+            controlsDiv.style.display = 'flex';
+            controlsDiv.style.alignItems = 'center';
+            controlsDiv.appendChild(message);
             controlsDiv.appendChild(input);
             controlsDiv.appendChild(resetButton);
             map.controls[google.maps.ControlPosition.TOP_LEFT].push(controlsDiv);
@@ -152,7 +125,7 @@
                             map,
                             position: place.geometry.location
                         });
-                        alert('목적지를 선택하세요.');
+                        message.innerText = '목적지를 선택하세요.';
                     } else if (!endMarker) {
                         endMarker = new google.maps.Marker({
                             map,
@@ -167,7 +140,7 @@
                             position: place.geometry.location
                         });
                         endMarker = null;
-                        alert('목적지를 선택하세요.');
+                        message.innerText = '목적지를 선택하세요.';
                     }
                 });
             });
@@ -178,7 +151,7 @@
                         position: event.latLng,
                         map: map,
                     });
-                    alert('목적지를 선택하세요.');
+                    message.innerText = '목적지를 선택하세요.';
                 } else if (!endMarker) {
                     endMarker = new google.maps.Marker({
                         position: event.latLng,
@@ -193,7 +166,7 @@
                         map: map,
                     });
                     endMarker = null;
-                    alert('목적지를 선택하세요.');
+                    message.innerText = '목적지를 선택하세요.';
                 }
             });
 
@@ -223,15 +196,19 @@
             startMarker = null;
             endMarker = null;
             document.getElementById("pac-input").value = "";
-            alert('현재 위치를 선택하세요.');
+            const message = document.getElementById("message");
+            message.innerText = '현재 위치를 선택하세요.';
         }
 
         window.initMap = initMap;
     </script>
 </head>
 <body>
-    <input id="pac-input" class="controls" type="text" placeholder="원하는 장소를 입력하세요."/>
-    <button id="reset-button">경로 초기화</button>
+    <div style="display: flex; align-items: center;">
+        <div id="message"></div>
+        <input id="pac-input" class="controls" type="text" placeholder="원하는 장소를 입력하세요."/>
+        <button id="reset-button">경로 초기화</button>
+    </div>
     <div id="map"></div>
     <div id="sidebar"></div>
 

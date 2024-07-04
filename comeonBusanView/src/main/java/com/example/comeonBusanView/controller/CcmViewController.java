@@ -30,5 +30,15 @@ public class CcmViewController {
 	public String rainInfo() {
 		return "rainInfo";
 	}
+	
+	@GetMapping("/recommand")
+	public String recommand() {
+		return "recommand";
+	}
+	
+	@GetMapping("/translate")
+	public String translate() {
+		return "translate";
+	}
 
 }
