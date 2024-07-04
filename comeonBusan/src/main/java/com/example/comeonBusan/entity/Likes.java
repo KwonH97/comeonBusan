@@ -12,8 +12,8 @@ public class Likes {
     private Long lno;
 
     @ManyToOne
-    @JoinColumn(name = "ex_entity_uc_seq", referencedColumnName = "uc_seq")
-    private ExEntity exEntity;
+    @JoinColumn(name = "tourlist_uc_seq", referencedColumnName = "uc_seq")
+    private TourList tourlist;
 
     @ManyToOne
     @JoinColumn(name = "festival_uc_seq", referencedColumnName = "UC_SEQ")

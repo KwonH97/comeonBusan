@@ -15,80 +15,15 @@
 <div id="container"></div>
 
 <script>
-	/*
-	$(document).ready(function(){
-		var xhr = new XMLHttpRequest();
-		var url = 'http://apis.data.go.kr/6260000/AttractionService/getAttractionKr'; /*URL*/
-		/*	
-		var queryParams = '?' + encodeURIComponent('serviceKey') + '='+'UzRFDzI6IWxs4ali8ZzhS%2FNQFzOPHO%2FLYOSFX6EItT5fnEy%2BmUS8Pa7%2Fmb%2B0ESkJizJdsWY4oHd6CiwCtju%2BEg%3D%3D'; /*Service Key*/
-		/*
-		queryParams += '&' + encodeURIComponent('pageNo') + '=' + encodeURIComponent('1'); 
-		queryParams += '&' + encodeURIComponent('numOfRows') + '=' + encodeURIComponent('10'); 
-		queryParams += '&' + encodeURIComponent('resultType') + '=' + encodeURIComponent('json'); 
-		queryParams += '&' + encodeURIComponent('UC_SEQ') + '=' + encodeURIComponent('255'); 
-		xhr.open('GET', url + queryParams);
-		xhr.onreadystatechange = function () {
-		    if (this.readyState == 4) {
-		    	let obj = JSON.parse(this.responseText);
-		    	console.log("obj : " + obj);
-		    	
-		        console.log('Status: '+this.status+'nHeaders: '+JSON.stringify(this.getAllResponseHeaders())+'nBody: '+this.responseText);
-		    }
-		};
-
-		xhr.send('');
-	});
-	*/
 	
 	$(document).ready(function(){
         $.ajax({
             url: "http://localhost:9002/kibTest/tourList",
-        	//url: 'http://apis.data.go.kr/6260000/AttractionService/getAttractionKr',
             type: 'GET',
-            /*
-            data: {
-                serviceKey: 'UzRFDzI6IWxs4ali8ZzhS/NQFzOPHO/LYOSFX6EItT5fnEy+mUS8Pa7/mb+0ESkJizJdsWY4oHd6CiwCtju+Eg==', // 실제 서비스 키로 교체
-                pageNo: '1',
-                numOfRows: '10',
-                resultType: 'JSON'
-            },
-            */
-            success: function(response) {
-                //console.log(response.item.MAIN_TITLE);
-                console.log(response);
-                /*
-                const data = JSON.parse(response);
-                
-                console.log(data.getAttractionKr.item[0].MAIN_IMG_NORMAL);
-                
-                var img = $('<img>').attr({
-                    'src': data.getAttractionKr.item[0].MAIN_IMG_NORMAL,
-                    'style': 'max-width: 100%; height: auto;' // 반응형 이미지를 위한 스타일
-                  });
-                
-                $('#container').empty().append(img);
-                /*
-            	var data = typeof response === 'string' ? JSON.parse(response) : response;
-				if (data && data.getAttractionKr && data.getAttractionKr.item && data.getAttractionKr.item.length > 0) {
-				  console.log(data.getAttractionKr.item[0].MAIN_TITLE);
-				} else {
-				  console.log("데이터를 찾을 수 없습니다.");
-				}
-                
-                
-                //const items = response.getAttractionKr.items.item;
-            	/*
-            	const items = $(response).find('item');
-
-                if (items.length > 0) {
-                    // 첫 번째 항목의 MAIN_TITLE을 로그에 출력합니다.
-                    const mainTitle = $(items[0]).find('MAIN_TITLE').text();
-                    console.log(mainTitle);
-                } else {
-                    console.error("No items found in the response");
-                }
-                */
             
+            success: function(response) {
+                console.log(response);
+                console.log(response[0].maintitle);
             },
             error: function(xhr, status, error) {
                 console.error("Error: " + error);
