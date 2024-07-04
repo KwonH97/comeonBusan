@@ -1,13 +1,10 @@
 package com.example.comeonBusan.entity;
-import java.io.Serializable;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.io.Serializable;
+import java.util.List;
+
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "festival")
@@ -16,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Festival implements Serializable {
 
-    @Id  
+    @Id
     @Column(name = "UC_SEQ")
     private Long ucSeq;
 
@@ -79,4 +76,10 @@ public class Festival implements Serializable {
 
     @Column(name = "LAT")
     private Float lat;
+
+    @OneToMany(mappedBy = "festival", cascade = CascadeType.ALL)
+    private List<Likes> likes;
+    
+    @OneToMany(mappedBy = "festival", cascade = CascadeType.ALL)
+    private List<Views> views;
 }
