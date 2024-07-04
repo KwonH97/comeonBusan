@@ -37,16 +37,25 @@
             margin-left: 12px;
             padding: 0 11px 0 13px;
             text-overflow: ellipsis;
-            width: 400px;
+            width: 300px;
             height: 40px;
         }
 
         #pac-input:focus {
             border-color: #4d90fe;
         }
+
+        #search-button {
+            height: 40px;
+            margin-left: 12px;
+            margin-top: 10px;
+            padding: 0 11px;
+            font-size: 15px;
+            cursor: pointer;
+        }
     </style>
     <script>
-        let map, panorama, streetViewService;
+        let map, panorama, streetViewService, searchBox;
 
         function initialize() {
             const busan = { lat: 35.1796, lng: 129.0756 }; // 부산 중심 좌표
@@ -76,51 +85,64 @@
             streetViewLayer.setMap(map);
 
             const input = document.getElementById("pac-input");
-            const searchBox = new google.maps.places.SearchBox(input);
+            searchBox = new google.maps.places.SearchBox(input);
             map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+            map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById("search-button"));
+
             map.addListener("bounds_changed", () => {
                 searchBox.setBounds(map.getBounds());
             });
 
             let markers = [];
             searchBox.addListener("places_changed", () => {
-                const places = searchBox.getPlaces();
-                if (places.length == 0) {
+                searchPlaces(markers);
+            });
+
+            document.getElementById("search-button").addEventListener("click", () => {
+                const event = new Event('places_changed');
+                searchBox.input.dispatchEvent(event);
+            });
+        }
+
+        function searchPlaces(markers) {
+            const places = searchBox.getPlaces();
+            if (places.length == 0) {
+                return;
+            }
+            markers.forEach((marker) => {
+                marker.setMap(null);
+            });
+            markers = [];
+            const bounds = new google.maps.LatLngBounds();
+            places.forEach((place) => {
+                if (!place.geometry || !place.geometry.location) {
+                    console.log("Returned place contains no geometry");
                     return;
                 }
-                markers.forEach((marker) => {
-                    marker.setMap(null);
+                const icon = {
+                    url: place.icon,
+                    size: new google.maps.Size(71, 71),
+                    origin: new google.maps.Point(0, 0),
+                    anchor: new google.maps.Point(17, 34),
+                    scaledSize: new google.maps.Size(25, 25),
+                };
+                const marker = new google.maps.Marker({
+                    map,
+                    icon,
+                    title: place.name,
+                    position: place.geometry.location,
                 });
-                markers = [];
-                const bounds = new google.maps.LatLngBounds();
-                places.forEach((place) => {
-                    if (!place.geometry || !place.geometry.location) {
-                        console.log("Returned place contains no geometry");
-                        return;
-                    }
-                    const icon = {
-                        url: place.icon,
-                        size: new google.maps.Size(71, 71),
-                        origin: new google.maps.Point(0, 0),
-                        anchor: new google.maps.Point(17, 34),
-                        scaledSize: new google.maps.Size(25, 25),
-                    };
-                    markers.push(
-                        new google.maps.Marker({
-                            map,
-                            icon,
-                            title: place.name,
-                            position: place.geometry.location,
-                        })
-                    );
-                    if (place.geometry.viewport) {
-                        bounds.union(place.geometry.viewport);
-                    } else {
-                        bounds.extend(place.geometry.location);
-                    }
+                marker.addListener('click', () => {
+                    getStreetView(place.geometry.location);
                 });
-                map.fitBounds(bounds);
+                markers.push(marker);
+                if (place.geometry.viewport) {
+                    bounds.union(place.geometry.viewport);
+                } else {
+                    bounds.extend(place.geometry.location);
+                }
             });
+            map.fitBounds(bounds);
         }
 
         function getStreetView(latLng) {
@@ -148,10 +170,11 @@
 </head>
 <body>
     <input id="pac-input" class="controls" type="text" placeholder="원하는 장소를 입력하세요." />
+    <button id="search-button">검색</button>
     <div id="map"></div>
     <div id="pano"></div>
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initialize&libraries=places&v=weekly"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDdazKeiuGmyPYgAHOkoOk5BPb1TUW8uWQ&callback=initialize&libraries=places&v=weekly"
       defer
     ></script>
 </body>
