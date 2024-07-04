@@ -11,11 +11,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name = "tourlist")
-public class ExEntity {
+public class TourList {
 
     @Id
     @Column(name = "uc_seq", nullable = false)
-    private String UC_SEQ; // 콘텐츠 id
+    private String uc_seq; // 콘텐츠 id
 
     private String maintitle; // 콘텐츠 명
     private String gugun_nm; // 구군
@@ -41,9 +41,9 @@ public class ExEntity {
     @Column(columnDefinition = "TEXT")
     private String ITEMCNTNTS;
 
-    @OneToMany(mappedBy = "exEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tourlist", cascade = CascadeType.ALL)
     private List<Likes> likes;
     
-    @OneToMany(mappedBy = "exEntity", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tourlist", cascade = CascadeType.ALL)
     private List<Views> views;
 }

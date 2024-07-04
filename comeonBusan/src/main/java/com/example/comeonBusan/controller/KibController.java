@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.comeonBusan.entity.ExEntity;
+import com.example.comeonBusan.entity.TourList;
 import com.example.comeonBusan.repository.ExRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +32,7 @@ public class KibController {
 	
 	
 	@GetMapping("/tourList")
-	public ResponseEntity<String> getTourList() throws IOException{
+	public ResponseEntity<List<TourList>> getTourList() throws IOException{
 		StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/6260000/AttractionService/getAttractionKr"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=UzRFDzI6IWxs4ali8ZzhS%2FNQFzOPHO%2FLYOSFX6EItT5fnEy%2BmUS8Pa7%2Fmb%2B0ESkJizJdsWY4oHd6CiwCtju%2BEg%3D%3D"); /*Service Key*/
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
@@ -67,11 +67,11 @@ public class KibController {
         JsonNode rootNode = objectMapper.readTree(jsonResponse);
         JsonNode itemsNode = rootNode.path("getAttractionKr").path("item");
 
-        List<ExEntity> entities = new ArrayList<>();
+        List<TourList> entities = new ArrayList<>();
 
         for (JsonNode itemNode : itemsNode) {
-            ExEntity entity = ExEntity.builder()
-            		.UC_SEQ(itemNode.path("UC_SEQ").asText())
+            TourList entity = TourList.builder()
+            		.uc_seq(itemNode.path("UC_SEQ").asText())
                     .maintitle(itemNode.path("MAIN_TITLE").asText())
                     .gugun_nm(itemNode.path("GUGUN_NM").asText())
                     .lat(itemNode.path("LAT").asText())
@@ -98,8 +98,10 @@ public class KibController {
 
         // 데이터베이스에 저장
         exRepo.saveAll(entities);
+        
+        List<TourList> tourlist = exRepo.findAll();
 
-        return ResponseEntity.ok("Data saved successfully");
+        return ResponseEntity.ok(tourlist);
 	}
 	
 }
