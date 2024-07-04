@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>위험 지역 표시 지도</title>
+    <meta charset="utf-8">
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+        #danger-list {
+            margin-top: 20px;
+        }
+        .danger-item {
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .danger-details {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h3>위험 지역 표시 지도</h3>
+    <div id="map"></div>
+    <div id="danger-list"></div>
+
+    <script>
+        var map;
+        var dangerZones = [
+            {
+                name: "위험 지역 1",
+                color: "#FF0000",
+                coords: [{lat: 35.1796, lng: 129.0656}, {lat: 35.1846, lng: 129.0706}, {lat: 35.1796, lng: 129.0756}],
+                description: "급경사 지역으로 우천 시 산사태 위험이 있습니다.",
+                riskLevel: "높음",
+                safetyTips: "우천 시 접근을 삼가고, 주변 안전 시설물을 확인하세요."
+            },
+            {
+                name: "위험 지역 2",
+                color: "#00FF00",
+                coords: [{lat: 35.1696, lng: 129.0756}, {lat: 35.1746, lng: 129.0806}, {lat: 35.1696, lng: 129.0856}],
+                description: "홍수 취약 지역으로 집중 호우 시 침수 위험이 있습니다.",
+                riskLevel: "중간",
+                safetyTips: "호우 경보 시 고지대로 대피하세요."
+            },
+            {
+                name: "위험 지역 3",
+                color: "#0000FF",
+                coords: [{lat: 35.1896, lng: 129.0756}, {lat: 35.1946, lng: 129.0806}, {lat: 35.1896, lng: 129.0856}],
+                description: "지반 약화 지역으로 지진 발생 시 건물 붕괴 위험이 있습니다.",
+                riskLevel: "높음",
+                safetyTips: "지진 발생 시 신속히 개활지로 대피하세요."
+            },
+            {
+                name: "위험 지역 4",
+                color: "#FFFF00",
+                coords: [{lat: 35.1796, lng: 129.0856}, {lat: 35.1846, lng: 129.0906}, {lat: 35.1796, lng: 129.0956}],
+                description: "화학 공장 인근 지역으로 유해 물질 누출 위험이 있습니다.",
+                riskLevel: "중간",
+                safetyTips: "경보 발령 시 실내로 대피하고 창문을 닫으세요."
+            },
+            {
+                name: "위험 지역 5",
+                color: "#FF00FF",
+                coords: [{lat: 35.1696, lng: 129.0656}, {lat: 35.1746, lng: 129.0706}, {lat: 35.1696, lng: 129.0756}],
+                description: "해안가 저지대로 해일 발생 시 침수 위험이 있습니다.",
+                riskLevel: "높음",
+                safetyTips: "해일 경보 시 신속히 고지대로 대피하세요."
+            }
+        ];
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 13,
+                center: {lat: 35.1796, lng: 129.0756} // 부산 중심 좌표
+            });
+
+            var infoWindow = new google.maps.InfoWindow();
+
+            dangerZones.forEach(function(zone, index) {
+                var polygon = new google.maps.Polygon({
+                    paths: zone.coords,
+                    strokeColor: zone.color,
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: zone.color,
+                    fillOpacity: 0.35
+                });
+
+                polygon.setMap(map);
+
+                google.maps.event.addListener(polygon, 'click', function(event) {
+                    var content = `<strong>${zone.name}</strong><br>${zone.description}<br>위험 수준: ${zone.riskLevel}`;
+                    infoWindow.setContent(content);
+                    infoWindow.setPosition(event.latLng);
+                    infoWindow.open(map);
+                });
+
+                addToList(zone, index);
+            });
+        }
+
+        function addToList(zone, index) {
+            var list = document.getElementById('danger-list');
+            var item = document.createElement('div');
+            item.className = 'danger-item';
+            item.innerHTML = `
+                <h4 style="margin: 0; color: ${zone.color}">${zone.name}</h4>
+                <p>위험 수준: ${zone.riskLevel}</p>
+                <div class="danger-details">
+                    <p>${zone.description}</p>
+                    <p><strong>안전 수칙:</strong> ${zone.safetyTips}</p>
+                </div>
+            `;
+            item.onclick = function() {
+                map.setCenter(zone.coords[0]);
+                map.setZoom(15);
+                toggleDetails(this);
+            };
+            list.appendChild(item);
+        }
+
+        function toggleDetails(item) {
+            var details = item.querySelector('.danger-details');
+            if (details.style.display === 'none' || details.style.display === '') {
+                details.style.display = 'block';
+            } else {
+                details.style.display = 'none';
+            }
+        }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDdazKeiuGmyPYgAHOkoOk5BPb1TUW8uWQ&callback=initMap">
+    </script>
+</body>
+</html>
