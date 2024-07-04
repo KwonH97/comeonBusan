@@ -22,6 +22,10 @@ public class Likes {
     @ManyToOne
     @JoinColumn(name = "lodgment_lid", referencedColumnName = "lid")
     private Lodgment lodgment;
+    
+    @ManyToOne
+    @JoinColumn(name = "food_uc_seq", referencedColumnName = "UC_SEQ")
+    private Food food;
 
     private Long likecount;
 }
