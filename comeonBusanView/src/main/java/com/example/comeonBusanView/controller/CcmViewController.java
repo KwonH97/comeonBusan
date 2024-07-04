@@ -40,5 +40,11 @@ public class CcmViewController {
 	public String translate() {
 		return "translate";
 	}
+	
+	@GetMapping("/dangerArea")
+	public String dangerArea() {
+		return "dangerArea";
+	}
+
 
 }
