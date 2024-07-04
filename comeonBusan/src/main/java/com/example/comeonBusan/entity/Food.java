@@ -1,8 +1,12 @@
 package com.example.comeonBusan.entity;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -50,4 +54,11 @@ public class Food {
 	
 	@Column(columnDefinition = "TEXT")
 	private String itemcntnts;
+	
+	@OneToMany(mappedBy = "food", cascade = CascadeType.ALL)
+    private List<Likes> likes;
+    
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL)
+    private List<Views> views;
+	
 }
