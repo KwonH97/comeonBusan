@@ -75,7 +75,9 @@
         		const tourItem = `
         			<div class="tour-item">
         				<div class="tour-title">${item.maintitle}</div>
-        				<img class="tour-thumbnail" src="${item.main_img_thumb}" alt="${item.maintitle}">
+        				<a href="/tourDetail?uc_seq=${item.uc_seq}">
+        					<img class="tour-thumbnail" src="${item.main_img_thumb}" alt="${item.maintitle}">
+        				</a>
         			</div>
         		`;
         		$('#container').append(tourItem);
