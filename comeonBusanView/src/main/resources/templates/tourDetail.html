@@ -3,15 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+	<style>
+		#placeInfo{
+			border: 2px solid #D88FD8;
+			padding: 10px;
+			margin: 20px 0;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+		
+		.info-group{
+			flex: 1;
+			gap: 5px;
+		}
+		
+		.info-group:last-child {
+			margin-right: 0;
+		}
+		
+		.info-group span{
+			display: block;
+			margin-bottom: 5px;
+		}
+		
+		.info-section{
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 10px;
+		}
+		
+		.single-info{
+			margin-bottom: 10px;
+		}
+		
+		.addr .tel .homepage_url .dayInfo .useageDay_week_and_time .usage_amount .middle_size_rm .trfc_info{
+			margin-bottom: 10px;
+		}
+		
+		.info{
+			color: blue;
+			font-size: 30px;
+		}
+	</style>
 </head>
 <body>
 <h1>관광지 상세페이지</h1>
 <hr>
 
-<div class="container"></div>
+<div class="container">
+	<h3 id="title"></h3>
+	<h4 id="subtitle"></h4>
+	<h4 id="place"></h4>
+	<img id="main_img" alt="관광지 홍보사진"><br>
+	<span><!-- 조회수 -->조회수</span>   <input type="button" onclick=>좋아요 <br>
+	<div id="itemcntnts"><!-- 관광지 설명 --></div>
+	
+	<div id="video-container"><!-- 유튜브 영상 --></div>
+	<video style="width:100%;" src="https://vod.visitbusan.net:8080/upload/encoding/video/2024/06/c0a49b6312a84e2ea5a74ec9efd3f293_media_1280x720.mp4" controls="" controlslist="nodownload" loop="" playsinline="" poster="https://vod.visitbusan.net:8080//upload/encoding/video/2024/06/c0a49b6312a84e2ea5a74ec9efd3f293_mplayer1_3.png"> Sorry, your browser doesn't support embedded videos,
+ but don't worry, you can <a href="videofile.ogg">download it</a>
+ and watch it with your favorite video player!
+</video>
+	
+	<div id="placeInfo"><!-- 관광지 상세정보(휴무일, 입장료 유무, 주소 등) -->
+		
+		<div class="info-section">
+			<!-- 좌측 위에서 아래로 3개 -->
+			<div class="info-group">
+				<span class="info">주소: </span><span class="addr"><!-- 관광지 주소 --></span>
+				<span class="info">연락처: </span><span class="tel"><!-- 관광지 연락처 --></span>
+				<span class="info">홈페이지: </span><span class="homepage_url"><!-- 관광지 홈페이지 --></span><br>
+			</div>
+			<!-- 우측 위에서 아래로 3개 -->
+			<div class="info-group">
+				<span class="info">운영일~휴무일  </span><span class="dayInfo"><!-- 관광지 운영일(usage_day) 와 휴무일(hldy_info) --></span>
+				<span class="info">운영 및 시간  </span><span class="useageDay_week_and_time"><!-- 운영 및 시간 --></span>
+				<span class="info">이용요금  </span><span class="usage_amount"><!-- 이용요금 --></span><br>
+			</div>
+		</div>
+		<!-- 좌측 3개, 우측 3개 아래부분-->
+		<div class="single-info">
+			<span class="info">편의 시설  </span><br>
+			<span class="middle_size_rm"><!-- 편의 시설 --></span>
+		</div>
+		<div class="single-info">
+			<span class="info">교통정보  </span><br>
+			<span class="trfc_info"><!-- 교통정보 --></span>
+		</div>
+		
+	</div>
+	
+</div>
 
 <script>
+	var uc_seq = "[[${uc_seq}]]";
 	
+	$(document).ready(function(){
+		console.log("id값: " + uc_seq);
+		
+		$.ajax({
+			url: "http://localhost:9002/kibTest/tour/" + uc_seq,
+			method: "GET",
+			success: function(response){
+				
+				console.log("데이터 확인: " + response.trfc_info);
+				
+				// response 데이터 저장
+				const title = response.title; //관광지 홍보타이틀
+				const subtitle = response.subtitle // 관광지 홍보 서브타이틀
+				const place = response.place; //관광지 이름
+				const main_img_normal = response.main_img_normal; // 관광지 홍보사진URL
+				const itemcntnts = response.itemcntnts; //관광지 
+				const addr = response.addr;
+				
+				document.querySelector("h3#title").textContent = title;
+				document.querySelector("h4#subtitle").textContent = subtitle;
+				document.querySelector("h4#place").textContent = place;
+				
+				document.querySelector("img#main_img").src = main_img_normal;
+				document.querySelector("div#itemcntnts").innerHTML = itemcntnts;
+				
+				//div.placeinfo 속 요소들 설정
+				document.querySelector("span.addr").textContent = addr;
+				document.querySelector("span.tel").textContent = response.tel;
+				document.querySelector("span.homepage_url").innerHTML = response.homepage_url;
+				
+				document.querySelector("span.dayInfo").textContent = response.usage_day;
+				document.querySelector("span.useageDay_week_and_time").textContent = response.useageDay_week_and_time;
+				document.querySelector("span.usage_amount").textContent = response.usage_amount;
+				
+				document.querySelector("span.middle_size_rm").textContent = response.middle_size_rm;
+				document.querySelector("span.trfc_info").textContent = response.trfc_info;
+			},
+			error: function(error){
+				console.log("Error: " + error);
+			}
+		});
+		
+	});
 </script>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<!--  
+    <script>
+        var API_KEY = 'AIzaSyAHM0PE1VR2JBfFxnbT4yiboKbAkGpChbw';
+        var videoId = 'o_FlQvFotwQ'; // YouTube 영상 ID
+
+        // 유튜브 iframe API 준비
+        function onYouTubeIframeAPIReady() {
+            new YT.Player('video-container', {
+                height: '390',
+                width: '640',
+                videoId: videoId,
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING) {
+                console.log('Video is playing');
+            }
+        }
+    </script>
+-->
 </body>
 </html>

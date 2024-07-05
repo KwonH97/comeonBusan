@@ -8,11 +8,13 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -102,6 +104,17 @@ public class KibController {
         List<TourList> tourlist = tourRepo.findAll();
 
         return ResponseEntity.ok(tourlist);
+	}
+	
+	@GetMapping("/tour/{uc_seq}")
+	public TourList getTourDetail(@PathVariable("uc_seq")String uc_seq) {
+		
+		Optional<TourList> result= tourRepo.findById(uc_seq);
+		TourList tour= result.get();
+		
+		System.out.println(tour);
+		
+		return tour;
 	}
 	
 }
