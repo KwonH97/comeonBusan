@@ -1,6 +1,7 @@
 package com.example.comeonBusanView.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,8 +30,8 @@ public class TestController {
 	}
 	
 	@RequestMapping("/tourDetail")
-	public String tourDetailPage(@RequestParam("uc_seq")String uc_seq, HttpServletResponse response) {
-		response.addHeader("uc_seq", uc_seq);
+	public String tourDetailPage(@RequestParam("uc_seq")String uc_seq, Model model) {
+		model.addAttribute("uc_seq", uc_seq);
 		
 		return "tourDetail";
 	}
