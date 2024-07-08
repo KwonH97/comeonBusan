@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>로그인 페이지</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+</head>
+<body>
+	<h1>회원가입 페이지</h1>
+	<hr>
+    <form id="form">
+        <input type="text" name="username" placeholder="Username" />
+        <input type="password" name="password" placeholder="Password" autocomplete="current-password"/>
+        <button type="button" onclick="submitForm2(event)">회원가입</button>
+    </form>
+	
+	<button type="submit" value="메인" onclick="getInfo(event)">메인 통신</button>
+	
+    <script>
+        function submitForm2(event) {
+            event.preventDefault();
+		
+            var form = document.forms['form'];
+            var formDataArray = $(form).serializeArray();
+            var formData = {
+            		"username" : form.username.value,
+            		"password" : form.password.value
+            };
+            
+
+         /*   $.each(formDataArray, function(index, field) {
+                formData[field.name] = field.value;
+            });
+		*/
+            console.log("폼 데이터" + JSON.stringify(formData));
+
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:9002/join",
+                contentType: "application/json",
+                data: JSON.stringify(formData),
+                success: function(data, status, xhr) {
+                    console.log(data);
+                    alert(data);
+                    //window.location.href = "/loginForm";
+                    
+                },
+                error: function() {
+                    console.log("에러발생");
+                }
+            });
+        }
+        
+        function getInfo(event){
+        	event.preventDefault();
+        	
+        	$.ajax({
+        		type: "GET",
+        		url : "http://localhost:9002/good",
+        		success : function(data, status, xhr){
+        			console.log(data);
+        		},
+        		error: function(){
+        			console.log("에러 발생............");
+        		}
+        	});
+        }
+    </script>
+</body>
+</html>
