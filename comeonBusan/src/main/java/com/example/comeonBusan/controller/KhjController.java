@@ -22,7 +22,7 @@ import com.example.comeonBusan.entity.Festival;
 import com.example.comeonBusan.repository.FestivalRepository;
 
 @RestController
-@CrossOrigin("*")
+//@CrossOrigin("*")
 @RequestMapping("/khj")
 public class KhjController {
 
