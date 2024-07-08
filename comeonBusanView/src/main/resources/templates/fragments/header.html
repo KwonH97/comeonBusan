@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Header</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+</head>
+<body>
+	<header id="navigation">
+		<img th:src="@{/img/busan.jpg}" alt="Busan Logo"
+			style="width: 150px; height: auto;"> <span>온나부산!</span>
+		<div id="search_area" class="search_area">
+			<div class="search_group">
+				<div id="search" class="search_group_inner">
+					<form id="form" name="search" method="get" action="">
+						<fieldset>
+							<div>
+								<input type="search" id="search-input" placeholder="검색어를 입력하세요."
+									onkeyup="showSuggestions(this.value)">
+							</div>
+							<button type="submit" class="btn_search" onclick="">
+								<span><img th:src="@{/img/search.png}" alt="search icon"
+									style="width: 40px; height: auto;"></span>
+							</button>
+						</fieldset>
+					</form>
+					<div class="layer_atcmp" id="autoFrame" style="display: none;">
+
+					</div>
+				</div>
+				<!-- search -->
+			</div>
+			<!--  search_group -->
+		</div>
+		<!-- dk.. search_area -->
+		<div class="lang">
+			<img th:src="@{/img/translation.png}" alt="translation icon"
+				style="width: 60px; height: auto;">
+		</div>
+	</header>
+	<script>
+		function showSuggestions(query) {
+			if (query.length === 0) {
+				document.getElementById("autoFrame").style.display = "none";
+		        document.getElementById("autoFrame").innerHTML = "";
+				return;
+			}
+			console.log(query);
+			 fetch("http://localhost:9002/autocomplete/" + query)
+			.then(response => response.json())
+			.then(data => {
+				let suggestions = data.map(item => `<div class="suggestion" onclick="selectSuggestion('${item.keyword}')">${item.keyword}</div>`).join("");
+				document.getElementById("autoFrame").style.display = "block";
+				document.getElementById("autoFrame").innerHTML = suggestions;
+			});
+		}
+		
+		function selectSuggestion(suggestion){
+			document.getElementById("search-input").value = suggestion;
+			document.getElementById("autoFrame").style.display = "none";
+			document.getElementById("autoFrame").innerHTML = "";
+		}
+	</script>
+</body>
+</html>
