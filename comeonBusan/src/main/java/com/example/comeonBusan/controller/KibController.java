@@ -1,29 +1,42 @@
 package com.example.comeonBusan.controller;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.example.comeonBusan.dto.TourListDto;
 import com.example.comeonBusan.entity.TourList;
 import com.example.comeonBusan.repository.TourlistRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
+import net.coobird.thumbnailator.Thumbnails;
 
 
 @RestController
@@ -119,9 +132,105 @@ public class KibController {
 		return tour;
 	}
 	
+	//파일 저장 장소
+	private static final String UPLOAD_DIR = "C:/uploads/";
+	
+	//파일 확장자 추출 메서드
+	private String getFileExtension(String filename) {
+		return filename.substring(filename.lastIndexOf(".") + 1);
+	}
+	
 	@PostMapping("/tour")
-	public void registTour() {
+	public void registTour(@RequestParam("file") MultipartFile file,
+            @RequestParam("uc_seq") String ucSeq,
+            @RequestParam("maintitle") String mainTitle,
+            @RequestParam("gugun_nm") String gugunNm,
+            @RequestParam("lat") String lat,
+            @RequestParam("lng") String lng,
+            @RequestParam("place") String place,
+            @RequestParam("title") String title,
+            @RequestParam("subtitle") String subtitle,
+            @RequestParam("addr") String addr,
+            @RequestParam("tel") String tel,
+            @RequestParam("homepage_url") String homepageUrl,
+            @RequestParam("trfc_info") String trfcInfo,
+            @RequestParam("usage_day") String usageDay,
+            @RequestParam("hldy_info") String hldyInfo,
+            @RequestParam("useageDay_week_and_time") String useageDayWeekAndTime,
+            @RequestParam("usage_amount") String usageAmount,
+            @RequestParam("middle_size_rm") String middleSizeRm,
+            @RequestParam("itemcntnts") String itemcntnts,
+            HttpServletRequest request) {
 		
+		String jwt = request.getHeader("Autorization");
+		
+		TourList tourEn = new TourList();
+		
+		try {
+			
+			/*
+			//UUID를 사용해 고유 파일 이름 생성
+			String originalFilename = file.getOriginalFilename();
+			String fileExtension = getFileExtension(originalFilename);
+			String uniqueFilename = UUID.randomUUID().toString() + "." + fileExtension;
+			
+			//원본 파일 저장
+			File originalFile = new File(UPLOAD_DIR + uniqueFilename);
+			file.transferTo(originalFile);
+			*/
+			
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+			Path targetLocation = Paths.get(UPLOAD_DIR + fileName);
+			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+			
+			String fileUrl = "http://localhost:9002/uploads/" + fileName;
+			
+			/*
+			//썸네일 생성 및 저장
+			String thumbnailFilename = "thumb_" + uniqueFilename;
+			File thumbnailFile = new File(UPLOAD_DIR + thumbnailFilename);
+			Thumbnails.of(originalFile).size(100, 100).toFile(thumbnailFile);
+			*/
+			
+			String thumbnailFilename = "thumb_" + fileName;
+			Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
+			//File thumbnailFile = thumbnailPath.toFile();
+			Files.copy(file.getInputStream(),thumbnailPath , StandardCopyOption.REPLACE_EXISTING);
+			
+			//Thumbnails.of(targetLocation.toFile()).size(100, 100).toFile(thumbnailFile);
+			
+			String thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
+			
+			if(jwt == null) {
+				tourEn.setUc_seq(ucSeq);
+	            tourEn.setMaintitle(mainTitle);
+	            tourEn.setGugun_nm(gugunNm);
+	            tourEn.setLat(lat);
+	            tourEn.setLng(lng);
+	            tourEn.setPlace(place);
+	            tourEn.setTitle(title);
+	            tourEn.setSubtitle(subtitle);
+	            tourEn.setAddr(addr);
+	            tourEn.setTel(tel);
+	            tourEn.setHomepage_url(homepageUrl);
+	            tourEn.setTrfc_info(trfcInfo);
+	            tourEn.setUsage_day(usageDay);
+	            tourEn.setHldy_info(hldyInfo);
+	            tourEn.setUseageDay_week_and_time(useageDayWeekAndTime);
+	            tourEn.setUsage_amount(usageAmount);
+	            tourEn.setMiddle_size_rm(middleSizeRm);
+	            tourEn.setITEMCNTNTS(itemcntnts);
+	            
+	            tourEn.setMain_img_normal(fileUrl);
+	            tourEn.setMain_img_thumb(thumbnailUrl);
+	            
+	            System.out.println(tourEn);
+	            tourRepo.save(tourEn);
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

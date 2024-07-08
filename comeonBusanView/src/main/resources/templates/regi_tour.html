@@ -10,7 +10,7 @@
 <body>
 <h1>관광지 등록 폼</h1>
 <hr>
-<form name="frm">
+<form name="frm" enctype="multipart/form-data">
 	<input type="text" name="uc_seq" placeholder="관광지 ID...."><br>
 	
 	<input type="text" name="maintitle" placeholder="ex)관광지 명(한,영,일)...."><br>
@@ -43,20 +43,23 @@
 
 <script>
 
-	function registTour(){
+	$(document).ready(function(){
 		$("form").on('submit', function (event){
 			event.preventDefault();
 			
-			const formData = new formData(this);
+			var formData = new FormData($(this)[0]);
+			
+			console.log(formData);
 			
 			$.ajax({
 				url: "http://localhost:9002/kibTest/tour",
 				method: "POST",
-				data: fromData,
-				contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+				data: formData,
+				contentType: false,
+				processData: false,
 				success: function (response){
 					alert("관광지 등록이 진행되었습니다.");
-					window.location.href="/kibTest";
+					//window.location.href="/kibTest";
 					
 				},
 				error: function (error) {
@@ -64,7 +67,8 @@
 				}
 			});
 		}); 
-	}
+	});
+	
 </script>
 </body>
 </html>
