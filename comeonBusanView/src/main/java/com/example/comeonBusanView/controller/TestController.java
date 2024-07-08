@@ -35,4 +35,9 @@ public class TestController {
 		
 		return "tourDetail";
 	}
+	
+	@RequestMapping("/regi_tour")
+	public String registTour() {
+		return "regi_tour";
+	}
 }
