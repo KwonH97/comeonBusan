@@ -24,4 +24,8 @@ public class LodgmentService {
 	  public Page<Lodgment> LodgmentPage(Pageable pageable){
 		  return lodgmentRepository.findAll(pageable);
 	  }
+	  
+	  public Lodgment saveLodgment(Lodgment lodgment) {
+		  return lodgmentRepository.save(lodgment);
+	  }
 }

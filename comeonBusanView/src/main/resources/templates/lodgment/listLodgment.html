@@ -3,16 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <title>숙박 목록</title>
+<link rel="stylesheet" th:href="@{/css/header.css}">
+<script src="/js/common.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
-    .pagination button.active {
-        font-weight: bold;
-    }
+.pagination button.active {
+	font-weight: bold;
+}
 </style>
 </head>
 <body>
-    <div id="data"></div>
-    <div id="pagination" class="pagination"></div>
+	<div th:replace="fragments/header :: header"></div>
+	<div id="data"></div>
+	<div id="pagination" class="pagination"></div>
 </body>
 
 <script>
