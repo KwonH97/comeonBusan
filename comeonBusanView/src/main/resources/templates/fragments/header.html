@@ -9,26 +9,26 @@
 </head>
 <body>
 	<header id="navigation">
+		<link rel="stylesheet" th:href="@{/css/header.css}">
 		<img th:src="@{/img/busan.jpg}" alt="Busan Logo"
 			style="width: 150px; height: auto;"> <span>온나부산!</span>
 		<div id="search_area" class="search_area">
 			<div class="search_group">
 				<div id="search" class="search_group_inner">
-					<form id="form" name="search" method="get" action="">
+					<form id="form" name="search" method="get" action="searchResult">
 						<fieldset>
 							<div>
 								<input type="search" id="search-input" placeholder="검색어를 입력하세요."
 									onkeyup="showSuggestions(this.value)">
 							</div>
-							<button type="submit" class="btn_search" onclick="">
+							<button type="submit" class="btn_search"
+								onclick="f(document.getElementById('search-input').value)">
 								<span><img th:src="@{/img/search.png}" alt="search icon"
 									style="width: 40px; height: auto;"></span>
 							</button>
 						</fieldset>
 					</form>
-					<div class="layer_atcmp" id="autoFrame" style="display: none;">
-
-					</div>
+					<div class="layer_atcmp" id="autoFrame" style="display: none;"></div>
 				</div>
 				<!-- search -->
 			</div>
@@ -48,7 +48,12 @@
 				return;
 			}
 			console.log(query);
-			 fetch("http://localhost:9002/autocomplete/" + query)
+			 fetch("http://localhost:9002/autocomplete/" + encodeURIComponent(query), {
+				 method: "get",
+				 headers: {
+					 "Content-Type" : "application/json;charset=utf-8",
+				 }
+			 })
 			.then(response => response.json())
 			.then(data => {
 				let suggestions = data.map(item => `<div class="suggestion" onclick="selectSuggestion('${item.keyword}')">${item.keyword}</div>`).join("");
@@ -61,6 +66,20 @@
 			document.getElementById("search-input").value = suggestion;
 			document.getElementById("autoFrame").style.display = "none";
 			document.getElementById("autoFrame").innerHTML = "";
+		}
+		
+		function f(query){
+			fetch("http://localhost:9002/search/" + encodeURIComponent(query),{
+			method: "Post",
+			headers: {
+				"Content-Type" : "application/json;charset=utf-8",
+			}
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log('Search results:', data);
+			});
+			
 		}
 	</script>
 </body>

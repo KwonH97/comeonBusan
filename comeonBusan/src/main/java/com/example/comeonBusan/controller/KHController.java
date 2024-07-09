@@ -6,8 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.comeonBusan.entity.SearchKeyword;
@@ -21,13 +20,14 @@ public class KHController {
 	private KeywordService keywordService;
 	
 	@GetMapping("/autocomplete/{query}")
-	public List<SearchKeyword> autocomplete(@PathVariable String query){
-		
+	public List<SearchKeyword> autocomplete(@PathVariable(name ="query") String query){
+		System.out.println("autocomplete---------------");
 		return keywordService.getSuggestions(query);
 	}
 	
-	@GetMapping("/search/{query}")
-	public List<SearchKeyword> search(@PathVariable String query) {
+	@PostMapping("/search/{query}")
+	public List<SearchKeyword> search(@PathVariable(name ="query") String query) {
+		System.out.println("search---------------");
 		keywordService.saveOrUpdateSearchKeyword(query);
 		
         return keywordService.getSuggestions(query);
