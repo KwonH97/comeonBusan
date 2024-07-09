@@ -47,4 +47,9 @@ public class TestController {
 		
 		return "/admin/modi_tour";
 	}
+	
+	@RequestMapping("/foodList")
+	public String foodTourList() {
+		return "foodList";
+	}
 }
