@@ -3,11 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<link rel="stylesheet" th:href="@{/css/header.css}">
+<script src="/js/common.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-	<form>
-		<input type="text" name="업체명">
-		<input type="text" name="카테고리명">
-	</form>
+    <div th:replace="fragments/header :: header"></div>
+    <form id="frm">
+        <input type="text" name="업체명" placeholder="업체명"><br>
+        <input type="radio" name="카테고리명" value="숙박/휴양">숙박/휴양
+        <input type="radio" name="카테고리명" value="문화관광/명소">문화관광/명소<br>
+        <input type="text" name="시도명" value="부산광역시"><br>
+        <input type="text" name="시군구명" placeholder="시군구명"><br>
+        <input type="text" name="읍면동명" placeholder="읍면동명"><br>
+        <input type="text" name="리명" placeholder="리명"><br>
+        <input type="text" name="번지" placeholder="번지"><br>
+        <input type="text" name="도로명" placeholder="도로명"><br>
+        <input type="text" name="도로명상세" placeholder="도로명 상세"><br>
+        <input type="text" name="위도" placeholder="위도"><br>
+        <input type="text" name="경도" placeholder="경도"><br>
+        <input type="text" name="전화번호" placeholder="전화번호"><br>
+        <input type="text" name="홈페이지주소" placeholder="홈페이지 주소"><br>
+        <input type="submit" value="등록">
+    </form>
+    
+    <script>
+    document.getElementById('frm').addEventListener('submit', function(event) {
+        event.preventDefault(); // 폼 제출 기본 동작 막기
+
+        const form = document.getElementById('frm');
+        const formData = new FormData(form);
+
+        fetch('http://localhost:9002/lodgment', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            console.log('Success', data);
+            alert('등록 성공!');
+        })
+        .catch((error) => {
+            console.error('Error', error);
+            alert('등록 실패!');
+        });
+    });
+    </script>
 </body>
 </html>

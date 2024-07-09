@@ -6,21 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class KHController {
-
-	@GetMapping("/header")
-	public String header() {
-		
-		return "/fragments/header";
-	}
 	
 	@GetMapping("/searchResult")
 	public String searchResult() {
 		return "/searchResult";
-	}
-	
-	@GetMapping("/lodgment")
-	public String getlodgmentList() {
-		return "/lodgment/listLodgment";
 	}
 	
 	@GetMapping("/index")
