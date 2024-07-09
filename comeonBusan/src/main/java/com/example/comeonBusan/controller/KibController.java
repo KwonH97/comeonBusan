@@ -141,7 +141,7 @@ public class KibController {
 	}
 	
 	@PostMapping("/tour")
-	public void registTour(@RequestParam("file") MultipartFile file,
+	public void registTour(@RequestParam(value="file", required= false) MultipartFile file,
             @RequestParam("uc_seq") String ucSeq,
             @RequestParam("maintitle") String mainTitle,
             @RequestParam("gugun_nm") String gugunNm,
@@ -167,39 +167,43 @@ public class KibController {
 		TourList tourEn = new TourList();
 		
 		try {
+			String fileUrl = null;
+			String thumbnailUrl = null;
 			
-			/*
-			//UUID를 사용해 고유 파일 이름 생성
-			String originalFilename = file.getOriginalFilename();
-			String fileExtension = getFileExtension(originalFilename);
-			String uniqueFilename = UUID.randomUUID().toString() + "." + fileExtension;
-			
-			//원본 파일 저장
-			File originalFile = new File(UPLOAD_DIR + uniqueFilename);
-			file.transferTo(originalFile);
-			*/
-			
-			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-			Path targetLocation = Paths.get(UPLOAD_DIR + fileName);
-			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-			
-			String fileUrl = "http://localhost:9002/uploads/" + fileName;
-			
-			/*
-			//썸네일 생성 및 저장
-			String thumbnailFilename = "thumb_" + uniqueFilename;
-			File thumbnailFile = new File(UPLOAD_DIR + thumbnailFilename);
-			Thumbnails.of(originalFile).size(100, 100).toFile(thumbnailFile);
-			*/
-			
-			String thumbnailFilename = "thumb_" + fileName;
-			Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
-			//File thumbnailFile = thumbnailPath.toFile();
-			Files.copy(file.getInputStream(),thumbnailPath , StandardCopyOption.REPLACE_EXISTING);
-			
-			//Thumbnails.of(targetLocation.toFile()).size(100, 100).toFile(thumbnailFile);
-			
-			String thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
+			if(file != null && !file.isEmpty()) {
+				/*
+				//UUID를 사용해 고유 파일 이름 생성
+				String originalFilename = file.getOriginalFilename();
+				String fileExtension = getFileExtension(originalFilename);
+				String uniqueFilename = UUID.randomUUID().toString() + "." + fileExtension;
+				
+				//원본 파일 저장
+				File originalFile = new File(UPLOAD_DIR + uniqueFilename);
+				file.transferTo(originalFile);
+				*/
+				
+				String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+				Path targetLocation = Paths.get(UPLOAD_DIR + fileName);
+				Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+				
+				fileUrl = "http://localhost:9002/uploads/" + fileName;
+				
+				/*
+				//썸네일 생성 및 저장
+				String thumbnailFilename = "thumb_" + uniqueFilename;
+				File thumbnailFile = new File(UPLOAD_DIR + thumbnailFilename);
+				Thumbnails.of(originalFile).size(100, 100).toFile(thumbnailFile);
+				*/
+				
+				String thumbnailFilename = "thumb_" + fileName;
+				Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
+				//File thumbnailFile = thumbnailPath.toFile();
+				Files.copy(file.getInputStream(),thumbnailPath , StandardCopyOption.REPLACE_EXISTING);
+				
+				//Thumbnails.of(targetLocation.toFile()).size(100, 100).toFile(thumbnailFile);
+				
+				thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
+			}
 			
 			if(jwt == null) {
 				tourEn.setUc_seq(ucSeq);
@@ -221,8 +225,10 @@ public class KibController {
 	            tourEn.setMiddle_size_rm(middleSizeRm);
 	            tourEn.setITEMCNTNTS(itemcntnts);
 	            
-	            tourEn.setMain_img_normal(fileUrl);
-	            tourEn.setMain_img_thumb(thumbnailUrl);
+	            if(fileUrl != null && thumbnailUrl != null) {
+	            	tourEn.setMain_img_normal(fileUrl);
+		            tourEn.setMain_img_thumb(thumbnailUrl);
+	            }
 	            
 	            System.out.println(tourEn);
 	            tourRepo.save(tourEn);

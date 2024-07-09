@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
@@ -53,6 +53,8 @@
 <body>
 <h1>관광지 상세페이지</h1>
 <hr>
+
+<button class="hiddenButton" style="display: none;" onclick="gomodifyPage()">수정하기</button>
 
 <div class="container">
 	<h3 id="title"></h3>
@@ -143,7 +145,16 @@
 			}
 		});
 		
+		var authValue = localStorage.getItem("Authorization");
+		if(authValue != null){
+			$(".hiddenButton").css("display", "block");
+		}
+		
 	});
+	
+	function gomodifyPage() {
+		window.location.href = "/admin/modi_tour?uc_seq=" + uc_seq;
+	}
 </script>
 
 <script src="https://www.youtube.com/iframe_api"></script>
