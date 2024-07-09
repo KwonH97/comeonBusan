@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>숙박 목록</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+    .pagination button.active {
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+    <div id="data"></div>
+    <div id="pagination" class="pagination"></div>
+</body>
+
+<script>
+    const pageSize = 10;
+    let currentGroup = 0;
+    const pagesPerGroup = 10;
+
+    function loadPage(page) {
+        $.ajax({
+            url: "http://localhost:9002/lodgment/page",
+            type: 'GET',
+            data: {
+                page: page,
+                size: pageSize
+            },
+            dataType: 'json',
+            contentType: 'application/json; charset=UTF-8',
+            success: function(response) {
+                $('#data').empty();
+                if (response.content && response.content.length > 0) {
+                    response.content.forEach(function(item) {
+                        $('#data').append(`
+                            <div class="lodgment-item">
+                                <h3>${item.업체명}</h3>
+                                <p>${item.카테고리명}</p>
+                                <p>주소: ${item.시도명} ${item.시군구명} ${item.읍면동명} ${item.리명} ${item.번지}</p>
+                                <p>도로명: ${item.도로명} ${item.도로명상세}</p>
+                                <p>전화번호: ${item.전화번호}</p>
+                                <p>홈페이지: ${item.홈페이지주소}</p>
+                            </div>
+                        `);
+                    });
+                    renderPagination(response.totalPages, page);
+                } else {
+                    $('#data').append('<p>No lodgments found.</p>');
+                }
+            },
+            error: function(error) {
+                console.error('Error fetching lodgments:', error);
+                $('#data').append('<p>Error loading lodgments. Please try again later.</p>');
+            }
+        });
+    }
+
+    function renderPagination(totalPages, currentPage) {
+        $('#pagination').empty();
+        const totalGroups = Math.ceil(totalPages / pagesPerGroup);
+        const startPage = currentGroup * pagesPerGroup;
+        const endPage = Math.min(startPage + pagesPerGroup, totalPages);
+
+        if (currentGroup > 0) {
+            $('#pagination').append(`<button onclick="changeGroup(${currentGroup - 1})"> ◀ </button>`);
+        }
+
+        for (let i = startPage; i < endPage; i++) {
+            $('#pagination').append(`<button onclick="loadPage(${i})" class="${i === currentPage ? 'active' : ''}">${i + 1}</button>`);
+        }
+
+        if (currentGroup < totalGroups - 1) {
+            $('#pagination').append(`<button onclick="changeGroup(${currentGroup + 1})"> ▶ </button>`);
+        }
+    }
+
+    function changeGroup(group) {
+        currentGroup = group;
+        loadPage(currentGroup * pagesPerGroup);
+    }
+
+    $(document).ready(function() {
+        loadPage(0);  // Load the first page initially
+    });
+</script>
+</html>
