@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Food {
 	
 	@Id
@@ -48,7 +50,7 @@ public class Food {
 	
 	private String rprsntv_menu;
 	
-	private String main_img_no;
+	private String main_img_normal;
 	
 	private String main_img_thumb;
 	

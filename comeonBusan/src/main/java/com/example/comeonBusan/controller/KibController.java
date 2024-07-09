@@ -1,7 +1,6 @@
 package com.example.comeonBusan.controller;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -14,7 +13,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,20 +21,19 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.comeonBusan.dto.TourListDto;
+import com.example.comeonBusan.entity.Food;
 import com.example.comeonBusan.entity.TourList;
+import com.example.comeonBusan.repository.FoodRepository;
 import com.example.comeonBusan.repository.TourlistRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
-import net.coobird.thumbnailator.Thumbnails;
 
 
 @RestController
@@ -47,6 +44,8 @@ public class KibController {
 	@Autowired
 	TourlistRepository tourRepo;
 	
+	@Autowired
+	FoodRepository foodRepo;
 	
 	@GetMapping("/tourList")
 	public ResponseEntity<List<TourList>> getTourList() throws IOException{
@@ -238,5 +237,77 @@ public class KibController {
 			e.printStackTrace();
 		}
 	}
+	
+	@GetMapping("/food")
+	public ResponseEntity<List<Food>> foodTourList() throws IOException {
+		StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/6260000/FoodService/getFoodKr"); /*URL*/
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=UzRFDzI6IWxs4ali8ZzhS%2FNQFzOPHO%2FLYOSFX6EItT5fnEy%2BmUS8Pa7%2Fmb%2B0ESkJizJdsWY4oHd6CiwCtju%2BEg%3D%3D"); /*Service Key*/
+        urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
+        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("398", "UTF-8")); /*한 페이지 결과 수*/
+        urlBuilder.append("&" + URLEncoder.encode("resultType","UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*JSON방식으로 호출 시 파라미터 resultType=json 입력*/
+        //urlBuilder.append("&" + URLEncoder.encode("UC_SEQ","UTF-8") + "=" + URLEncoder.encode("", "UTF-8")); /*콘텐츠 ID*/
+        URL url = new URL(urlBuilder.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Content-type", "application/json");
+        System.out.println("Response code: " + conn.getResponseCode());
+        BufferedReader rd;
+        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } else {
+            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+        }
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = rd.readLine()) != null) {
+            sb.append(line);
+        }
+        rd.close();
+        conn.disconnect();
+        System.out.println(sb.toString());
+        
+        String jsonResponse = sb.toString();
+        
+        
+        // JSON 파싱 및 데이터베이스 저장
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(jsonResponse);
+        JsonNode itemsNode = rootNode.path("getFoodKr").path("item");
+        
+        List<Food> entities = new ArrayList<>();
+        
+        for (JsonNode itemNode : itemsNode) {
+            Food entity = Food.builder()
+            		.UC_SEQ(itemNode.path("UC_SEQ").asText())
+                    .main_title(itemNode.path("MAIN_TITLE").asText())
+                    .gugun_nm(itemNode.path("GUGUN_NM").asText())
+                    .lat(itemNode.path("LAT").asText())
+                    .lng(itemNode.path("LNG").asText())
+                    .place(itemNode.path("PLACE").asText())
+                    .title(itemNode.path("TITLE").asText())
+                    .subtitle(itemNode.path("SUBTITLE").asText())
+                    .addr1(itemNode.path("ADDR1").asText())
+                    .addr2(itemNode.path("ADDR2").asText())
+                    .cntct_tel(itemNode.path("CNTCT_TEL").asText())
+                    .homepage_url(itemNode.path("HOMEPAGE_URL").asText())
+                    .usage_day_week_and_time(itemNode.path("USAGE_DAY_WEEK_AND_TIME").asText())
+                    .rprsntv_menu(itemNode.path("RPRSNTV_MENU").asText())
+            		.main_img_normal(itemNode.path("MAIN_IMG_NORMAL").asText())
+            		.main_img_thumb(itemNode.path("MAIN_IMG_THUMB").asText())
+            		.itemcntnts(itemNode.path("ITEMCNTNTS").asText())
+                    .build();
+
+            entities.add(entity); 
+            
+        }
+        
+        // 데이터베이스에 저장
+        foodRepo.saveAll(entities);
+        
+        List<Food> foodlist = foodRepo.findAll();
+
+        return ResponseEntity.ok(foodlist);
+        
+    }
 	
 }
