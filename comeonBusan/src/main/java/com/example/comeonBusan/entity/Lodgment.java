@@ -3,7 +3,14 @@ package com.example.comeonBusan.entity;
 import java.time.LocalDate;
 import java.util.List;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 @Data
@@ -43,8 +50,10 @@ public class Lodgment {
     private LocalDate 등록일자;
 
     @OneToMany(mappedBy = "lodgment", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Likes> likes;
     
     @OneToMany(mappedBy = "lodgment", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Views> views;
 }

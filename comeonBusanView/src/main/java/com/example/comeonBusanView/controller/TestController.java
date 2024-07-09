@@ -53,10 +53,12 @@ public class TestController {
 		return "foodList";
 	}
 	
+
 	@RequestMapping("/foodDetail")
 	public String foodTourDetail(@RequestParam("uc_seq")String uc_seq, Model model) {
 		model.addAttribute("uc_seq", uc_seq);
 		
 		return "foodDetail";
 	}
+
 }

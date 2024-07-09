@@ -17,4 +17,14 @@ public class KHController {
 	public String searchResult() {
 		return "/searchResult";
 	}
+	
+	@GetMapping("/lodgment")
+	public String getlodgmentList() {
+		return "/lodgment/listLodgment";
+	}
+	
+	@GetMapping("/index")
+	public String index() {
+		return "index2";
+	}
 }
