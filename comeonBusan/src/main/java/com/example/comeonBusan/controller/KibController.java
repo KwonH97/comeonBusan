@@ -310,4 +310,12 @@ public class KibController {
         
     }
 	
+	@GetMapping("/food/{uc_seq}")
+	public Food foodDetail(@PathVariable("uc_seq") String uc_seq) {
+		Optional<Food> result= foodRepo.findById(uc_seq);
+		Food food = result.get();
+		
+		return food;
+	}
+	
 }

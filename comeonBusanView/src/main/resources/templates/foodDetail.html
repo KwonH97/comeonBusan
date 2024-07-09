@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+</head>
+<body>
+<h1>맛집 상세페이지</h1>
+<hr>
+
+<div class="container">
+
+	<h3 id="main_title"></h3>
+	<h4 id="subtitle"></h4>
+	
+	<img id="main_img_normal" alt="맛집 홍보사진"><br>
+	
+	<span> 조회수 </span><span> 좋아요 </span>
+	
+	<h4 id="rprsntv_menu"></h4>
+	<div id="itemcntnts"></div>
+	
+	<div id="placeInfo">
+		
+		<div class="info-group">
+			<span class="info">주소: </span><span id="addr1"></span>
+			<span class="info">운영 및 시간 </span> <span id="usage_day_week_and_time"></span>
+		</div>
+		
+		<div class="info-group">
+			<span class="info">연락처: </span><span id="cntct_tel"></span>
+			<span class="info">홈페이지: </span><span id="homepage_url"></span>
+		</div>
+		
+	</div>
+	
+</div>
+
+<script>
+	
+	var uc_seq = "[[${uc_seq}]]";
+	
+	$(document).ready(function(){
+		
+		$.ajax({
+			url:"http://localhost:9002/kibTest/food/" + uc_seq,
+			method: "GET",
+			success: function(response){
+				console.log("데이터 확인: ");
+				
+				document.querySelector("h3#main_title").textContent = response.main_title;
+				document.querySelector("h4#subtitle").textContent = response.subtitle;
+				document.querySelector("img#main_img_normal").src = response.main_img_normal;
+				
+				document.querySelector("h4#rprsntv_menu").textContent = response.rprsntv_menu;
+				document.querySelector("div#itemcntnts").innerHTML = response.itemcntnts;
+				
+				document.querySelector("span#addr1").textContent = response.addr1;
+				document.querySelector("span#usage_day_week_and_time").textContent = response.usage_day_week_and_time;
+				document.querySelector("span#cntct_tel").textContent = response.cntct_tel;
+				document.querySelector("span#homepage_url").textContent = response.homepage_url;
+			},
+			error: function(error){
+				console.log(Error);
+			} 
+		});
+		
+	});
+
+</script>
+
+</body>
+</html>
