@@ -12,4 +12,9 @@ public class KHController {
 		
 		return "/fragments/header";
 	}
+	
+	@GetMapping("/searchResult")
+	public String searchResult() {
+		return "/searchResult";
+	}
 }

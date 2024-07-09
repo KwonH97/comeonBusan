@@ -15,12 +15,12 @@ public class KeywordService {
 	private SearchKeywordRepository searchKeywordRepository;
 	
 	public List<SearchKeyword> getSuggestions(String query){
-		System.out.println("넘어옴");
+		System.out.println("Suggestions 서비스-------------------");
 		return searchKeywordRepository.findBykeywordStartingWith(query);
 	}
 	
 	public void saveOrUpdateSearchKeyword(String keyword) {
-		System.out.println("넘어옴");
+		System.out.println("Keyword저장---------------------------");
         SearchKeyword searchKeyword = searchKeywordRepository.findByKeyword(keyword)
                 .orElse(new SearchKeyword());
         if (searchKeyword.getSid() == null) {
