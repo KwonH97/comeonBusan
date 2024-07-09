@@ -6,6 +6,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
+	<script src="/js/common.js"></script>
 </head>
 <body>
 	<header id="navigation">
@@ -41,46 +42,7 @@
 		</div>
 	</header>
 	<script>
-		function showSuggestions(query) {
-			if (query.length === 0) {
-				document.getElementById("autoFrame").style.display = "none";
-		        document.getElementById("autoFrame").innerHTML = "";
-				return;
-			}
-			console.log(query);
-			 fetch("http://localhost:9002/autocomplete/" + encodeURIComponent(query), {
-				 method: "get",
-				 headers: {
-					 "Content-Type" : "application/json;charset=utf-8",
-				 }
-			 })
-			.then(response => response.json())
-			.then(data => {
-				let suggestions = data.map(item => `<div class="suggestion" onclick="selectSuggestion('${item.keyword}')">${item.keyword}</div>`).join("");
-				document.getElementById("autoFrame").style.display = "block";
-				document.getElementById("autoFrame").innerHTML = suggestions;
-			});
-		}
 		
-		function selectSuggestion(suggestion){
-			document.getElementById("search-input").value = suggestion;
-			document.getElementById("autoFrame").style.display = "none";
-			document.getElementById("autoFrame").innerHTML = "";
-		}
-		
-		function f(query){
-			fetch("http://localhost:9002/search/" + encodeURIComponent(query),{
-			method: "Post",
-			headers: {
-				"Content-Type" : "application/json;charset=utf-8",
-			}
-			})
-			.then(response => response.json())
-			.then(data => {
-				console.log('Search results:', data);
-			});
-			
-		}
 	</script>
 </body>
 </html>
