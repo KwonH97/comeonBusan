@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<h1>메인이다</h1>
+<h1>로그인페이지다</h1>
 
 <form name="frm" onsubmit="submitForm(event)">
 	<input type="text" name="username" placeholder="username"/>
@@ -42,7 +42,7 @@
 				var token = xhr.getResponseHeader("Authorization");
 				if (token != null) {
 					console.log("JWT Token: " + token.split(" ")[1]);
-					localStorage.setItem("jwtToken", token.split(" ")[1]);
+					localStorage.setItem("Authorization", token.split(" ")[1]);
 				} else {
 					console.log("Authorization 헤더가 없습니다.");
 				}
@@ -54,7 +54,7 @@
 	}
 	
 	function requestAdmin(){
-		const token = localStorage.getItem("jwtToken");
+		const token = localStorage.getItem("Authorization");
 		console.log(token);
 		$.ajax({
 		    type: "GET",
