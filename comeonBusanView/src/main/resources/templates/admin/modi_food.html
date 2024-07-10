@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+</head>
+<body>
+<h1>맛집투어 정보 수정</h1>
+<hr>
+<form name="frm" enctype="multipart/form-data">
+
+	<span>등록 ID </span><input type="text" name="uc_seq" readonly><br>
+	<span>맛집 게시글 제목 </span><input type="text" name="title"><br><!-- main_title / title / place -->
+	<span>맛집 게시글 부제목 </span><input type="text" name="subtitle"><br>
+	<span>주력 메뉴 </span><input type="text" name="rprsntv_menu"><br>
+	<span>소재지 (구 단위) </span><input type="text" name="gugun_nm"><br>
+	<span>소재지 (전체) </span><input type="text" name="addr1"><br>
+	<span>맛집 연락처 </span><input type="text" name="cntct_tel"><br>
+	<span>맛집 홍보페이지 링크 (인스타, 네이버 등) </span><input type="text" name="homepage_url"><br>
+	
+	
+	<span>운영일 및 시간</span><br>
+	<textarea name="usage_day_week_and_time"></textarea><br>
+	
+	<span>맛집 설명</span><br>
+	<textarea name="itemcntnts"></textarea><br>
+	
+	<span>홍보 이미지 </span><br>
+	<input type="file" name="file"><br><br>
+	
+	<input type="submit" value="등록하기">
+
+</form>
+
+<script>
+	
+	$(document).ready(function(){
+		const uc_seq = "[[${uc_seq}]]";
+		
+		console.log("게시글 아이디: " + uc_seq);
+		
+		$.ajax({
+			url: "http://localhost:9002/kibTest/food/" + uc_seq,
+			method: "GET",
+			success: function(response){
+				document.querySelector("input[name='uc_seq']").value = uc_seq;
+				document.querySelector("input[name='title']").value = response.title;
+				document.querySelector("input[name='subtitle']").value = response.subtitle;
+				document.querySelector("input[name='rprsntv_menu']").value = response.rprsntv_menu;
+				document.querySelector("input[name='gugun_nm']").value = response.gugun_nm;
+				document.querySelector("input[name='addr1']").value = response.addr1;
+				document.querySelector("input[name='cntct_tel']").value = response.cntct_tel;
+				document.querySelector("input[name='homepage_url']").value = response.homepage_url;
+				document.querySelector("textarea[name='usage_day_week_and_time']").value = response.usage_day_week_and_time;
+				document.querySelector("textarea[name='itemcntnts']").value = response.itemcntnts;
+			},
+			error: function(error){
+				console.log("Error: " + error);
+			}
+		});
+		
+		$("form").on('submit',function(event){
+			event.preventDefault();
+			
+			var formData = new FormData($(this)[0]);
+			
+			if(formData != null){
+				console.log("form Data not null");
+			}else{
+				alert("수정 데이터의 오류가 있습니다.\n 다시 입력해주세요.");
+			}
+			
+			if($("input[name='file']")[0].files.length === 0){
+				formData.delete('file');
+			}
+			
+			$.ajax({
+				url:"http://localhost:9002/kibTest/mfood",
+				method: "POST",
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(response){
+					alert("수정기능 실행됨");
+				},
+				error: function(error){
+					console.log("Error: " + error);
+				}
+			});
+			
+		});
+	});
+
+</script>
+
+</body>
+</html>

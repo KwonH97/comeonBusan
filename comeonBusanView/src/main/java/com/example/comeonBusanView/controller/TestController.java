@@ -60,5 +60,16 @@ public class TestController {
 		
 		return "foodDetail";
 	}
+	
+	@RequestMapping("/regi_food")
+	public String regiFoodTour() {
+		return "/admin/regi_food";
+	}
+	
+	@RequestMapping("/modi_food")
+	public String modifyFoodTour(@RequestParam("uc_seq")String uc_seq, Model model) {
+		model.addAttribute("uc_seq", uc_seq);
+		return "/admin/modi_food";
+	}
 
 }

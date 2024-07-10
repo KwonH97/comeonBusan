@@ -318,4 +318,140 @@ public class KibController {
 		return food;
 	}
 	
+	private static final String UPLOADED_FOLDER = "src/main/resources/static/images/";
+	
+	@PostMapping("/food")
+	public void regiFoodTour(@RequestParam(value="file", required= false) MultipartFile file,
+			@RequestParam("uc_seq") String uc_seq,
+			@RequestParam("title") String title,
+			@RequestParam("subtitle") String subtitle,
+			@RequestParam("rprsntv_menu") String rprsntv_menu,
+			@RequestParam("gugun_nm") String gugun_nm,
+			@RequestParam("addr1") String addr1,
+			@RequestParam("cntct_tel") String cntct_tel,
+			@RequestParam("homepage_url") String homepage_url,
+			@RequestParam("usage_day_week_and_time") String usage_day_week_and_time,
+			@RequestParam("itemcntnts") String itemcntnts,
+			HttpServletRequest request) {
+		
+		System.out.println("등록기능 실행.......");
+		
+		String jwt = request.getHeader("Autorization");
+		
+		//db 저장용 엔티티 (dto생성해서도 사용가능..) 
+		Food food = new Food();
+		
+		try{
+			String fileUrl = null;
+			String thumbnailUrl = null;
+			
+			if(file != null && !file.isEmpty()) {
+				String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+				Path targetLocation = Paths.get(UPLOAD_DIR + fileName);
+				Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+				
+				fileUrl = "http://localhost:9002/uploads/" + fileName;
+				
+				String thumbnailFilename = "thumb_" + fileName;
+				Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
+				Files.copy(file.getInputStream(),thumbnailPath , StandardCopyOption.REPLACE_EXISTING);
+				
+				thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
+				
+			}
+			
+			String place = title;
+			String title2 = title;
+			
+			if(jwt == null) {
+				food.setUC_SEQ(uc_seq);
+				food.setMain_title(title);
+				food.setPlace(place);
+				food.setTitle(title2);
+				food.setSubtitle(subtitle);
+				food.setRprsntv_menu(rprsntv_menu);
+				food.setGugun_nm(gugun_nm);
+				food.setAddr1(addr1);
+				food.setCntct_tel(cntct_tel);
+				food.setHomepage_url(homepage_url);
+				food.setUsage_day_week_and_time(usage_day_week_and_time);
+				food.setItemcntnts(itemcntnts);
+				
+				
+				if(fileUrl != null && thumbnailUrl != null) {
+					food.setMain_img_normal(fileUrl);
+					food.setMain_img_thumb(thumbnailUrl);
+				}
+				
+				System.out.println("save: " + food);
+				
+				foodRepo.save(food);
+			}
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@PostMapping("/mfood")
+	public void modifyFoodtour(@RequestParam(value="file", required= false) MultipartFile file,
+			@RequestParam("uc_seq") String uc_seq,
+			@RequestParam("title") String title,
+			@RequestParam("subtitle") String subtitle,
+			@RequestParam("rprsntv_menu") String rprsntv_menu,
+			@RequestParam("gugun_nm") String gugun_nm,
+			@RequestParam("addr1") String addr1,
+			@RequestParam("cntct_tel") String cntct_tel,
+			@RequestParam("homepage_url") String homepage_url,
+			@RequestParam("usage_day_week_and_time") String usage_day_week_and_time,
+			@RequestParam("itemcntnts") String itemcntnts,
+			HttpServletRequest request) {
+		
+		String jwt = request.getHeader("Authorization");
+		
+		Optional<Food> result = foodRepo.findById(uc_seq);
+		if(result.isPresent()) {
+			Food food = result.get();
+			
+			try{
+				String fileUrl = null;
+				String thumbnailUrl = null;
+				
+				if(file != null && !file.isEmpty()) {
+					String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+					Path targetLocation = Paths.get(UPLOAD_DIR + fileName);
+					Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+					
+					fileUrl = "http://localhost:9002/uploads/" + fileName;
+					
+					String thumbnailFilename = "thumb_" + fileName;
+					Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
+					Files.copy(file.getInputStream(),thumbnailPath , StandardCopyOption.REPLACE_EXISTING);
+					
+					thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
+					
+					// 이미지 URL 업데이트
+	                food.setMain_img_normal(fileUrl);
+	                food.setMain_img_thumb(thumbnailUrl);
+				}
+				
+				// 다른 필드 업데이트
+	            food.setMain_title(title);
+	            food.setSubtitle(subtitle);
+	            food.setRprsntv_menu(rprsntv_menu);
+	            food.setGugun_nm(gugun_nm);
+	            food.setAddr1(addr1);
+	            food.setCntct_tel(cntct_tel);
+	            food.setHomepage_url(homepage_url);
+	            food.setUsage_day_week_and_time(usage_day_week_and_time);
+	            food.setItemcntnts(itemcntnts);
+
+	            foodRepo.save(food);
+	            
+	            System.out.println("업데이트 확인: " + food);
+	            
+			}catch(IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

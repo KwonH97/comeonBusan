@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+</head>
+<body>
+<h1>맛집 투어 등록</h1>
+<hr>
+<form name="frm" enctype="multipart/form-data">
+
+	<span>등록 ID </span><input type="text" name="uc_seq"><br>
+	<span>맛집 게시글 제목 </span><input type="text" name="title"><br><!-- main_title / title / place -->
+	<span>맛집 게시글 부제목 </span><input type="text" name="subtitle"><br>
+	<span>주력 메뉴 </span><input type="text" name="rprsntv_menu"><br>
+	<span>소재지 (구 단위) </span><input type="text" name="gugun_nm"><br>
+	<span>소재지 (전체) </span><input type="text" name="addr1"><br>
+	<span>맛집 연락처 </span><input type="text" name="cntct_tel"><br>
+	<span>맛집 홍보페이지 링크 (인스타, 네이버 등) </span><input type="text" name="homepage_url"><br>
+	
+	
+	<span>운영일 및 시간</span><br>
+	<textarea name="usage_day_week_and_time"></textarea><br>
+	
+	<span>맛집 설명</span><br>
+	<textarea name="itemcntnts"></textarea><br>
+	
+	<span>홍보 이미지 </span><br>
+	<input type="file" name="file"><br><br>
+	
+	<input type="submit" value="등록하기">
+
+</form>
+
+<script>
+
+	$(document).ready(function(){
+		$("form").on("submit", function(event){
+			event.preventDefault();
+			
+			var formData = new FormData($(this)[0]);
+			
+			if(formData == null){
+				cosole.log("formdata is null");
+			}else{
+				console.log("formData is not null");
+			}
+			
+			$.ajax({
+				url:"http://localhost:9002/kibTest/food",
+				method:"POST",
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(response){
+					alert("등록이 완료되었습니다.");
+					window.location.href="/foodList";
+				},
+				error: function(error){
+					console.log("Error: " + error);
+				}
+			});
+		});
+	});
+	
+</script>
+</body>
+</html>
