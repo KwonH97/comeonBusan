@@ -15,14 +15,14 @@
         $(document).ready(function() {
             $('#fetchData').click(function() {
                 const serviceKey = 'sCVR8i55Be+0NJN/ppE+ueXJETgq4dOQK69iVMxaOqaPJRzNhY8lcSEuIxVxNHphEOJQLznqIjoobuErnBQT3g=='; // 여기에 서비스 키를 입력하세요
-                const apiUrl = 'http://apis.data.go.kr/6260000/FestivalService/getFestivalKr';
+                const apiUrl = 'http://apis.data.go.kr/B551011/KorService1/areaCode1';
 
                 $.ajax({
                     url: apiUrl,
                     type: 'GET',
                     data: {
                         serviceKey: serviceKey,
-                        resultType: 'json'
+                        resultType: 'xml'
                     },
                     success: function(response) {
                         // 응답 데이터를 콘솔에 출력하여 확인합니다.

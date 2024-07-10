@@ -38,6 +38,27 @@ public class TestController {
 	
 	@RequestMapping("/regi_tour")
 	public String registTour() {
-		return "regi_tour";
+		return "/admin/regi_tour";
 	}
+	
+	@RequestMapping("/modi_tour")
+	public String modify_tourlist(@RequestParam("uc_seq")String uc_seq,Model model) {
+		model.addAttribute("uc_seq",uc_seq);
+		
+		return "/admin/modi_tour";
+	}
+	
+	@RequestMapping("/foodList")
+	public String foodTourList() {
+		return "foodList";
+	}
+	
+
+	@RequestMapping("/foodDetail")
+	public String foodTourDetail(@RequestParam("uc_seq")String uc_seq, Model model) {
+		model.addAttribute("uc_seq", uc_seq);
+		
+		return "foodDetail";
+	}
+
 }

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+</head>
+<body>
+<h1>관광지 정보 수정</h1>
+<hr>
+<form name="frm" enctype="multipart/form-data">
+	<input type="text" name="uc_seq" placeholder="관광지 ID...." readonly><br>
+	
+	<input type="text" name="maintitle" placeholder="ex)관광지 명(한,영,일)...."><br>
+	<input type="text" name="title" placeholder="관광지 홍보제목..."><br>
+	<input type="text" name="subtitle" placeholder="부제목..."><br>
+	<input type="text" name="place" placeholder="ex)관광지 명...."><br>
+	관광지 이미지: <input type="file" name="file"><br>
+	<input type="text" name="itemcntnts" placeholder="관광지 소개..."><br>
+	
+	<input type="text" name="addr" placeholder="주소..."><br>
+	<input type="text" name="gugun_nm" placeholder="(주소)구 단위..."><br>
+	<input type="text" name="tel" placeholder="전화번호..."><br>
+	<input type="text" name="homepage_url" placeholder="홈페이지 주소(공란 가능)..."><br>
+	
+	<input type="text" name="usage_day" placeholder="관광지 운영일..."><br>
+	<input type="text" name="hldy_info" placeholder="관광지 휴무일..."><br>
+	
+	<input type="text" name="useageDay_week_and_time" placeholder="운영 및 시간..."><br>
+	<input type="text" name="usage_amount" placeholder="이용요금..."><br>
+	
+	<input type="text" name="middle_size_rm" placeholder="편의시설..."><br>
+	<input type="text" name="trfc_info" placeholder="교통정보..."><br>
+	
+	<span>**경도, 위도 (공란 가능...)**</span><br>
+	<input type="text" name="lat" placeholder="경도..."><br>
+	<input type="text" name="lng" placeholder="위도..."><br>
+	
+	<input type="submit" value="수정하기">
+</form>
+
+<script>
+	
+	$(document).ready(function(){
+		
+		const uc_seq = "[[${uc_seq}]]";
+		
+		console.log("uc_seq: " + uc_seq);
+		
+		
+		$.ajax({
+			url: "http://localhost:9002/kibTest/tour/" + uc_seq,
+			method:"GET",
+			success: function(response){
+				document.querySelector("input[name='uc_seq']").value= response.uc_seq;
+				document.querySelector("input[name='maintitle']").value= response.maintitle;
+				document.querySelector("input[name='title']").value = response.title;
+				document.querySelector("input[name='subtitle']").value = response.subtitle;
+				document.querySelector("input[name='place']").value = response.place;
+				document.querySelector("input[name='itemcntnts']").value = response.itemcntnts;
+				document.querySelector("input[name='addr']").value = response.addr;
+				document.querySelector("input[name='gugun_nm']").value = response.gugun_nm;
+				document.querySelector("input[name='tel']").value = response.tel;
+				document.querySelector("input[name='homepage_url']").value = response.homepage_url;
+				document.querySelector("input[name='usage_day']").value = response.usage_day;
+				document.querySelector("input[name='hldy_info']").value = response.hldy_info;
+				document.querySelector("input[name='useageDay_week_and_time']").value = response.useageDay_week_and_time;
+				document.querySelector("input[name='usage_amount']").value = response.usage_amount;
+				document.querySelector("input[name='middle_size_rm']").value = response.middle_size_rm;
+				document.querySelector("input[name='trfc_info']").value = response.trfc_info;
+				document.querySelector("input[name='lat']").value = response.lat;
+				document.querySelector("input[name='lng']").value = response.lng;
+			},
+			error: function(error){
+				console.log("Error: " + error);
+			}
+			 
+		});
+		
+		$("form").on('submit', function (event){
+			event.preventDefault();
+			
+			var formData = new FormData($(this)[0]);
+			
+			console.log(formData);
+			
+			if ($("input[name='file']")[0].files.length === 0) {
+				formData.delete('file');
+			}
+			
+			$.ajax({
+				url: "http://localhost:9002/kibTest/tour",
+				method: "POST",
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function (response){
+					alert("관광지 수정이 진행되었습니다.");
+					//window.location.href="/kibTest";
+					
+				},
+				error: function (error) {
+					console.log("Error: " + error);
+				}
+			});
+		}); 
+		
+	});
+	
+</script>
+
+</body>
+</html>

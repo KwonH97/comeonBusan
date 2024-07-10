@@ -6,19 +6,19 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
-	<style>
-  .tour-item {
+		<style>
+  .foodTour-item {
   	width: 23%;
   	margin: 1%;
   	box-sizing: border-box;
   	float: left;
   	text-align: center;
   }
-  .tour-title {
+  .foodTour-title {
     font-weight: bold;
     margin: 10px 0;
   }
-  .tour-thumbnail {
+  .foodTour-thumbnail {
     width: 100%;
     height: auto;
   }
@@ -35,50 +35,51 @@
 	</style>	
 </head>
 <body>
-<h1>부산 관광지</h1>
+<h1>맛집 목록</h1>
 <hr>
+
 <div id="container"></div>
 <div class="pagination"></div>
+
 <script>
-	
+
 	$(document).ready(function(){
-		
 		const itemsPerPage = 12;
 		let currentPage = 1;
-		let tourData = [];
+		let foodData = [];
 		
-        $.ajax({
-            url: "http://localhost:9002/kibTest/tourList",
-            type: 'GET',
-            
-            success: function(response) {
-                console.log(response);
-                console.log(response[0].maintitle);
-                
-                tourData = response;
-                renderPage(currentPage);
-                renderPagination(tourData.length, itemsPerPage);
-            },
-            error: function(xhr, status, error) {
-                console.error("Error: " + error);
-            }
-        });
-        
-        function renderPage(page) {
+		
+		$.ajax({
+			url: "http://localhost:9002/kibTest/food",
+			method: "GET",
+			success: function(response){
+				foodData = response;
+				console.log(foodData);
+				
+				renderPage(currentPage);
+                renderPagination(foodData.length, itemsPerPage);
+			},
+			error: function(Error){
+				console.log("Error: " + error);	
+			}
+		});
+		
+		
+		function renderPage(page) {
         	$('#container').empty();
         	
         	const start = (page - 1) * itemsPerPage;
         	const end = start + itemsPerPage;
-        	const items = tourData.slice(start, end);
+        	const items = foodData.slice(start, end);
         	
         	//console.log(item[0].main_img_thumb);
         	
         	items.forEach(item => {
         		const tourItem = `
-        			<div class="tour-item">
-        				<div class="tour-title">${item.title}</div>
-        				<a href="/tourDetail?uc_seq=${item.uc_seq}">
-        					<img class="tour-thumbnail" src="${item.main_img_thumb}" alt="${item.maintitle}">
+        			<div class="foodTour-item">
+        				<div class="foodTour-title">${item.title}</div>
+        				<a href="/foodDetail?uc_seq=${item.uc_SEQ}">
+        					<img class="foodTour-thumbnail" src="${item.main_img_thumb}" alt="${item.maintitle}">
         				</a>
         			</div>
         		`;
@@ -103,12 +104,14 @@
         }
         
         window.changePage = function(page){
-        	if(page < 1 || page > Math.ceil(tourData.length / itemsPerPage)) return;
+        	if(page < 1 || page > Math.ceil(foodData.length / itemsPerPage)) return;
         	currentPage = page;
         	renderPage(currentPage);
-        	renderPagination(tourData.length, itemsPerPage);
+        	renderPagination(foodData.length, itemsPerPage);
         }
+        
 	});
+
 </script>
 </body>
 </html>
