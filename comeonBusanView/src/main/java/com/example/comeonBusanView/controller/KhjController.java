@@ -51,4 +51,39 @@ public class KhjController {
 		return "/admin/festivalModify";
 	}
 	
+	// 공지사항 
+	
+	@RequestMapping("/noticeList")
+	public String noticeList() {
+		
+		return "noticeList";
+	}
+	
+	@RequestMapping("/noticeDetail")
+	public String noticeDetail(Model model, @RequestParam("hnum") String hnum) {
+		
+		model.addAttribute("id", hnum);
+	
+		return "noticeDetail";
+		
+	}
+	
+	@RequestMapping("/noticeAdd")
+	public String noticeAdd(){
+		
+		return "/admin/noticeAdd";
+		
+	}
+		
+	
+	
+	@RequestMapping("/noticeModify")
+	public String noticeModify(Model model, @RequestParam("hnum") String hnum) {
+		
+		System.out.println(hnum);
+		
+		model.addAttribute("id", hnum);
+		
+		return "/admin/noticeModify";
+	}
 }

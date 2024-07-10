@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<style>
+
+</style>
+</head>
+<body>
+
+<h1>공지</h1>
+
+<div class="container">
+
+	<h2 id="main_title"></h2>
+	<span>작성일   </span><p id="regDate"></p>
+	<button class="hiddenButton" style="display: none;" id="modifyButton">수정하기</button>
+	<button class="hiddenButton" style="display: none;" id="deleteButton">삭제하기</button>
+	
+	<img src="" id="notice_img"><!-- 이미지는 값이 있을 경우에만 출력되도록 처리 -->
+	
+	<div id="content"></div>
+	
+	
+</div>
+
+
+<script>
+
+
+	var hnum = "[[${id}]]";
+	
+	$(document).ready(function(){
+		console.log("noticeDetail..............");
+		console.log(hnum);
+		
+		$.ajax({
+			url: "http://localhost:9002/khj/noticeDetail/" + hnum,
+			method: "GET",
+			success: function(response){
+				console.log("데이터 확인 : ", response);
+				
+				document.querySelector("#main_title").textContent = response.title;
+				document.querySelector("#regDate").textContent = response.regDate;
+				
+				if(response.himg){
+					document.querySelector("#notice_img").src = response.himg;
+					document.querySelector("#notice_img").style.display = "block";
+					
+				}else {
+					
+					document.querySelector("#notice_img").style.display = "none";
+				}
+	
+				document.querySelector("#content").textContent = response.content;
+				document.querySelector("#modifyButton").onclick = function(){
+					gomodifyPage(response.hnum);
+				};
+				
+				document.querySelector("#deleteButton").onclick = function(){
+					
+					goDeletePage(response.hnum);
+				};
+			},
+			error : function(error){
+				console.log("Error : ", error);
+			}
+		});
+		
+		var authValue = localStorage.getItem("Authorization");
+		if(authValue != null){
+			$(".hiddenButton").css("display", "block");
+			
+		}
+		
+	});
+	
+	function gomodifyPage(hnum){
+		
+		window.location.href="/noticeModify?hnum=" + hnum;
+		
+	}
+	
+	function goDeletePage(hnum){
+		if(confirm("정말로 삭제하시겠습니까?")){
+		
+		console.log(hnum);
+		
+		$.ajax({
+		
+			url: "http://localhost:9002/khj/noticeDelete/" + hnum,
+			method: "DELETE",
+			success: function(response){
+			
+				alert(response);
+				//삭제 후 목록 페이지로 이동
+				window.location.href="/noticeList";
+				
+			},
+			error: function(error){
+				
+				console.log("Error : " , error);
+			}
+		});
+		}else{
+			
+			console.log("삭제 취소");
+			
+		}
+	}
+
+
+</script>
+
+
+
+</body>
+</html>
