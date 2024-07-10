@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>공지사항 등록 페이지</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+
+<style>
+</style>
+</head>
+<body>
+
+	<h1>공지 등록하기</h1>
+	<hr>
+
+	<div id="container">
+		<form name="frm" id="frm">
+			<ul>
+				<li>공지제목</li>
+				<input type="text" id="title" name="title" /><br>
+				<li>공지내용</li>
+				<input type="text" id="content" name="content" /><br>
+				<li>첨부파일(이미지)</li>
+				<input type="file" id="file" name="file" />
+				<input type="button" value="둥록하기" onclick="submitForm()" />		
+			</ul>
+		</form>
+	</div>
+	<script>
+		function submitForm(){
+			
+			alert("submit.......");
+			
+			var form = document.getElementById('frm');
+			
+			if(!form){
+				
+				console.error("Form not found");
+				return;
+				
+			}
+			
+			var formData = new FormData(form);
+			
+			console.log(formData);
+			
+			let token = localStorage.getItem("Authorization");
+			
+			$.ajax({
+				
+				url: "http://localhost:9002/khj/noticeAdd",
+				method: "POST",
+				enctype : "multipart/form-data",
+				headers : {
+					"Authorization" : token
+				},
+				data: formData, 
+				processData: false,
+	            contentType: false,
+				success: function(response){
+					
+					console.log("success : " , response);
+					
+				},
+				error: function(e){
+					
+					console.log("error : " , e);
+				}
+				
+			});
+						
+		}
+	</script>
+
+</body>
+</html>
