@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>숙박 수정</title>
+<link rel="stylesheet" th:href="@{/css/header.css}">
+<script src="/js/common.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div th:replace="~{fragments/header :: header}"></div>
+    <form id="frm">
+        <input type="text" name="업체명" placeholder="업체명"><br>
+        <input type="radio" name="카테고리명" value="숙박/휴양">숙박/휴양
+        <input type="radio" name="카테고리명" value="문화관광/명소">문화관광/명소<br>
+        <input type="text" name="시도명" value="부산광역시"><br>
+        <input type="text" name="시군구명" placeholder="시군구명"><br>
+        <input type="text" name="읍면동명" placeholder="읍면동명"><br>
+        <input type="text" name="리명" placeholder="리명"><br>
+        <input type="text" name="번지" placeholder="번지"><br>
+        <input type="text" name="도로명" placeholder="도로명"><br>
+        <input type="text" name="도로명상세" placeholder="도로명 상세"><br>
+        <input type="text" name="위도" placeholder="위도"><br>
+        <input type="text" name="경도" placeholder="경도"><br>
+        <input type="text" name="전화번호" placeholder="전화번호"><br>
+        <input type="text" name="홈페이지주소" placeholder="홈페이지 주소"><br>
+        <input type="submit" value="수정">
+    </form>
+<script>
+    $(document).ready(function(){
+        function getParameterByName(name){
+            const url = new URL(window.location.href);
+            return url.searchParams.get(name);
+        }
+
+        const lid = getParameterByName('lid');
+
+        if(!lid){
+            alert("숙박업체 ID가 제공되지 않았습니다.");
+            return;
+        }
+
+        $.ajax({
+            url: `http://localhost:9002/lodgment/${lid}`,
+            type: 'GET',
+            success: function(data){
+                if(data){
+                    $('input[name="업체명"]').val(data.업체명);
+                    $('input[name="카테고리명"][value="' + data.카테고리명 + '"]').prop('checked', true);
+                    $('input[name="시도명"]').val(data.시도명);
+                    $('input[name="시군구명"]').val(data.시군구명);
+                    $('input[name="읍면동명"]').val(data.읍면동명);
+                    $('input[name="리명"]').val(data.리명);
+                    $('input[name="번지"]').val(data.번지);
+                    $('input[name="도로명"]').val(data.도로명);
+                    $('input[name="도로명상세"]').val(data.도로명상세);
+                    $('input[name="위도"]').val(data.위도);
+                    $('input[name="경도"]').val(data.경도);
+                    $('input[name="전화번호"]').val(data.전화번호);
+                    $('input[name="홈페이지주소"]').val(data.홈페이지주소);
+                }
+            },
+            error: function(error) {
+                console.error('Error fetching lodgment data:', error);
+                alert('숙박업체 데이터를 가져오는 중 오류가 발생했습니다.');
+            }
+        })
+
+        $('#frm').submit(function(event){
+            event.preventDefault();
+
+            const form = document.getElementById('frm');
+            const formData = new FormData(form);
+
+            fetch(`http://localhost:9002/lodgment/${lid}`,{
+                method: 'PUT',
+                body: formData
+            })
+            .then(response => {
+                if(!response.ok){
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                console.log('Success', data);
+                alert('수정성공!');
+                window.location.href = `lodgment`;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('수정실패..');
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

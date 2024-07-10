@@ -1,15 +1,19 @@
 package com.example.comeonBusan.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,4 +43,31 @@ public class LodgmentController {
 		lodgmentService.saveLodgment(lodgment);
 		return ResponseEntity.status(HttpStatus.CREATED).body("success");
 	}
+	
+	@PutMapping("/lodgment/{lid}")
+	public ResponseEntity<String> updateLodgment(@PathVariable(name="lid") Long lid, @ModelAttribute Lodgment lodgment){
+		lodgment.setLid(lid);
+        lodgmentService.saveLodgment(lodgment);
+        return ResponseEntity.ok("success");
+	}
+	
+	@GetMapping("/lodgment/{lid}")
+    public ResponseEntity<Lodgment> getLodgmentById(@PathVariable(name="lid") Long lid) {
+        Lodgment lodgment = lodgmentService.getLodgmentById(lid);
+        if (lodgment != null) {
+            return ResponseEntity.ok(lodgment);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+	
+	@DeleteMapping("/lodgment/{lid}")
+	 public ResponseEntity<String> deleteLodgment(@PathVariable(name="lid") Long lid) {
+		boolean isRemoved = lodgmentService.deleteLodgment(lid);
+        if (!isRemoved) {
+            return new ResponseEntity<>("Failed to delete the lodgment.", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Lodgment deleted successfully.", HttpStatus.OK);
+	}
+	
 }

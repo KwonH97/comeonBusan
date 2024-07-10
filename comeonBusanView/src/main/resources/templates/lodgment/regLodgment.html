@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>숙박 등록</title>
 <link rel="stylesheet" th:href="@{/css/header.css}">
 <script src="/js/common.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -47,6 +47,7 @@
         .then(data => {
             console.log('Success', data);
             alert('등록 성공!');
+            window.location.href = `lodgment`;
         })
         .catch((error) => {
             console.error('Error', error);

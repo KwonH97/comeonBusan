@@ -15,4 +15,9 @@ public class LodgmentController {
 	public String regLodgment() {
 		return "/lodgment/regLodgment";
 	}
+	
+	@GetMapping("/upLodgment")
+	public String upLodgment() {
+		return "/lodgment/upLodgment";
+	}
 }
