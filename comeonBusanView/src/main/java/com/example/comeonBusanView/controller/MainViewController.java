@@ -8,6 +8,6 @@ public class MainViewController {
 
 	@GetMapping("/main")
 	public String main() {
-		return "/mainPage/main";
+		return "/fragments/aaa";
 	}
 }
