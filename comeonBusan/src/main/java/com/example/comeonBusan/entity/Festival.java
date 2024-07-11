@@ -1,6 +1,7 @@
 package com.example.comeonBusan.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -78,6 +79,13 @@ public class Festival implements Serializable {
 	@Column(name = "LAT")
 	private Double lat; // 위도
 
+	@Column(name = "startDate")
+	private Date startDate;
+	
+	@Column(name = "endDate")
+	private Date endDate;
+	
+	
 	@OneToMany(mappedBy = "festival", cascade = CascadeType.ALL)
 	private List<Likes> likes;
 
@@ -98,4 +106,5 @@ public class Festival implements Serializable {
 		}
 
 	}
+	
 }

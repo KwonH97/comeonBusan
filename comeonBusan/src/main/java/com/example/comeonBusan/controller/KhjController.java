@@ -28,12 +28,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.http.HttpRequest;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,11 +43,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 
+import com.example.comeonBusan.dto.FestivalDto;
 import com.example.comeonBusan.dto.HelpDto;
 import com.example.comeonBusan.entity.Festival;
 import com.example.comeonBusan.entity.Help;
+import com.example.comeonBusan.entity.Likes;
 import com.example.comeonBusan.repository.FestivalRepository;
 import com.example.comeonBusan.repository.HelpRepository;
+import com.example.comeonBusan.repository.LikeRepository;
+import com.example.comeonBusan.service.FestivalService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -64,7 +70,13 @@ public class KhjController {
 
 	@Autowired
 	private HelpRepository helpRepository;
+	
+	@Autowired
+	private LikeRepository likeRepository;
 
+	@Autowired
+	private FestivalService festivalService;
+	
 	@Value("${spring.servlet.multipart.location}")
 	String uploadPath;
 
@@ -223,7 +235,7 @@ public class KhjController {
 					.usageAmount(itemNode.path("USAGE_AMOUNT").asText())
 					.mainImgNormal(itemNode.path("MAIN_IMG_NORMAL").asText())
 					.mainImgThumb(itemNode.path("MAIN_IMG_THUMB").asText()).build();
-
+					
 			entities.add(entity);
 		}
 
@@ -405,4 +417,47 @@ public class KhjController {
 		}
 			return "공지가 성공적으로 등록되었습니다.";
 	}
+	
+	@PostMapping("/doLikeFestival/{uc_seq}")
+	public String doLikeFestival(@PathVariable("uc_seq") String uc_seq, HttpServletRequest request) {
+		
+		String likeToken = request.getHeader("Like" + uc_seq);
+		
+		System.out.println("doLike...............");
+		
+		Likes like = new Likes();
+		Festival festival = new Festival();
+		Long uc_seq_long = Long.parseLong(uc_seq);
+		festival.setUcSeq(uc_seq_long);
+		like.setFestival(festival);
+		
+		Optional<Likes> likes = likeRepository.findById(uc_seq_long);
+		Likes fromDB = likes.get();
+		
+		like.setLikecount(fromDB.getLikecount() + 1);
+		
+		likeRepository.save(like);
+		
+		return "ok";
+	}
+	
+	@GetMapping("/getFestival")
+	public List<FestivalDto> getFestival() {
+		
+		//LocalDate today = LocalDate.now();		
+		//System.out.println(today);
+		//today.getMonthValue();
+		//System.out.println(today.getMonthValue());
+		
+		List<FestivalDto> list = festivalService.getFestivalsStartingThisMonth();	
+		
+		for(FestivalDto dto : list) {
+			
+			System.out.println(dto.getPlace());
+			System.out.println(dto.getMainImgThumb());
+		}
+		
+		return list;
+	}
+	
 }

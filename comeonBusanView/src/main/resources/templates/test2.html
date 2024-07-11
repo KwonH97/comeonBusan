@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<style>
+
+
+</style>
+
+</head>
+<body>
+<h1> 연습용 메인</h1>
+<hr>
+
+<p>축제/행사</p>
+<div id="festival-container">
+
+</div>
+
+<script>
+
+	$(document).ready(function(){
+		
+		$.ajax({
+			
+			url: 'http://localhost:9002/khj/getFestival',
+			type: 'GET',
+			success: function(response){
+				
+				console.log("성공", response);
+				console.log(response.place);
+				console.log(response.endDate);
+				//오늘 날짜 가져오기
+				const today = new Date().toISOString().split('T')[0];
+
+				console.log(today);
+				
+				response.forEach(function(festival) {
+					if(festival.endDate >= today){
+						$('#festival-container').append(
+						`<div class="festival-item">
+						
+							<img src="${festival.mainImgThumb}" alt="축제 이미지">
+							<p>장소 : ${festival.place} </p>
+												
+						</div>`					
+						
+					);
+						
+						
+					}	
+				});
+
+				
+			},
+			error: function(xhr, status, error){
+				
+				console.log("Error", error);
+				
+			}
+			
+		});
+		
+		
+	});
+	
+
+
+</script>
+
+
+
+
+</body>
+</html>
