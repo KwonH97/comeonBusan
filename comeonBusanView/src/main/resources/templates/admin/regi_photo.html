@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+</head>
+<body>
+<h1>부산 관광사진 등록</h1>
+<hr>
+<form name="frm" enctype="multipart/form-data">
+
+	<span class="info">사진 제목</span><br>
+	<input type="text" name="title"><br>
+	
+	<span class="info">촬영연도</span>
+	<input type="date" name="shoot_year"><br>
+	
+	<span class="info">촬영 기관/ 개인</span><br>
+	<input type="text" name="shooter"><br>
+	
+	<span class="info">소장기관</span><br>
+	<input type="text" name="have_agency"><br>
+	
+	<span class="info">해쉬태그</span><br>
+	<input type="text" name="hashtag"><br>
+	
+	<span class="info">이미지 파일</span><br>
+	<input type="file" name="file"><br>
+	
+	<input type="submit" value="등록">	
+
+</form>
+
+<script>
+	
+	$(document).ready(function(){
+		$("form").on("submit", function(event){
+			event.preventDefault();
+			
+			var formData = new FormData($(this)[0]);
+			
+			if(formData == null){
+				cosole.log("formdata is null");
+			}else{
+				console.log("formData is not null");
+			}
+			
+			$.ajax({
+				url: "http://localhost:9002/kibTest/photo",
+				method: "POST",
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(response){
+					alert("사진 등록이 완료되었습니다.");
+				},
+				error: function(error){
+					console.log("Error: " + error);
+				}
+			});
+		});
+	});
+
+</script>
+</body>
+</html>

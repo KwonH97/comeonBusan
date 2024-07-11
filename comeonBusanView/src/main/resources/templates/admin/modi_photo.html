@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>부산 관광사진 정보수정</h1>
+<hr>
+<form name="frm" enctype="multipart/form-data">
+
+	<span class="info">관광 사진 ID</span><br>
+	<input type="text" name="pno" readonly><br>
+
+	<span class="info">사진 제목</span><br>
+	<input type="text" name="title"><br>
+	
+	<span class="info">촬영연도</span>
+	<input type="date" name="shoot_year"><br>
+	
+	<span class="info">촬영 기관/ 개인</span><br>
+	<input type="text" name="shooter"><br>
+	
+	<span class="info">소장기관</span><br>
+	<input type="text" name="have_agency"><br>
+	
+	<span class="info">해쉬태그</span><br>
+	<input type="text" name="hashtag"><br>
+	
+	<span class="info">이미지 파일</span><br>
+	<input type="file" name="file"><br>
+	
+	<input type="submit" value="등록">	
+
+</form>
+
+<script>
+
+	$(document).ready(function(){
+		
+		let pno = "[[${pno}]]";
+		
+		$.ajax({
+			url: "http://localhost:9002/kibTest/photo/" + pno,
+			method: "GET",
+			success: function(response){
+				document.querySelector("input[name='pno']").value = pno; 				
+				document.querySelector("input[name='title']").value = response.title;
+				document.querySelector("input[name='shoot_year']").value = response.shoot_year;
+				document.querySelector("input[name='shooter']").value = response.shooter;
+				document.querySelector("input[name='have_agency']").value = response.have_agency;
+				document.querySelector("input[name='hashtag']").value = response.hashtag;
+			},
+			error: function(error){
+				console.log("Error: " + error);
+			}
+		});
+		
+		$("form").on("submit", function(event){
+			event.preventDefault();
+			
+			var formData = new FormData($(this)[0]);
+			
+			if(formData != null){
+				console.log("form Data not null");
+			}else{
+				alert("수정 데이터의 오류가 있습니다.\n 다시 입력해주세요.");
+			}
+			
+			if($("input[name='file']")[0].files.length === 0){
+				formData.delete('file');
+			}
+			
+			$.ajax({
+				url: "http://localhost:9002/kibTest/mPhoto",
+				method: "POST",
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function(response) {
+					alert("정보가 수정되었습니다.")
+					//상세페이지로
+				},
+				error: function(error) {
+					console.log("Error: " + error);
+				}
+			});
+		});
+		
+	});
+
+</script>
+
+</body>
+</html>
