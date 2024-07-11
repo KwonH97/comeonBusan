@@ -3,189 +3,284 @@
 <head>
 <meta charset="UTF-8">
 <title>축제 상세페이지</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
 <style>
-	body {
-        font-family: Arial, sans-serif;
-    }
-    
-    h1 {
-        text-align: center;
-    }
-    
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    .container img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 5px;
-        margin-top: 10px;
-    }
-    
-    .info-section {
-        display: flex;
-        margin-top: 20px;
-    }
-    
-    .info-left, .info-right {
-        flex: 1;
-        padding: 10px;
-    }
-    
-    .info-left {
-        border-right: 1px solid #ccc;
-    }
-    
-    .info-group {
-        margin-bottom: 10px;
-    }
-    
-    .info-group .info {
-        font-weight: bold;
-    }
-    
-    .info-group span {
-        display: block;
-        margin-bottom: 5px;
-    }
+body {
+	font-family: Arial, sans-serif;
+}
 
-    .hiddenButton {
-        display: none;
-    }
+h1 {
+	text-align: center;
+}
 
-    .btn {
-        padding: 10px 20px;
-        border: none;
-        background-color: #007bff;
-        color: white;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-    .btn:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-    }
+.container img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 5px;
+	margin-top: 10px;
+}
 
-    #title {
-        font-size: 24px;
-        margin-bottom: 10px;
-    }
+.info-section {
+	display: flex;
+	margin-top: 20px;
+}
 
-    #subtitle {
-        font-size: 18px;
-        margin-bottom: 20px;
-        color: #555;
-    }
+.info-left, .info-right {
+	flex: 1;
+	padding: 10px;
+}
 
-    .addr {
-        margin-top: 10px;
-        font-size: 16px;
-        color: #333;
-    }
+.info-left {
+	border-right: 1px solid #ccc;
+}
 
+.info-group {
+	margin-bottom: 10px;
+}
+
+.info-group .info {
+	font-weight: bold;
+}
+
+.info-group span {
+	display: block;
+	margin-bottom: 5px;
+}
+
+.hiddenButton {
+	display: none;
+}
+
+.btn {
+	padding: 10px 20px;
+	border: none;
+	background-color: #007bff;
+	color: white;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.btn:disabled {
+	background-color: #ccc;
+	cursor: not-allowed;
+}
+
+#title {
+	font-size: 24px;
+	margin-bottom: 10px;
+}
+
+#subtitle {
+	font-size: 18px;
+	margin-bottom: 20px;
+	color: #555;
+}
+
+.addr {
+	margin-top: 10px;
+	font-size: 16px;
+	color: #333;
+}
+
+.heart-button {
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+	outline: none;
+	padding: 0;
+	width: 50px;
+	height: 50px;
+}
+
+.heart-icon {
+	fill: red;
+	transition: transform 0.2s;
+}
+
+.heart-button:hover .heart-icon {
+	transform: scale(1.1);
+}
 </style>
 </head>
 <body>
 
-<h1>축제 상세 페이지</h1>
-<hr>
+	<h1>축제 상세 페이지</h1>
+	<hr>
 
-<button class="hiddenButton" style="display: none;" onclick="gomodifyPage()">수정하기</button>
+	<button class="hiddenButton" style="display: none;"
+		onclick="gomodifyPage()">수정하기</button>
 
-<div class="container">
+	<div class="container">
 
-	<h3 id="title"> </h3>
-	<h4 id="subtitle"></h4>
-	<img id="main_img" alt="축제 홍보사진"><br>
-	<span>조회수</span><input type="button" onclick="">좋아요<br>
-	<div id="itemcntnts"></div><!-- 축제 설명 -->
-	
-	<div id="placeInfo"> <!-- 관광지 상세 정보(휴뮤일, 입장료, 주소, 번호 등등) -->
-		<div class="info-section">
-			<div class="info-group">
-				<span class="info">주소 </span><span class="addr" id="addr"><!-- 관광지 주소 --></span>
-				<span class="info">홈페이지 </span><span class="homepage_url"><!-- 관광지 홈페이지 --></span>
-				<span class="info">이용요금 </span><span class="usage_amount"><!-- 이용요금 --></span>
-			</div>
-			<div class="info-group">
-				<span class="info">전화번호 </span><span class="tel"><!-- 전화번호 --></span>
-				<span class="info">운영요일 및 시간</span><span class="usageDay_week_and_time"><!-- 운영요일 및 시간 --></span>
-				<span class="info">교통정보</span><span class="trfc_info"><!-- 교통정보 --></span>
-				<span class="info">편의 시설</span><span class="middle_size_rm"><!-- 편의시설 --></span>
+		<h3 id="title"></h3>
+		<h4 id="subtitle"></h4>
+		<img id="main_img" alt="축제 홍보사진"><br> <span>조회수</span>
+		<button class="heart-button" onclick="doLike()">
+			<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
+            <path
+					d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+		</button>
+		<div id="itemcntnts"></div>
+		<!-- 축제 설명 -->
+
+		<div id="placeInfo">
+			<!-- 관광지 상세 정보(휴뮤일, 입장료, 주소, 번호 등등) -->
+			<div class="info-section">
+				<div class="info-group">
+					<span class="info">주소 </span><span class="addr" id="addr">
+						<!-- 관광지 주소 -->
+					</span> <span class="info">홈페이지 </span><span class="homepage_url">
+						<!-- 관광지 홈페이지 -->
+					</span> <span class="info">이용요금 </span><span class="usage_amount">
+						<!-- 이용요금 -->
+					</span>
+				</div>
+				<div class="info-group">
+					<span class="info">전화번호 </span><span class="tel">
+						<!-- 전화번호 -->
+					</span> <span class="info">운영요일 및 시간</span><span
+						class="usageDay_week_and_time">
+						<!-- 운영요일 및 시간 -->
+					</span> <span class="info">교통정보</span><span class="trfc_info">
+						<!-- 교통정보 -->
+					</span> <span class="info">편의 시설</span><span class="middle_size_rm">
+						<!-- 편의시설 -->
+					</span>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-<script>
-	
+	<script>
+		var uc_seq = "[[${uc_seq}]]";
 
-	var uc_seq = "[[${uc_seq}]]";
-		
-	$(document).ready(function(){
-	
-		console.log("uc_seq = " + uc_seq);
+		$(document)
+				.ready(
+						function() {
 
-		$.ajax({
-			url: 'http://localhost:9002/khj/festival2/' + uc_seq,
-			method: 'GET',
-			success: function(response){
-				
-	            console.log("찾아온 데이터 : " , response);
-	            console.log("정보 조회 테스트 : " , response.trfcInfo);
+							console.log("uc_seq = " + uc_seq);
 
-	            // response 데이터 저장
-	            const festivalData = response;
-	            const title = festivalData.title; // 메인 타이틀
-	            const subtitle = festivalData.subtitle; // 부제목
-	            const main_img_normal = festivalData.mainImgNormal; // 메인 이미지
-	            const itemcntnts = festivalData.itemCntnts; // 내용
-				
-	            const addr = festivalData.addr1;
-	            
-	            console.log(addr);
-	            
-	            document.querySelector("#title").textContent = title;
-	            document.querySelector("#subtitle").textContent = subtitle;
-	            document.querySelector("#main_img").src = main_img_normal;
-	            document.querySelector("#itemcntnts").textContent = itemcntnts;
-	            
-	            document.querySelector(".addr").textContent = addr;
-	            document.querySelector(".tel").textContent = festivalData.cntctTel;
-				document.querySelector(".homepage_url").textContent = festivalData.homepageUrl;
-				document.querySelector(".usage_amount").textContent = festivalData.usageAmount;
-				document.querySelector(".usageDay_week_and_time").textContent = festivalData.usageDayWeekAndTime;
-				document.querySelector(".trfc_info").textContent = festivalData.trfcInfo;
-				document.querySelector(".middle_size_rm").textContent = festivalData.middleSizeRm1;
-				
-			},
-			
-			error: function(error){
-				console.log("Error : " + error);
-			}
- 		});
-		
-		var authValue = localStorage.getItem("Authorization");
-		if(authValue != null){
-			$(".hiddenButton").css("display", "block");
-			
+							$
+									.ajax({
+										url : 'http://localhost:9002/khj/festival2/'
+												+ uc_seq,
+										method : 'GET',
+										success : function(response) {
+
+											console.log("찾아온 데이터 : ", response);
+											console.log("정보 조회 테스트 : ",
+													response.trfcInfo);
+
+											// response 데이터 저장
+											const festivalData = response;
+											const title = festivalData.title; // 메인 타이틀
+											const subtitle = festivalData.subtitle; // 부제목
+											const main_img_normal = festivalData.mainImgNormal; // 메인 이미지
+											const itemcntnts = festivalData.itemCntnts; // 내용
+
+											const addr = festivalData.addr1;
+
+											console.log(addr);
+
+											document.querySelector("#title").textContent = title;
+											document.querySelector("#subtitle").textContent = subtitle;
+											document.querySelector("#main_img").src = main_img_normal;
+											document
+													.querySelector("#itemcntnts").textContent = itemcntnts;
+
+											document.querySelector(".addr").textContent = addr;
+											document.querySelector(".tel").textContent = festivalData.cntctTel;
+											document
+													.querySelector(".homepage_url").textContent = festivalData.homepageUrl;
+											document
+													.querySelector(".usage_amount").textContent = festivalData.usageAmount;
+											document
+													.querySelector(".usageDay_week_and_time").textContent = festivalData.usageDayWeekAndTime;
+											document
+													.querySelector(".trfc_info").textContent = festivalData.trfcInfo;
+											document
+													.querySelector(".middle_size_rm").textContent = festivalData.middleSizeRm1;
+
+										},
+
+										error : function(error) {
+											console.log("Error : " + error);
+										}
+									});
+
+							var authValue = localStorage
+									.getItem("Authorization");
+							if (authValue != null) {
+								$(".hiddenButton").css("display", "block");
+
+							}
+
+						});
+
+		function gomodifyPage() {
+			window.location.href = "/fetivalModify?uc_seq=" + uc_seq;
 		}
-		
-	});
-	
-	function gomodifyPage() {
-		window.location.href = "/fetivalModify?uc_seq=" + uc_seq;
-	}
-	
-</script>
+
+		function doLike() {
+			console.log("doLike uc_seq......" + uc_seq);
+			
+			let likeYN = localStorage.getItem("Like" + uc_seq);
+			console.log(likeYN);
+			if (likeYN == null) {
+
+				// 이미지가 빈하트
+
+				// 토큰 발급 (local에 저장)
+				localStorage.setItem("Like" + uc_seq, uc_seq);
+				let likeToken = localStorage.getItem("Like" + uc_seq);
+				// ajax db에 like count +1
+				$.ajax({
+					type: "POST",
+					url: "http://localhost:9002/khj/doLikeFestival/" + uc_seq ,
+					headers: {
+						
+						"likeToken": likeToken,
+					},
+					success: function(response){
+						
+						console.log(response);
+						
+					},
+					error: function(xhr, status, error){
+						
+						console.error("Error : " , error);
+						
+					}
+					
+				});
+				
+
+				// 데이터 가지고 와서 count 보여주기
+
+				// 하트 빨간색으로 바꾸기
+
+			} else {
+
+				//만약 취소하면
+
+				// local에서 토큰 지우기
+
+			}
+
+		}
+	</script>
 
 </body>
 </html>

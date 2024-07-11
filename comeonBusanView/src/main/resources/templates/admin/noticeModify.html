@@ -14,10 +14,19 @@
 <h1>공지사항 수정 페이지</h1>
 <hr>
 
-
-공지사항 제목 <input type="text" id="title">
-공지사항 내용 <input type="password" id="password">
-
+<div id="container">
+	<form name="frm" id="frm">
+		<ul>
+			<li>공지제목</li>
+			<input type="text" id="title" name="title" /><br>
+			<li>공지내용</li>
+			<textarea type="text" id="content" name="content"></textarea><br>
+			<li>첨부파일(이미지)</li>
+			<input type="file" id="file" name="file" />
+			<input type="button" value="수정하기" onclick="submitForm()" />		
+		</ul>
+	</form>
+</div>
 
 <script>
 
@@ -35,9 +44,9 @@
 			success: function(response){
 				
 				console.log("데이터", response);
-				
-				
-				
+				$("input[name='title']").val(response.title);
+				$("textarea[name='content']").val(response.content);
+				//$("input[name='file']").val(response.himg);
 			},
 			error: function(error){
 				

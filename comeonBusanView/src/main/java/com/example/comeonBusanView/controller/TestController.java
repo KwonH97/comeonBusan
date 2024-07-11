@@ -71,5 +71,22 @@ public class TestController {
 		model.addAttribute("uc_seq", uc_seq);
 		return "/admin/modi_food";
 	}
+	
+	@RequestMapping("/regi_photo")
+	public String regiPhoto() {
+		return "/admin/regi_photo";
+	}
+	
+	@RequestMapping("/modi_photo")
+	public String modifyPhoto(@RequestParam("pno")String pno, Model model) {
+		model.addAttribute("pno", pno);
+		
+		return "/admin/modi_photo";
+	}
+	
+	@RequestMapping("/photoList")
+	public String photoList() {
+		return "photoList";
+	}
 
 }
