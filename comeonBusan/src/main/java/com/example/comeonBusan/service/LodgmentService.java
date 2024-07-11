@@ -42,4 +42,8 @@ public class LodgmentService {
 		}
 		return false;
 	}
+	
+	public List<Lodgment> getLodgmentsByName(String 업체명) {
+        return lodgmentRepository.findBy업체명Containing(업체명);
+    }
 }

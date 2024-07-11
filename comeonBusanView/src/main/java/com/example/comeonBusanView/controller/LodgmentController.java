@@ -20,4 +20,10 @@ public class LodgmentController {
 	public String upLodgment() {
 		return "/lodgment/upLodgment";
 	}
+	
+	@GetMapping("/reviewLodgment")
+	public String reviewLodgment() {
+		return "/lodgment/reviewLodgment";
+	}
 }
+
