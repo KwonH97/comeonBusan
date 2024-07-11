@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+</head>
+<body>
+<h1>부산 관광홍보 사진</h1>
+<hr>
+
+<div id="container"></div>
+<div class="pagination"></div>
+
+<script>
+
+	$(document).ready(function(){
+		const itemsPerPage = 12;
+		let currentPage = 1;
+		let PhotoData = [];
+		
+		$.ajax({
+			url: "http://localhost:9002/kibTest/photo",
+			method: "GET",
+			success: function(response){
+				PhotoData = response;
+				console.log(PhotoData);
+				
+				renderPage(currentPage);
+                renderPagination(PhotoData.length, itemsPerPage);
+			},
+			error: function(error){
+				console.log("error: " + error);
+			}
+		});
+		
+		function renderPage(page){
+			$('#container').empty();
+        	
+        	const start = (page - 1) * itemsPerPage;
+        	const end = start + itemsPerPage;
+        	const items = PhotoData.slice(start, end);
+        	
+        	items.forEach(item => {
+        		const photoItem = `
+        			<div class="photo-item">
+        				<img class="photo-thumbnail" src="${item.main_img_normal}" alt="${item.maintitle}"><br>
+        				<span id="photo_title">${item.title}</span><br>
+        				<span class="infoTitle">촬영연도: </span> <span class="info">${item.shoot_year}</span><br>
+        				<span class="infoTitle">제공: </span> <span class="info">${item.shooter}</span><br>
+        				<span class="infoTitle">소장기관: </span> <span class="info">${item.have_agency}</span><br>
+        				<span class="infoTitle">해쉬태그: </span> <span class="info">${item.hashtag}</span><br>
+        			</div>
+        		`;
+        		$('#container').append(photoItem);
+        	});
+		}
+		
+		function renderPagination(totalItems, itemsPerPage){
+        	$('.pagination').empty();
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+                	
+            const prevButton = `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo;</button>`;
+            $('.pagination').append(prevButton);
+                	
+            for(let i = 1; i <= totalPages; i++){
+               const pageButton = `<button onclick="changePage(${i})" ${i === currentPage ? 'disabled' : ''}>${i}</button>`;
+            $('.pagination').append(pageButton);
+            }
+                	
+            const nextButton = `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disable' : ''}>&raquo;</button>`;
+            $('.pagination').append(nextButton);
+		}
+		
+		window.changePage = function(page){
+        	if(page < 1 || page > Math.ceil(PhotoData.length / itemsPerPage)) return;
+        	currentPage = page;
+        	renderPage(currentPage);
+        	renderPagination(PhotoData.length, itemsPerPage);
+        }
+	});
+	
+</script>
+</body>
+</html>

@@ -75,9 +75,9 @@
         	//console.log(item[0].main_img_thumb);
         	
         	items.forEach(item => {
-        		const thumbnailSrc = item.main_img_thumb ? item.main_img_thumb : 'http://localhost:9002/images/restIcon.png';
+        		const thumbnailSrc = (item.main_img_thumb && item.main_img_thumb !== 'null') ? item.main_img_thumb : 'http://localhost:9002/uploads/restIcon.png';
         		//const thumbnailSrc = item.main_img_thumb ? item.main_img_thumb : 'imges/restIcon.png';
-        		
+        		        		
         		//src="${item.main_img_thumb}"
         		const tourItem = `
         			<div class="foodTour-item">
