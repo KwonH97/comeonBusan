@@ -2,14 +2,16 @@
 body {
 	margin: 0;
 	padding: 0;
+	font-family: Arial, sans-serif;
 }
 
 header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 10px;
-	border-bottom: 1px solid #ccc;
+	padding: 10px 20px;
+	border-bottom: 1px solid #e5e5e5;
+	background-color: #f8f8f8;
 }
 
 header img {
@@ -26,6 +28,7 @@ header .search_area {
 	display: flex;
 	align-items: center;
 	position: relative;
+	flex: 2;
 }
 
 header .lang {
@@ -35,6 +38,38 @@ header .lang {
 
 header .lang img {
 	height: 40px;
+}
+
+header .search_area .search_group_inner {
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+header .search_area input[type="search"] {
+	flex: 1;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 4px 0 0 4px;
+	font-size: 14px;
+	box-sizing: border-box;
+}
+
+header .btn_search {
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-left: none;
+	border-radius: 0 4px 4px 0;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+}
+
+header .btn_search .search-icon {
+	width: 20px;
+	height: auto;
 }
 
 .search_area {

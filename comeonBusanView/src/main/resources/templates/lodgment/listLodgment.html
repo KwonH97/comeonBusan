@@ -48,6 +48,7 @@
                                 <p>도로명: ${item.도로명} ${item.도로명상세}</p>
                                 <p>전화번호: ${item.전화번호}</p>
                                 <p>홈페이지: ${item.홈페이지주소}</p>
+                                <p><button onclick="blog(${item.업체명})">리뷰보기</button></p>
                                 <p><button onclick="editLodgment(${item.lid})">수정</button></p>
                                 <p><button onclick="deleteLodgment(${item.lid})">삭제</button></p>
                             </div>
@@ -63,6 +64,10 @@
                 $('#data').append('<p>Error loading lodgments. Please try again later.</p>');
             }
         });
+    }
+    
+    function blog(업체명){
+    	window.location.href = `blog?업체명=${업체명}`;
     }
     
     function regLodgment() {
