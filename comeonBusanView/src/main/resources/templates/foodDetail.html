@@ -2,10 +2,18 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>맛집 상세페이지</title>
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU"></script> <!-- Google Maps API 스크립트 추가 -->
+<style>
+  #map {
+    height: 500px; /* 원하는 높이로 설정 */
+    width: 50%; /* 원하는 너비로 설정 */
+    margin: 0 auto; /* 중앙 정렬 */
+  }
+</style>
 </head>
 <body>
 <h1>맛집 상세페이지</h1>
@@ -39,10 +47,10 @@
 		
 	</div>
 	
+	<div id="map"></div> <!-- 지도를 표시할 div 추가 -->
 </div>
 
 <script>
-	
 	var uc_seq = "[[${uc_seq}]]";
 	
 	$(document).ready(function(){
@@ -64,6 +72,9 @@
 				document.querySelector("span#usage_day_week_and_time").textContent = response.usage_day_week_and_time;
 				document.querySelector("span#cntct_tel").textContent = response.cntct_tel;
 				document.querySelector("span#homepage_url").textContent = response.homepage_url;
+
+				// 지도와 마커를 추가하는 함수 호출
+				initMap(response.lat, response.lng);
 			},
 			error: function(error){
 				console.log(Error);
@@ -74,13 +85,23 @@
 		if(authValue != null){
 			$(".hiddenbutton").css("display", "block");
 		}
-		
 	});
 	
+	function initMap(lat, lng) {
+        var location = { lat: parseFloat(lat), lng: parseFloat(lng) };
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 15,
+            center: location
+        });
+        var marker = new google.maps.Marker({
+            position: location,
+            map: map
+        });
+    }
+
 	function modifyFoodTour(){
 		window.location.href="/admin/modi_food?uc_seq=" + uc_seq;
 	}
-
 </script>
 
 </body>
