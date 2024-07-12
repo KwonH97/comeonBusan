@@ -5,16 +5,17 @@
     <style>
         /* Footer Styles */
         footer {
-            background: #303036;
-            color: black;
-            padding: 0.5em 0;
-            font-family: 'Noto Sans KR', sans-serif;
             background: url('/img/pado.png') no-repeat center center;
-            background-size: cover; /* 이미지를 푸터에 꽉 차게 만듭니다 */
-  		    position: relative;
+            background-size: cover;
+            color: black;
+            font-family: 'Noto Sans KR', sans-serif;
+            padding: 0 0 0 0;
+            position: relative;
         }
 
-        .footer-content {
+         .footer-content {
+            position: relative;
+            z-index: 2;
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
@@ -25,38 +26,45 @@
 
         .footer-section {
             flex: 1;
-            padding: 1em;
-            min-width: 250px;
+            padding: 0.5em;
+            min-width: 200px;
         }
 
         .footer-section h3 {
             color: black;
-            margin-bottom: 1em;
-            font-size: 1.3em;
+            margin-bottom: 0.5em;
+            font-size: 1.1em;
         }
 
         .about .contact span {
             display: block;
-            margin-bottom: 0.5em;
+            margin-bottom: 0.3em;
         }
 
         .about .socials a {
             color: black;
             border: 1px solid black;
-            width: 35px;
-            height: 35px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: inline-flex;
             justify-content: center;
             align-items: center;
             margin-right: 0.5em;
             transition: all 0.3s;
+            overflow: hidden; /* 이미지가 원 밖으로 나가지 않도록 */
         }
 
         .about .socials a:hover {
             color: black;
             border-color: white;
         }
+        
+        .about .socials .social-icon {
+          	 width: 100%; /* 원 크기의 70%로 설정 */
+    		 height: 100%; /* 원 크기의 70%로 설정 */
+    		 object-fit: contain; /* 이미지 비율 유지하면서 컨테이너에 맞춤 */
+}
 
         .links ul {
             list-style-type: none;
@@ -67,7 +75,7 @@
             color: black;
             text-decoration: none;
             display: block;
-            margin-bottom: 0.5em;
+            margin-bottom: 0.3em;
             transition: all 0.3s;
         }
 
@@ -78,10 +86,10 @@
 
         .contact-form .contact-input {
             background: white;
-            color: #bebdbd;
-            border: none;
+            color: #333;
+            border: 1px solid #ccc;
             margin-bottom: 0.5em;
-            padding: 0.7em;
+            padding: 0.5em;
             width: 100%;
         }
 
@@ -89,21 +97,20 @@
             background: #3498db;
             border: none;
             color: white;
-            padding: 0.7em 1.5em;
+            padding: 0.5em 1em;
             cursor: pointer;
             transition: all 0.3s;
         }
 
-        .contact-form .contact-btn:hover {
-            background: #2980b9;
-        }
-
+      
         .footer-bottom {
-            background: grey;
+            position: relative;
+            z-index: 2;
             color: black;
             text-align: center;
-            padding: 1em 0;
-            margin-top: 2em;
+            padding: 0.5em 0;
+            margin-top: 1em;
+          
         }
 
         /* Responsive Design */
@@ -113,7 +120,7 @@
             }
 
             .footer-section {
-                margin-bottom: 1em;
+                margin-bottom: 0.5em;
             }
         }
     </style>
@@ -129,9 +136,10 @@
                     <span><i class="fas fa-envelope"></i> info@onnabusan.com</span>
                 </div>
                 <div class="socials">
-                    <a href="#"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><img src="/img/facebook.png" alt="Instagram" class="social-icon"></a>
+                    <a href="#"><img src="/img/instagram.png" alt="Instagram" class="social-icon"></a>
+                    <a href="#"><img src="/img/x.jpg" alt="Instagram" class="social-icon"></a>
+                    
                 </div>
             </div>
             <div class="footer-section links">
