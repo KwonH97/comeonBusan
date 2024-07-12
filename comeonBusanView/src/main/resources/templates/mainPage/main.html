@@ -1,14 +1,30 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-<link rel="stylesheet" th:href="@{/css/header.css}">
-<script src="/js/common.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>온나부산 - 메인</title>
+    <style>
+    	main{
+    		min-height:1000px;
+    	}
+    </style>
 </head>
 <body>
-<div th:replace="fragments/header :: header"></div>
+
+   <header>
+<th:block th:insert="~{/fragments/aaa.html}"></th:block>
+</header>
+
+    <!-- 메인 콘텐츠 -->
+    <main>
+        <h1>온나부산에 오신 것을 환영합니다!</h1>
+        <p>부산의 모든 것을 만나보세요.</p>
+    </main>
+
+    <footer>
+    <th:block th:insert="~{/fragments/footer.html}"></th:block>
+    </footer>
 
 </body>
 </html>

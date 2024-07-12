@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Footer Styles */
+        footer {
+            background: #303036;
+            color: black;
+            padding: 0.5em 0;
+            font-family: 'Noto Sans KR', sans-serif;
+            background: url('/img/pado.png') no-repeat center center;
+            background-size: cover; /* 이미지를 푸터에 꽉 차게 만듭니다 */
+  		    position: relative;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-section {
+            flex: 1;
+            padding: 1em;
+            min-width: 250px;
+        }
+
+        .footer-section h3 {
+            color: black;
+            margin-bottom: 1em;
+            font-size: 1.3em;
+        }
+
+        .about .contact span {
+            display: block;
+            margin-bottom: 0.5em;
+        }
+
+        .about .socials a {
+            color: black;
+            border: 1px solid black;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 0.5em;
+            transition: all 0.3s;
+        }
+
+        .about .socials a:hover {
+            color: black;
+            border-color: white;
+        }
+
+        .links ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .links ul a {
+            color: black;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5em;
+            transition: all 0.3s;
+        }
+
+        .links ul a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .contact-form .contact-input {
+            background: white;
+            color: #bebdbd;
+            border: none;
+            margin-bottom: 0.5em;
+            padding: 0.7em;
+            width: 100%;
+        }
+
+        .contact-form .contact-btn {
+            background: #3498db;
+            border: none;
+            color: white;
+            padding: 0.7em 1.5em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .contact-form .contact-btn:hover {
+            background: #2980b9;
+        }
+
+        .footer-bottom {
+            background: grey;
+            color: black;
+            text-align: center;
+            padding: 1em 0;
+            margin-top: 2em;
+        }
+
+        /* Responsive Design */
+        @media screen and (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+            }
+
+            .footer-section {
+                margin-bottom: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <footer th:fragment="footer">
+        <div class="footer-content">
+            <div class="footer-section about">
+                <h3>온나부산</h3>
+                <p>부산의 모든 것을 만나보세요.</p>
+                <div class="contact">
+                    <span><i class="fas fa-phone"></i> 051-123-4567</span>
+                    <span><i class="fas fa-envelope"></i> info@onnabusan.com</span>
+                </div>
+                <div class="socials">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-section links">
+                <h3>빠른 링크</h3>
+                <ul>
+                    <li><a href="/tourList">관광명소</a></li>
+                    <li><a href="/foodList">맛집</a></li>
+                    <li><a href="/festivalList">축제·행사</a></li>
+                    <li><a href="/recommand">AI코스추천</a></li>
+                    <li><a href="">시티투어</a></li>
+                    <li><a href="/showTheWay">관광지도</a></li>
+                </ul>
+            </div>
+            <div class="footer-section contact-form">
+                <h3>문의하기</h3>
+                <form action="index.html" method="post">
+                    <input type="email" name="email" class="text-input contact-input" placeholder="이메일 주소">
+                    <textarea name="message" class="text-input contact-input" placeholder="메시지를 입력하세요"></textarea>
+                    <button type="submit" class="btn btn-big contact-btn">
+                        <i class="fas fa-envelope"></i>
+                        전송
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2024 온나부산 | 모든 권리 보유
+        </div>
+    </footer>
+</body>
+</html>
