@@ -24,9 +24,9 @@ public class TestController {
 		
 	}
 	
-	@RequestMapping("/kibTest")
+	@RequestMapping("/tourList")
 	public String kibTest() {
-		return "kibTest";
+		return "tourList";
 	}
 	
 	@RequestMapping("/tourDetail")

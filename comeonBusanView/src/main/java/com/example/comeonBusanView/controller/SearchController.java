@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class KHController {
+public class SearchController {
 	
 	@GetMapping("/searchResult")
 	public String searchResult() {
