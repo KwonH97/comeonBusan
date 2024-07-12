@@ -14,7 +14,7 @@ import com.example.comeonBusan.service.KeywordService;
 
 @CrossOrigin("*")
 @RestController
-public class KHController {
+public class SearchController {
 
 	@Autowired
 	private KeywordService keywordService;
