@@ -6,6 +6,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU"></script> <!-- Google Maps API 스크립트 추가 -->
 <style>
 body {
 	font-family: Arial, sans-serif;
@@ -111,6 +112,12 @@ h1 {
 .heart-button:hover .heart-icon {
 	transform: scale(1.1);
 }
+
+#map {
+	height: 500px;
+	width: 100%;
+	margin: 20px 0;
+}
 </style>
 </head>
 <body>
@@ -118,116 +125,91 @@ h1 {
 	<h1>축제 상세 페이지</h1>
 	<hr>
 
-	<button class="hiddenButton" style="display: none;"
-		onclick="gomodifyPage()">수정하기</button>
+	<button class="hiddenButton" style="display: none;" onclick="gomodifyPage()">수정하기</button>
 
 	<div class="container">
-
 		<h3 id="title"></h3>
 		<h4 id="subtitle"></h4>
-		<img id="main_img" alt="축제 홍보사진"><br> <span>조회수</span>
+		<img id="main_img" alt="축제 홍보사진"><br> 
+		<span>조회수</span>
 		<button class="heart-button" onclick="doLike()">
 			<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
-            <path
-					d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-        </svg>
+				<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+			</svg>
 		</button>
 		<div id="itemcntnts"></div>
 		<!-- 축제 설명 -->
 
 		<div id="placeInfo">
-			<!-- 관광지 상세 정보(휴뮤일, 입장료, 주소, 번호 등등) -->
+			<!-- 관광지 상세 정보(휴무일, 입장료, 주소, 번호 등등) -->
 			<div class="info-section">
 				<div class="info-group">
-					<span class="info">주소 </span><span class="addr" id="addr">
-						<!-- 관광지 주소 -->
-					</span> <span class="info">홈페이지 </span><span class="homepage_url">
-						<!-- 관광지 홈페이지 -->
-					</span> <span class="info">이용요금 </span><span class="usage_amount">
-						<!-- 이용요금 -->
-					</span>
+					<span class="info">주소 </span><span class="addr" id="addr"></span> 
+					<span class="info">홈페이지 </span><span class="homepage_url"></span> 
+					<span class="info">이용요금 </span><span class="usage_amount"></span>
 				</div>
 				<div class="info-group">
-					<span class="info">전화번호 </span><span class="tel">
-						<!-- 전화번호 -->
-					</span> <span class="info">운영요일 및 시간</span><span
-						class="usageDay_week_and_time">
-						<!-- 운영요일 및 시간 -->
-					</span> <span class="info">교통정보</span><span class="trfc_info">
-						<!-- 교통정보 -->
-					</span> <span class="info">편의 시설</span><span class="middle_size_rm">
-						<!-- 편의시설 -->
-					</span>
+					<span class="info">전화번호 </span><span class="tel"></span> 
+					<span class="info">운영요일 및 시간</span><span class="usageDay_week_and_time"></span> 
+					<span class="info">교통정보</span><span class="trfc_info"></span> 
+					<span class="info">편의 시설</span><span class="middle_size_rm"></span>
 				</div>
 			</div>
 		</div>
+		<div id="map"></div> <!-- 지도를 표시할 div 추가 -->
 	</div>
 
 	<script>
 		var uc_seq = "[[${uc_seq}]]";
 
-		$(document)
-				.ready(
-						function() {
+		$(document).ready(function() {
+			console.log("uc_seq = " + uc_seq);
 
-							console.log("uc_seq = " + uc_seq);
+			$.ajax({
+				url: 'http://localhost:9002/khj/festival2/' + uc_seq,
+				method: 'GET',
+				success: function(response) {
+					console.log("찾아온 데이터 : ", response);
+					console.log("정보 조회 테스트 : ", response.trfcInfo);
 
-							$
-									.ajax({
-										url : 'http://localhost:9002/khj/festival2/'
-												+ uc_seq,
-										method : 'GET',
-										success : function(response) {
+					// response 데이터 저장
+					const festivalData = response;
+					const title = festivalData.title; // 메인 타이틀
+					const subtitle = festivalData.subtitle; // 부제목
+					const main_img_normal = festivalData.mainImgNormal; // 메인 이미지
+					const itemcntnts = festivalData.itemCntnts; // 내용
+					const addr = festivalData.addr1;
+					const lat = festivalData.lat; // 위도
+					const lng = festivalData.lng; // 경도
 
-											console.log("찾아온 데이터 : ", response);
-											console.log("정보 조회 테스트 : ",
-													response.trfcInfo);
+					console.log(addr);
 
-											// response 데이터 저장
-											const festivalData = response;
-											const title = festivalData.title; // 메인 타이틀
-											const subtitle = festivalData.subtitle; // 부제목
-											const main_img_normal = festivalData.mainImgNormal; // 메인 이미지
-											const itemcntnts = festivalData.itemCntnts; // 내용
+					document.querySelector("#title").textContent = title;
+					document.querySelector("#subtitle").textContent = subtitle;
+					document.querySelector("#main_img").src = main_img_normal;
+					document.querySelector("#itemcntnts").textContent = itemcntnts;
 
-											const addr = festivalData.addr1;
+					document.querySelector(".addr").textContent = addr;
+					document.querySelector(".tel").textContent = festivalData.cntctTel;
+					document.querySelector(".homepage_url").textContent = festivalData.homepageUrl;
+					document.querySelector(".usage_amount").textContent = festivalData.usageAmount;
+					document.querySelector(".usageDay_week_and_time").textContent = festivalData.usageDayWeekAndTime;
+					document.querySelector(".trfc_info").textContent = festivalData.trfcInfo;
+					document.querySelector(".middle_size_rm").textContent = festivalData.middleSizeRm1;
 
-											console.log(addr);
+					// 지도와 마커를 추가하는 함수 호출
+					initMap(lat, lng);
+				},
+				error: function(error) {
+					console.log("Error : " + error);
+				}
+			});
 
-											document.querySelector("#title").textContent = title;
-											document.querySelector("#subtitle").textContent = subtitle;
-											document.querySelector("#main_img").src = main_img_normal;
-											document
-													.querySelector("#itemcntnts").textContent = itemcntnts;
-
-											document.querySelector(".addr").textContent = addr;
-											document.querySelector(".tel").textContent = festivalData.cntctTel;
-											document
-													.querySelector(".homepage_url").textContent = festivalData.homepageUrl;
-											document
-													.querySelector(".usage_amount").textContent = festivalData.usageAmount;
-											document
-													.querySelector(".usageDay_week_and_time").textContent = festivalData.usageDayWeekAndTime;
-											document
-													.querySelector(".trfc_info").textContent = festivalData.trfcInfo;
-											document
-													.querySelector(".middle_size_rm").textContent = festivalData.middleSizeRm1;
-
-										},
-
-										error : function(error) {
-											console.log("Error : " + error);
-										}
-									});
-
-							var authValue = localStorage
-									.getItem("Authorization");
-							if (authValue != null) {
-								$(".hiddenButton").css("display", "block");
-
-							}
-
-						});
+			var authValue = localStorage.getItem("Authorization");
+			if (authValue != null) {
+				$(".hiddenButton").css("display", "block");
+			}
+		});
 
 		function gomodifyPage() {
 			window.location.href = "/fetivalModify?uc_seq=" + uc_seq;
@@ -239,46 +221,41 @@ h1 {
 			let likeYN = localStorage.getItem("Like" + uc_seq);
 			console.log(likeYN);
 			if (likeYN == null) {
-
-				// 이미지가 빈하트
-
 				// 토큰 발급 (local에 저장)
 				localStorage.setItem("Like" + uc_seq, uc_seq);
 				let likeToken = localStorage.getItem("Like" + uc_seq);
 				// ajax db에 like count +1
 				$.ajax({
 					type: "POST",
-					url: "http://localhost:9002/khj/doLikeFestival/" + uc_seq ,
+					url: "http://localhost:9002/khj/doLikeFestival/" + uc_seq,
 					headers: {
-						
 						"likeToken": likeToken,
 					},
-					success: function(response){
-						
+					success: function(response) {
 						console.log(response);
-						
 					},
-					error: function(xhr, status, error){
-						
-						console.error("Error : " , error);
-						
+					error: function(xhr, status, error) {
+						console.error("Error : ", error);
 					}
-					
 				});
-				
-
-				// 데이터 가지고 와서 count 보여주기
-
 				// 하트 빨간색으로 바꾸기
-
 			} else {
-
 				//만약 취소하면
-
 				// local에서 토큰 지우기
-
+				localStorage.removeItem("Like" + uc_seq);
 			}
+		}
 
+		function initMap(lat, lng) {
+			var location = { lat: parseFloat(lat), lng: parseFloat(lng) };
+			var map = new google.maps.Map(document.getElementById('map'), {
+				zoom: 15,
+				center: location
+			});
+			var marker = new google.maps.Marker({
+				position: location,
+				map: map
+			});
 		}
 	</script>
 
