@@ -33,6 +33,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,7 +43,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import com.example.comeonBusan.dto.FestivalDto;
 import com.example.comeonBusan.dto.HelpDto;
@@ -157,7 +161,7 @@ public class KhjController {
 	 */
 
 	@GetMapping("/festival")
-	public ResponseEntity<List<Festival>> getFestivalData() throws IOException {
+	public ResponseEntity<List<Festival>> getFestivalData() throws IOException, ParseException {
 
 		System.out.println("getFestivalData................");
 
@@ -205,7 +209,11 @@ public class KhjController {
 		JsonNode itemsNode = rootNode.path("getFestivalKr").path("item");
 
 		List<Festival> entities = new ArrayList<>();
-
+		// JSON 파일에서 날짜 데이터를 읽어오기
+	    InputStream inputStream = new FileInputStream("src/main/resources/static/json/festival.json");
+	    JsonNode dateRootNode = objectMapper.readTree(inputStream);
+	    
+	    
 		for (JsonNode itemNode : itemsNode) {
 
 			System.out.println(itemNode.path("LAT").asText());
@@ -220,7 +228,39 @@ public class KhjController {
 			String lngString = itemNode.path("LNG").asText();
 
 			double lngDouble = Festival.parseDoubleOrDefault(lngString, 0.0);
+			
+			String main_title = itemNode.path("MAIN_TITLE").asText();
+			
+			// 날짜 데이터를 JSON 파일에서 찾기
+	        JsonNode matchingDateNode = null;
+	        for (JsonNode dateNode : dateRootNode) {
+	            if (dateNode.path("main_title").asText().equals(main_title)) {
+	                matchingDateNode = dateNode;
+	                break;
+	            }
+	        }
 
+	        String s_startDate = matchingDateNode != null ? matchingDateNode.path("startDate").asText() : null;
+	        String s_endDate = matchingDateNode != null ? matchingDateNode.path("endDate").asText() : null;
+	        
+	        Date startDate = null;
+	        Date endDate = null;
+	        
+	        // 날짜 타입으로 바꾸기
+	        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	        if (s_startDate != null && !s_startDate.equals("2024-00-00")) {
+	            startDate = formatter.parse(s_startDate);
+	        }
+	        
+	        if (s_endDate != null && !s_endDate.equals("2024-00-00")) {
+	            endDate = formatter.parse(s_endDate);
+	        }
+	        
+	        System.out.println(startDate);
+	        System.out.println(endDate);
+			
+			
+			
 			Festival entity = Festival.builder().ucSeq(Long.parseLong(itemNode.path("UC_SEQ").asText()))
 					.mainTitle(itemNode.path("MAIN_TITLE").asText()).gugunNm(itemsNode.path("GUGUN_NM").asText())
 					.lat(latDouble).lng(lngDouble).place(itemNode.path("PLACE").asText())
@@ -234,7 +274,10 @@ public class KhjController {
 					.middleSizeRm1(itemNode.path("MIDDLE_SIZE_RM1").asText())
 					.usageAmount(itemNode.path("USAGE_AMOUNT").asText())
 					.mainImgNormal(itemNode.path("MAIN_IMG_NORMAL").asText())
-					.mainImgThumb(itemNode.path("MAIN_IMG_THUMB").asText()).build();
+					.mainImgThumb(itemNode.path("MAIN_IMG_THUMB").asText())
+					.startDate(startDate) // 추가
+	                .endDate(endDate) // 추가
+	                .build();
 					
 			entities.add(entity);
 		}
