@@ -79,11 +79,13 @@ public class Festival implements Serializable {
 	@Column(name = "LAT")
 	private Double lat; // 위도
 
+    @Temporal(TemporalType.DATE)
 	@Column(name = "startDate")
-	private Date startDate;
-	
+	private Date startDate; // 시작일
+    
+    @Temporal(TemporalType.DATE)
 	@Column(name = "endDate")
-	private Date endDate;
+	private Date endDate; // 종료일
 	
 	
 	@OneToMany(mappedBy = "festival", cascade = CascadeType.ALL)
