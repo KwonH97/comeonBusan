@@ -8,10 +8,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Likes {
 
     @Id
@@ -26,6 +33,7 @@ public class Likes {
     @ManyToOne
     @JoinColumn(name = "festival_uc_seq", referencedColumnName = "UC_SEQ")
     @JsonBackReference
+    @ToString.Exclude
     private Festival festival;
 
     @ManyToOne

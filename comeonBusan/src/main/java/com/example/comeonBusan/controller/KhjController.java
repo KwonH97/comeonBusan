@@ -462,11 +462,12 @@ public class KhjController {
 	}
 	
 	@PostMapping("/doLikeFestival/{uc_seq}")
-	public String doLikeFestival(@PathVariable("uc_seq") String uc_seq, HttpServletRequest request) {
-		
-		String likeToken = request.getHeader("Like" + uc_seq);
+	public String doLikeFestival(@PathVariable("uc_seq") String uc_seq) {
 		
 		System.out.println("doLike...............");
+		
+		//String likeToken = request.getHeader("Like" + uc_seq);
+		//System.out.println("likeToken = " + likeToken);
 		
 		Likes like = new Likes();
 		Festival festival = new Festival();
@@ -474,16 +475,42 @@ public class KhjController {
 		festival.setUcSeq(uc_seq_long);
 		like.setFestival(festival);
 		
-		Optional<Likes> likes = likeRepository.findById(uc_seq_long);
-		Likes fromDB = likes.get();
+		 Optional<Likes> existingLike = likeRepository.findByFestivalUcSeq(uc_seq_long);
+	        
+	        System.out.println("existingLike = " + existingLike);
+	        
+	        if (existingLike.isPresent()) {
+	            Likes fromDB = existingLike.get();
+	            fromDB.setLikecount(fromDB.getLikecount() + 1);
+	            likeRepository.save(fromDB);
+	            
+	            return "좋아요 추가";
+	            
+	        } else {
+	            // 좋아요가 없는 경우 1 추가
+	            Likes newLike = Likes.builder()
+	                    .festival(Festival.builder().ucSeq(uc_seq_long).build())
+	                    .likecount(1L)
+	                    .build();
+	            
+	            likeRepository.save(newLike);
+	            
+	            return "당신이 처음으로 좋아요를 눌렀어..!";
+	        }
 		
-		like.setLikecount(fromDB.getLikecount() + 1);
-		
-		likeRepository.save(like);
-		
-		return "ok";
 	}
 	
+/*	@DeleteMapping("/deleteLikeFestival/{uc_seq}")
+	public String deleteLikeFestival(@PathVariable("uc_seq") String uc_seq) {
+		
+		System.out.println("deleteLike.............");
+		
+		
+		
+		
+	}
+*/	
+	// 메인 축제 정렬 연습
 	@GetMapping("/getFestival")
 	public List<FestivalDto> getFestival() {
 		
