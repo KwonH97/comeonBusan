@@ -221,6 +221,10 @@ h1 {
 
 											// 지도와 마커를 추가하는 함수 호출
 											initMap(lat, lng);
+											
+											// 좋아요 여부 확인 후 하트색 결정하는 함수 호출
+											checkIfLiked();
+									
 										},
 										error : function(error) {
 											console.log("Error : " + error);
@@ -259,6 +263,7 @@ h1 {
 					//},
 					success : function(response) {
 						console.log(response);
+						alert(response);
 						// 하트 빨간색으로 바꾸기
 						heartIcon.classList.add('liked');
 					},
@@ -276,6 +281,7 @@ h1 {
 							+ uc_seq,
 					success : function(response) {
 						console.log(response);
+						alert(response);
 						// local에서 토큰 지우기
 						localStorage.removeItem("Like" + uc_seq);
 						// 하트 색 원래대로 돌리기
@@ -303,6 +309,26 @@ h1 {
 				position : location,
 				map : map
 			});
+		}
+
+		// 페이지 로드될때, localStorage key 유무로 좋아요 하트색 결정
+		function checkIfLiked() {
+
+			let likeYN = localStorage.getItem("Like" + uc_seq);
+			
+			console.log("페이지 로드 시 좋아요 키값" + likeYN);
+			const heartIcon = document.querySelector('.heart-icon');
+
+			if (likeYN != null) {
+
+				heartIcon.classList.add('liked');
+
+			} else {
+
+				heartIcon.classList.remove('liked');
+
+			}
+
 		}
 	</script>
 
