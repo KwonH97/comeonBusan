@@ -1,6 +1,10 @@
-package com.example.comeonBusanView.service;
+package com.example.comeonBusan.service;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SearchBlogService {
-
+	
 	String clientId = "fOjquJtlpoSJ14Mkxb8X"; // 애플리케이션 클라이언트 아이디
 	String clientSecret = "Hj7Y_nUFJj"; // 애플리케이션 클라이언트 시크릿
 
