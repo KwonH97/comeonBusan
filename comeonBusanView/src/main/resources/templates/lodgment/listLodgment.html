@@ -48,7 +48,7 @@
                                 <p>도로명: ${item.도로명} ${item.도로명상세}</p>
                                 <p>전화번호: ${item.전화번호}</p>
                                 <p>홈페이지: ${item.홈페이지주소}</p>
-                                <p><button onclick="blog(${item.업체명})">리뷰보기</button></p>
+                                <p><button onclick="blog(${item.lid})">리뷰보기</button></p>
                                 <p><button onclick="editLodgment(${item.lid})">수정</button></p>
                                 <p><button onclick="deleteLodgment(${item.lid})">삭제</button></p>
                             </div>
@@ -66,8 +66,18 @@
         });
     }
     
-    function blog(업체명){
-    	window.location.href = `blog?업체명=${업체명}`;
+    function blog(lid){
+    	$.ajax({
+            url: `http://localhost:9002/blog?lid=${lid}`,
+            type: 'GET',
+            success: function(response) {
+            	window.location.href = '/blog';
+            },
+            error: function(error) {
+                console.error('Error fetching blog data:', error);
+                alert('블로그 데이터를 가져오는 중 오류가 발생했습니다.');
+            }
+        });
     }
     
     function regLodgment() {

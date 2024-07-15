@@ -8,5 +8,5 @@ import com.example.comeonBusan.entity.Lodgment;
 
 public interface LodgmentRepository extends JpaRepository<Lodgment, Long>{
 
-	List<Lodgment> findBy업체명Containing(String 업체명);
+	List<Lodgment> findBy업체명(String 업체명);
 }
