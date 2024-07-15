@@ -21,6 +21,11 @@ public interface LikeRepository extends JpaRepository<Likes, Long>{
 	 @Transactional
 	 @Query("UPDATE Likes l SET l.likecount = :likecount WHERE l.festival.ucSeq = :ucSeq")
 	 int updateLikeCountByFestivalUcSeq(@Param("likecount") Long likecount, @Param("ucSeq") Long ucSeq);
-
+	 
+	 // 축제 ㅈ호아요 카운트
+	 
+	 @Query("SELECT l.likecount FROM Likes l WHERE l.festival.ucSeq = :ucSeq")
+	 Long findLikeCountByFestivalUcSeq(@Param("ucSeq") Long ucSeq);
+	 
 	
 }

@@ -303,9 +303,27 @@ public class KhjController {
 		Festival fes = result.get();
 
 		System.out.println(fes);
-
+		
 		return fes;
 
+	}
+	
+	@GetMapping("/like/{uc_seq}")
+	public Long getLikeCount(@PathVariable("uc_seq") String uc_seq) {
+		
+		System.out.println("getLikeCount..................");
+		
+		Long uc_seq_long = Long.parseLong(uc_seq);
+
+		System.out.println(uc_seq_long);
+		
+		Long likeCount = likeRepository.findLikeCountByFestivalUcSeq(uc_seq_long);
+		
+		System.out.println("디비에서 찾아낸 특정 uc_seq 의 좋아요 수........." + likeCount);
+		
+		return likeCount;
+		
+		
 	}
 
 	// 공지사항
