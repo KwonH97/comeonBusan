@@ -15,7 +15,7 @@ public class KeywordService {
 	private SearchKeywordRepository searchKeywordRepository;
 	
 	public List<SearchKeyword> getSuggestions(String query){
-		System.out.println("Suggestions 서비스-------------------");
+		
 		return searchKeywordRepository.findBykeywordStartingWith(query);
 	}
 	
