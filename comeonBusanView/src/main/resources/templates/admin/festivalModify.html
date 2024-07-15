@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>\
+<title>Insert title here</title>
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
@@ -12,8 +12,145 @@
 </head>
 <body>
 
-<h1>축제 수정 페이지</h1>
-<hr>
+	<h1>축제 수정 페이지</h1>
+	<hr>
+
+
+	<div id="container">
+		<div class="content">
+			<form name="frm" id="frm" enctype="multipart/form-data">
+				<ul>
+					<li>축제 등록번호</li>
+					<input type="text" name="uc_seq" id="uc_seq" placeholder="축제 ID" readonly />
+					<br>
+					<li>축제명</li>
+					<input type="text" name="maintitle" id="maintitle" placeholder="Ex)축제명(한,영,일)">
+					<br>
+					<li>축제 홍보 제목</li>
+					<input type="text" name="title" id="title" placeholder="축제 홍보 제목">
+					<br>
+					<li>부제목</li>
+					<input type="text" name="subtitle" id="subtitle" placeholder="부제목">
+					<br>
+					<li>메인 축제 장소</li>
+					<input type="text" name="main_place" id="main_place" placeholder="메인 축제 장소">
+					<br>
+					<li>축제 장소</li>
+					<input type="text" name="place" id="place" placeholder="축제 장소">
+					<br>
+					<li>축제 홍보 이미지</li>
+					<input type="file" name="file" id="file">
+					<br>
+					<li>축제 소개</li>
+					<input type="text" name="itemcntnts" id="itemcntnts" placeholder="축제 소개">
+					<br>
+					<li>주소1</li>
+					<input type="text" name="addr1" id="addr1" placeholder="주소1">
+					<br>
+					<li>주소2</li>
+					<input type="text" name="addr2" id="addr2" placeholder="주소2">
+					<br>
+					<li>(주소)구 단위</li>
+					<input type="text" name="gugun_nm" id="gugun_nm" placeholder="(주소)구 단위 (공란 가능)">
+					<br>
+					<li>전화번호</li>
+					<input type="text" name="cntct_tel" id="cntct_tel" placeholder="전화번호">
+					<br>
+					<li>홈페이지 주소</li>
+					<input type="text" name="homepage_url" id="homepage_url" placeholder="홈페이지 주소(공란 가능)">
+					<br>
+					<li>운영 및 시간</li>
+					<input type="text" name="usage_day_week_and_time" id="usage_day_week_and_time"
+						placeholder="운영 및 시간">
+					<br>
+					<li>축제 시작일</li>
+					<input type="date" value="2024-01-01" name="start_date" id="start_date" />
+					<li>~ 축제 종료일</li>
+					<input type="date" name="end_date" id="end_date" />
+					<br>
+					<li>축제 운영일 상세설명</li>
+					<input type="text" name="usage_day" id="usage_day" placeholder="축제 운영일 상세설명">
+					<br>
+					<li>이용요금</li>
+					<input type="text" name="usage_amount" id="usage_amount" placeholder="이용요금">
+					<br>
+					<li>편의시설</li>
+					<input type="text" name="middle_size_rm1" id="middle_size_rm1" placeholder="편의시설">
+					<br>
+					<li>교통정보</li>
+					<input type="text" name="trfc_info" id="trfc_info" placeholder="교통정보">
+					<br>
+
+					<span>경도, 위도</span>
+					<br>
+					<li>경도</li>
+					<input type="text" name="lat" id="lat" placeholder="경도">
+					<br>
+					<li>위도</li>
+					<input type="text" name="lng" id="lng" placeholder="위도">
+					<br>
+					<input type="submit" value="수정하기">
+				</ul>
+			</form>
+		</div>
+	</div>
+
+	<script>
+		var uc_seq = "[[${uc_seq}]]";
+
+		$(document).ready(function() {
+
+			console.log("uc_seq = " + uc_seq);
+			
+			//document.getElementById("uc_seq").style.background = "#e5e5e5";
+			$("#uc_seq").css("background", "#e5e5e5").val(uc_seq);		
+			
+			$.ajax({
+
+				url : "http://localhost:9002/khj/festival2/" + uc_seq,
+				type : 'GET',
+				success: function(response){
+					
+					console.log("찾아온 데이터 : ", response);
+					
+					console.log(response.ucSeq);
+					
+					$("#uc_seq").val(response.ucSeq); // 왜 안되지?
+					$("#maintitle").val(response.mainTitle);
+					$("#title").val(response.title);
+					$("#subtitle").val(response.subtitle);
+					$("#main_place").val(response.mainPlace);
+					$("#place").val(response.place);
+	                $("#itemcntnts").val(response.itemcntnts);
+	                $("#addr1").val(response.addr1);
+	                $("#addr2").val(response.addr2);
+	                $("#gugun_nm").val(response.gugun_nm);
+	                $("#cntct_tel").val(response.cntct_tel);
+	                $("#homepage_url").val(response.homepage_url);
+	                $("#usage_day_week_and_time").val(response.usage_day_week_and_time);
+	                $("#start_date").val(response.start_date);
+	                $("#end_date").val(response.end_date);
+	                $("#usage_day").val(response.usage_day);
+	                $("#usage_amount").val(response.usage_amount);
+	                $("#middle_size_rm1").val(response.middle_size_rm1);
+	                $("#trfc_info").val(response.trfc_info);
+	                $("#lat").val(response.lat);
+	                $("#lng").val(response.lng);
+					
+
+				},
+				error: function(e){
+					
+					console.log("Error : " , e);
+					
+				}
+
+			});
+
+
+		});
+	</script>
+
 
 </body>
 </html>
