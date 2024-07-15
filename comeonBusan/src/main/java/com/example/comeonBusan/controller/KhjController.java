@@ -484,7 +484,7 @@ public class KhjController {
 	            fromDB.setLikecount(fromDB.getLikecount() + 1);
 	            likeRepository.save(fromDB);
 	            
-	            return "좋아요 추가";
+	            return "좋아요 추가되었습니다.";
 	            
 	        } else {
 	            // 좋아요가 없는 경우 1 추가
@@ -500,16 +500,32 @@ public class KhjController {
 		
 	}
 	
-/*	@DeleteMapping("/deleteLikeFestival/{uc_seq}")
+	@DeleteMapping("/deleteLikeFestival/{uc_seq}")
 	public String deleteLikeFestival(@PathVariable("uc_seq") String uc_seq) {
 		
 		System.out.println("deleteLike.............");
 		
+		Long uc_seq_long = Long.parseLong(uc_seq);
 		
+		Optional<Likes> existingLike = likeRepository.findByFestivalUcSeq(uc_seq_long);
 		
+		System.out.println("existingLike = " + existingLike);
 		
+		if(existingLike.isPresent()) {
+			
+			Likes fromDB = existingLike.get();
+			fromDB.setLikecount(fromDB.getLikecount() - 1);
+			likeRepository.save(fromDB);
+			
+			return "좋아요가 취소되었습니다.";
+		} else {
+			
+			// 좋아요가 없는 경우	
+			return "좋아요 삭제 에러";
+			
+		}
 	}
-*/	
+	
 	// 메인 축제 정렬 연습
 	@GetMapping("/getFestival")
 	public List<FestivalDto> getFestival() {
