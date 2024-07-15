@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>Blog Reviews</title>
-<link rel="stylesheet" th:href="@{/css/header.css}">
 <script src="/js/common.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
@@ -16,7 +15,9 @@
 </style>
 </head>
 <body>
-    <div th:replace="fragments/header :: header"></div>
+    <header>
+		<th:block th:insert="~{/fragments/header2.html}"></th:block>
+	</header>
     <div id="reviewContainer"></div>
 </body>
 
