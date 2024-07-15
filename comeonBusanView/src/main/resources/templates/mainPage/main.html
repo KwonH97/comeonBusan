@@ -23,6 +23,31 @@
             text-align: center;
             margin-bottom: 20px;
         }
+        #weather-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            width: 90%;
+            margin-bottom: 20px;
+        }
+        .weather-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            width: 140px;
+            text-align: center;
+        }
+        .weather-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.2em;
+        }
+        .weather-icon {
+            font-size: 1.5em;
+        }
+        .weather-temp {
+            font-size: 1em;
+        }
         #container, #current-festival-container, #upcoming-festival-container {
             display: flex;
             flex-wrap: wrap;
@@ -37,6 +62,9 @@
             border: 1px solid #ccc;
             padding: 10px;
             background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .tour-title {
             font-weight: bold;
@@ -46,6 +74,14 @@
             width: 100%;
             height: auto;
             max-width: 250px;
+        }
+        .upcoming-label {
+            background-color: #ffd700;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: inline-block;
         }
         footer {
             background-color: #f1f1f1;
@@ -58,14 +94,6 @@
             text-align: center;
             font-size: 24px;
             margin: 20px 0;
-        }
-        .upcoming-label {
-            background-color: #ffd700;
-            color: #000;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            display: inline-block;
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.7.1.js"
@@ -83,7 +111,8 @@
         <h1>온나부산에 오신 것을 환영합니다!</h1>
         <p>부산의 모든 것을 만나보세요.</p>
     </div>
-    <h2 class="section-title">주변 관광지</h2>
+    <div id="weather-container" class="weather-container"></div>
+    <h2 class="section-title">현 위치 주변 관광지</h2>
     <div id="container"></div>
     <h2 class="section-title">현재 진행 중인 행사</h2>
     <div id="current-festival-container"></div>
@@ -119,7 +148,7 @@
                         item.distance = calculateDistance(lat, lon, item.latitude, item.longitude);
                     });
                     tourData.sort((a, b) => a.distance - b.distance);
-                    const nearestTours = tourData.slice(0, 6);
+                    const nearestTours = tourData.slice(0, 8);
                     renderTours(nearestTours);
                 },
                 error: function(xhr, status, error) {
@@ -139,6 +168,91 @@
                     console.error("Error loading festivals:", error);
                 }
             });
+
+            const apiKey = '07ad361c368f829e92fb66148a3a35dc';
+            const cityName = 'Busan';
+            const weatherUrl = `http://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}`;
+
+            const weatherMapping = {
+                'clear sky': '맑음',
+                'few clouds': '맑음',
+                'scattered clouds': '맑음',
+                'broken clouds': '흐림',
+                'overcast clouds': '흐림',
+                'light rain': '비',
+                'moderate rain': '비',
+                'heavy intensity rain': '비',
+                'shower rain': '비',
+                'rain': '비',
+                'thunderstorm': '비',
+                'snow': '눈',
+                'mist': '안개',
+                'fog': '안개',
+                'haze': '안개',
+                'smoke': '안개',
+                'dust': '안개',
+                'sand': '안개',
+                'ash': '안개',
+                'squalls': '비',
+                'tornado': '비'
+            };
+
+            const weatherIcons = {
+                '맑음': '☀️',
+                '흐림': '☁️',
+                '비': '🌧️',
+                '눈': '❄️',
+                '안개': '🌫️'
+            };
+
+            fetch(weatherUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const weatherForecast = data.list;
+                    const weatherContainer = document.getElementById('weather-container');
+                    let content = '';
+
+                    const days = {};
+
+                    weatherForecast.forEach(forecast => {
+                        const date = forecast.dt_txt.split(' ')[0];
+                        const tempMin = (forecast.main.temp_min - 273.15).toFixed(2);
+                        const tempMax = (forecast.main.temp_max - 273.15).toFixed(2);
+                        const description = forecast.weather[0].description;
+                        const simplifiedDescription = weatherMapping[description] || '맑음';
+                        const icon = weatherIcons[simplifiedDescription] || '☀️';
+
+                        if (!days[date]) {
+                            days[date] = {
+                                tempsMin: [],
+                                tempsMax: [],
+                                descriptions: new Set(),
+                                icons: new Set()
+                            };
+                        }
+                        days[date].tempsMin.push(parseFloat(tempMin));
+                        days[date].tempsMax.push(parseFloat(tempMax));
+                        days[date].descriptions.add(simplifiedDescription);
+                        days[date].icons.add(icon);
+                    });
+
+                    for (const [date, data] of Object.entries(days)) {
+                        const minTemp = Math.min(...data.tempsMin).toFixed(2);
+                        const maxTemp = Math.max(...data.tempsMax).toFixed(2);
+                        const icon = Array.from(data.icons).join(' ');
+
+                        content += `
+                            <div class="weather-card">
+                                <h3>${date}</h3>
+                                <div class="weather-icon">${icon}</div>
+                                <div class="weather-temp">최저: ${minTemp}°C<br>최고: ${maxTemp}°C</div>
+                            </div>
+                        `;
+                    }
+
+                    weatherContainer.innerHTML = content;
+                })
+                .catch(error => console.error('Error fetching weather data:', error));
         }
 
         function showError(error) {
@@ -230,3 +344,4 @@
 
 </body>
 </html>
+
