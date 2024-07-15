@@ -46,10 +46,18 @@ public class KhjController {
 	// 축제 admin 등록, 수정
 	
 	@RequestMapping("/festivalModify")
-	public String festivalModify() {
+	public String festivalModify(Model model, @RequestParam("uc_seq") String uc_seq) {
+
 		
+		System.out.println("festivalModify ............... viewController");
+		
+		System.out.println(uc_seq);
+		
+		model.addAttribute("uc_seq", uc_seq);
+
 		return "/admin/festivalModify";
 	}
+	
 	
 	// 공지사항 
 	

@@ -308,6 +308,8 @@ public class KhjController {
 
 	}
 
+	// 공지사항
+	
 	@GetMapping("/noticeList")
 	public List<Help> getNoticeList() {
 
@@ -353,7 +355,7 @@ public class KhjController {
 	}
 
 	//@PostMapping("/noticeAdd")
-	public String noticeAdd(HelpDto helpDto) {
+/*	public String noticeAdd(HelpDto helpDto) {
 
 		System.out.println("파라미터로 받은 helpDto = " + helpDto);
 		System.out.println("Current directory: " + System.getProperty("user.dir"));
@@ -402,7 +404,7 @@ public class KhjController {
 		return "good";
 
 	}
-	
+*/	
 	@PostMapping("/noticeAdd")
 	public String noticeAdd2(@RequestParam(value="file", required= false) MultipartFile file, @RequestParam("title") String title, @RequestParam("content") String content, HttpServletRequest request) {
 		
@@ -545,5 +547,13 @@ public class KhjController {
 		
 		return list;
 	}
+	
+	// 관리자
+	
+	// 축제 정보 GET
+	
+	//url 재활용 해도 되지 않을까?
+	
+	
 	
 }
