@@ -21,13 +21,13 @@ public class SearchController {
 	
 	@GetMapping("/autocomplete/{query}")
 	public List<SearchKeyword> autocomplete(@PathVariable(name ="query") String query){
-		System.out.println("autocomplete---------------");
+		
 		return keywordService.getSuggestions(query);
 	}
 	
 	@PostMapping("/search/{query}")
 	public List<SearchKeyword> search(@PathVariable(name ="query") String query) {
-		System.out.println("search---------------");
+		
 		keywordService.saveOrUpdateSearchKeyword(query);
 		
         return keywordService.getSuggestions(query);

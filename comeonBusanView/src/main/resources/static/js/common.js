@@ -4,7 +4,7 @@ function showSuggestions(query) {
         document.getElementById("autoFrame").innerHTML = "";
         return;
     }
-    console.log(query);
+    
     fetch("http://localhost:9002/autocomplete/" + encodeURIComponent(query), {
         method: "GET",
         headers: {
@@ -32,10 +32,8 @@ function f(query) {
             "Content-Type": "application/json;charset=utf-8",
         }
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Search results:', data);
-    });
+    .then(response => response.json());
+    
 }
 
 function handleSubmit(event) {
