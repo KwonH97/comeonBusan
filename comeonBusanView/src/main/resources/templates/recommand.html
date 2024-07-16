@@ -23,6 +23,17 @@
             text-align: center;
             vertical-align: middle;
         }
+        .gm-style-iw {
+            padding: 10px;
+        }
+        .gm-style-iw h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .gm-style-iw p {
+            margin: 5px 0;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -151,14 +162,14 @@
             let currentDate = '';
 
             lines.forEach(line => {
-                const dateMatch = line.match(/^(\d{2}-\d{2})/);
+                const dateMatch = line.match(/^(\d{4}-\d{2}-\d{2}):/);
                 if (dateMatch) {
                     currentDate = dateMatch[1];
                     if (!days[currentDate]) {
                         days[currentDate] = [];
                     }
                 } else {
-                    const match = line.match(/(\d{2}:\d{2}): (.+) \((\d+\.\d+), (\d+\.\d+)\) \| (.+) \| (.+) \| (.+)/);
+                    const match = line.match(/(\d{2}:\d{2}): (.+) \((\d+\.\d+),\s*(\d+\.\d+)\) \| (.+) \| (.+) \| (.+)/);
                     if (match && currentDate) {
                         const [_, time, name, lat, lng, activity, cost, weather] = match;
                         days[currentDate].push({
@@ -174,6 +185,7 @@
                 }
             });
 
+            console.log("Parsed itinerary:", days);
             return days;
         }
 
@@ -183,6 +195,7 @@
         }
 
         function drawMarkersAndPolylines(days) {
+            console.log("Drawing markers and polylines:", days);
             // 기존 마커와 선 제거
             markers.forEach(marker => marker.setMap(null));
             markers = [];
@@ -196,7 +209,7 @@
                 const places = days[date];
 
                 const bounds = new google.maps.LatLngBounds();
-                const path = places.map(place => {
+                const path = places.map((place, index) => {
                     const latLng = new google.maps.LatLng(place.lat, place.lng);
                     bounds.extend(latLng);
 
@@ -204,15 +217,27 @@
                         position: latLng,
                         map: map,
                         title: place.name,
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            scale: 8,
-                            fillColor: color,
-                            fillOpacity: 1,
-                            strokeColor: color,
-                            strokeWeight: 2
+                        animation: google.maps.Animation.DROP,
+                        label: {
+                            text: (index + 1).toString(),
+                            color: 'white'
                         }
                     });
+
+                    const infowindow = new google.maps.InfoWindow({
+                        content: `<div>
+                            <h3>${place.name}</h3>
+                            <p>시간: ${place.time}</p>
+                            <p>활동: ${place.activity}</p>
+                            <p>비용: ${place.cost}</p>
+                            <p>날씨: ${place.weather}</p>
+                        </div>`
+                    });
+
+                    marker.addListener('click', () => {
+                        infowindow.open(map, marker);
+                    });
+
                     markers.push(marker);
 
                     return latLng;
@@ -261,9 +286,12 @@
                 - 날씨 요약: ${weatherSummary}
 
                 위 정보를 바탕으로 매일 추천 시간과 일정을 만들어 주세요. 
-                각 장소에 대해 다음 형식으로 응답해주세요:
-                시간: 장소명 (위도, 경도) | 활동 설명 | 예상 비용 | 날씨
-                예: 10:00: 부산타워 (35.1796, 129.0756) | 전망대 관람 | 10,000원 | 맑음`;
+                각 장소에 대해 사용자가 입력한 각 날짜 별로 다음 형식으로 응답해주세요:
+                YYYY-MM-DD:
+                시간: <장소명> (위도, 경도) | 활동 설명 | 예상 비용 | 날씨
+                예: 
+                2024-07-20:
+                10:00: 부산타워 (35.1796, 129.0756) | 전망대 관람 | 10,000원 | 맑음`;
 
                 const itinerary = await fetchOpenAI(prompt);
                 displayAIResponse(itinerary);  // AI의 답변을 먼저 출력
