@@ -1,48 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Festival Data Fetcher</title>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<title>Geolocation Test</title>
 </head>
 <body>
-	<h1>부산 축제 정보</h1>
-	<button id="fetchData">데이터 가져오기</button>
-	<pre id="result"></pre>
-
+	<h1>Geolocation Test</h1>
+	<hr>
+	<button onclick="f()">실행</button>
+	<div>
+		Latitude : <span id='Lat'></span>
+	</div>
 	<script>
-        $(document).ready(function() {
-            $('#fetchData').click(function() {
-                const serviceKey = 'sCVR8i55Be+0NJN/ppE+ueXJETgq4dOQK69iVMxaOqaPJRzNhY8lcSEuIxVxNHphEOJQLznqIjoobuErnBQT3g=='; // 여기에 서비스 키를 입력하세요
-                const apiUrl = 'http://apis.data.go.kr/B551011/KorService1/areaCode1';
-
-                $.ajax({
-                    url: apiUrl,
-                    type: 'GET',
-                    data: {
-                        serviceKey: serviceKey,
-                        resultType: 'xml'
-                    },
-                    success: function(response) {
-                        // 응답 데이터를 콘솔에 출력하여 확인합니다.
-                        console.log(response);
-
-                        // JSON 데이터를 보기 좋게 출력
-                        const items = response?.response?.body?.items?.item;
-                        if (items) {
-                            $('#result').text(JSON.stringify(items, null, 2));
-                        } else {
-                            $('#result').text('응답 형식이 예상과 다릅니다: ' + JSON.stringify(response, null, 2));
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', status, error);
-                        $('#result').text('데이터를 가져오는 중 오류가 발생했습니다.');
-                    }
-                });
-            });
-        });
-    </script>
+		function f(){
+			if (navigator.geolocation){
+				navigator.geolocation
+						.getCurrentPosition(
+								function(position){
+									document.getElementById('Lat').innerText = position.coords.latitude;
+									console.log("Latitude : "
+											+ position.coords.latitude);
+									console.log("Longitude : " + position.coords.longitude);
+								}, function(error){
+									console.error("Error Code = " + error.code
+											+ " - " + error.message);
+								});
+						
+			} else{
+				console.log("Geolocation is not supported by this browser.");
+			}
+		}
+	</script>
 </body>
 </html>
