@@ -5,221 +5,232 @@
 <title>온나부산 - 메인</title>
 <style>
 body {
-	margin: 0;
-	font-family: Arial, sans-serif;
-	background-color: #f5f5f5;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
 }
 
 header {
-	width: 100%;
-	background: url('/img/pado.png') no-repeat center center;
-	background-size: cover;
-	border-bottom: 1px solid #eee;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	position: relative;
+    width: 100%;
+    background: url('/img/pado.png') no-repeat center center;
+    background-size: cover;
+    border-bottom: 1px solid #eee;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
 }
 
 .head {
-	width: 100%;
-	max-width: 1400px;
-	margin: 0 auto;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 20px 0;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
 }
 
 .head-top {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	width: 100%;
-	padding: 0 20px;
-	box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
 }
 
 .logo img {
-	width: 150px;
-	border-radius: 50%;
+    width: 150px;
+    border-radius: 50%;
 }
 
 .title {
-	margin: 0;
-	font-size: 55px;
-	font-weight: bold;
-	color: black;
-	text-align: center;
+    margin: 0;
+    font-size: 55px;
+    font-weight: bold;
+    color: black;
+    text-align: center;
 }
 
 .search-bar {
-	display: flex;
-	align-items: center;
-	gap: 10px;
-	position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
 }
 
 .search-bar input[type="search"] {
-	width: 300px;
-	padding: 10px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .search-bar button {
-	padding: 10px 20px;
-	border: none;
-	background-color: #007BFF;
-	color: white;
-	border-radius: 4px;
-	cursor: pointer;
+    padding: 10px 20px;
+    border: none;
+    background-color: #007BFF;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .search-bar button:hover {
-	background-color: #0056b3;
+    background-color: #0056b3;
 }
 
 .layer_atcmp {
-	position: absolute;
-	top: 40px; /* 검색창 바로 아래에 위치하도록 조정 */
-	left: 0;
-	width: 100%;
-	background: white;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	z-index: 1000;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
 
 .suggestion {
-	padding: 10px;
-	cursor: pointer;
+    padding: 10px;
+    cursor: pointer;
 }
 
 .suggestion:hover {
-	background-color: #f0f0f0;
+    background-color: #f0f0f0;
 }
 
 .nav {
-	width: 100%;
-	padding: 10px 0;
-	background-color: #f9f9f9;
+    width: 100%;
+    padding: 10px 0;
+    background-color: #f9f9f9;
 }
 
 .nav ul {
-	display: flex;
-	justify-content: center;
-	gap: 20px;
-	list-style: none;
-	margin: 0;
-	padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .nav ul li a {
-	text-decoration: none;
-	color: #000;
-	font-weight: bold;
-	padding: 10px 15px;
-	border-radius: 4px;
-	transition: background-color 0.3s, color 0.3s;
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .nav ul li a:hover {
-	background-color: #007BFF;
-	color: white;
+    background-color: #007BFF;
+    color: white;
 }
 
 #google_translate_element {
-	position: absolute;
-	top: 20px;
-	right: 20px;
-	z-index: 1000;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
 }
 </style>
-<script type="text/javascript"
-	src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script type="text/javascript">
+    function loadGoogleTranslate() {
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        document.head.appendChild(script);
+    }
+    loadGoogleTranslate();
+</script>
 <script src="/js/common.js"></script>
 </head>
 <body>
-	<header>
-		<div id="google_translate_element"></div>
-		<div class="head">
-			<div class="head-top">
-				<div class="logo">
-					<img src="/img/busan.png" alt="Logo">
-				</div>
-				<h1 class="title">온 나 부 산</h1>
-				<div class="search-bar">
-					<form id="form" name="search" method="get" action="searchResult">
-						<div>
-							<input type="search" id="search-input" placeholder="검색어를 입력하세요."
-								onkeyup="showSuggestions(this.value)" autocomplete='off'
-								onblur="hideSuggestions()">
-							<button type="submit" class="btn_search"
-								onclick="f(document.getElementById('search-input').value)">
-								<span><img th:src="@{/img/search.png}" alt="search icon"
-									style="width: 20px; height: auto;"></span>
-							</button>
-						</div>
-					</form>
-					<div class="layer_atcmp" id="autoFrame" style="display: none;"></div>
-				</div>
-			</div>
-			<div class="nav">
-				<ul>
-					<li><a href="/tourList">🚗관광명소</a></li>
-					<li><a href="/lodgment">🏘숙 박</a></li>
-					<li><a href="/foodList">🍽맛 집</a></li>
-					<li><a href="/festivalList">✨축제·행사</a></li>
-					<li><a href="/recommand">🔎AI코스추천</a></li>
-					<li><a href="">🚌시티투어</a></li>
-					<li><a href="/showTheWay">📝관광지도 · 길찾기</a></li>
-					<li><a href="/dangerArea">🆘안전지도</a></li>
-				</ul>
-			</div>
-		</div>
-	</header>
+    <header>
+        <div id="google_translate_element"></div>
+        <div class="head">
+            <div class="head-top">
+                <div class="logo">
+                    <img src="/img/busan.png" alt="Logo">
+                </div>
+                <h1 class="title">온 나 부 산</h1>
+                <div class="search-bar">
+                    <form id="form" name="search" method="get" action="searchResult" onsubmit="return handleSubmit(event)">
+                        <div>
+                            <input type="search" id="search-input" placeholder="검색어를 입력하세요."
+                                onkeyup="showSuggestions(this.value)" autocomplete='off'
+                                onblur="hideSuggestions()">
+                            <button type="submit" class="btn_search"
+                                onclick="f(document.getElementById('search-input').value)">
+                                <span><img th:src="@{/img/search.png}" alt="search icon"
+                                    style="width: 20px; height: auto;"></span>
+                            </button>
+                        </div>
+                    </form>
+                    <div class="layer_atcmp" id="autoFrame" style="display: none;"></div>
+                </div>
+            </div>
+            <div class="nav">
+                <ul>
+                    <li><a href="/tourList">🚗관광명소</a></li>
+                    <li><a href="/lodgment">🏘숙 박</a></li>
+                    <li><a href="/foodList">🍽맛 집</a></li>
+                    <li><a href="/festivalList">✨축제·행사</a></li>
+                    <li><a href="/recommand">🔎AI코스추천</a></li>
+                    <li><a href="">🚌시티투어</a></li>
+                    <li><a href="/showTheWay">📝관광지도 · 길찾기</a></li>
+                    <li><a href="/dangerArea">🆘안전지도</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
 
-	<script>
-		function googleTranslateElementInit() {
-			new google.translate.TranslateElement({
-				pageLanguage : 'ko',
-				includedLanguages : 'en,ja,zh-CN',
-				layout : google.translate.TranslateElement.InlineLayout.SIMPLE
-			}, 'google_translate_element');
-		}
+    <script>
+        function googleTranslateElementInit() {
+            if (!document.getElementById('google_translate_element').hasChildNodes()) {
+                new google.translate.TranslateElement({
+                    pageLanguage: 'ko',
+                    includedLanguages: 'en,ja,zh-CN',
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+                }, 'google_translate_element');
+            }
+        }
 
-		function setLanguage() {
-			var languageCode = localStorage.getItem('selectedLanguage');
-			if (languageCode && document.querySelector('.goog-te-combo')) {
-				var selectElement = document.querySelector('.goog-te-combo');
-				selectElement.value = languageCode;
-				selectElement.dispatchEvent(new Event('change'));
-			}
-		}
+        function setLanguage() {
+            var languageCode = localStorage.getItem('selectedLanguage');
+            if (languageCode) {
+                var intervalId = setInterval(function() {
+                    var selectElement = document.querySelector('.goog-te-combo');
+                    if (selectElement) {
+                        selectElement.value = languageCode;
+                        selectElement.dispatchEvent(new Event('change'));
+                        clearInterval(intervalId);
+                    }
+                }, 100);
+            }
+        }
 
-		document.addEventListener('DOMContentLoaded', function() {
-			// DOMNodeInserted 이벤트를 사용하여 번역 선택 바가 추가될 때 이벤트 리스너 추가
-			document.body.addEventListener('DOMNodeInserted', function(event) {
-				if (event.target.className === 'goog-te-combo') {
-					event.target.addEventListener('change', function() {
-						localStorage.setItem('selectedLanguage',
-								event.target.value);
-					});
-					// 번역 선택 바가 추가되면 언어 설정
-					setLanguage();
-				}
-			});
-			// 페이지가 로드될 때 언어 설정 시도
-			setLanguage();
-		});
-		
-		function showSuggestions(query) {
+        document.addEventListener('DOMContentLoaded', function () {
+            googleTranslateElementInit();
+            setLanguage();
+        });
+
+        document.body.addEventListener('DOMNodeInserted', function (event) {
+            if (event.target.className === 'goog-te-combo') {
+                event.target.addEventListener('change', function () {
+                    localStorage.setItem('selectedLanguage', event.target.value);
+                });
+            }
+        });
+
+        function showSuggestions(query) {
             if (query.length === 0) {
                 document.getElementById("autoFrame").style.display = "none";
                 document.getElementById("autoFrame").innerHTML = "";
                 return;
             }
-            
+
             fetch("http://localhost:9002/autocomplete/" + encodeURIComponent(query), {
                 method: "GET",
                 headers: {
@@ -254,21 +265,22 @@ header {
                     "Content-Type": "application/json;charset=utf-8",
                 }
             })
-            .then(response => response.json());            
+            .then(response => response.json());
         }
 
         function handleSubmit(event) {
-            event.preventDefault(); // 폼 제출 방지
+            event.preventDefault();
             const query = document.getElementById('search-input').value;
             f(query)
             .then(() => {
-                document.getElementById('form').submit(); // 검색어 저장 후 폼 제출
+                document.getElementById('form').submit();
             })
             .catch(error => {
                 console.error('Error sending search query:', error);
             });
             return false;
         }
-	</script>
+    </script>
 </body>
 </html>
+
