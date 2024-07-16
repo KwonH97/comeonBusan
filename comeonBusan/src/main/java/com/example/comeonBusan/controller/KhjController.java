@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -566,12 +567,28 @@ public class KhjController {
 		return list;
 	}
 	
-	// 관리자
-	
-	// 축제 정보 GET
-	
-	//url 재활용 해도 되지 않을까?
-	
+	@PutMapping("/festivalModify")
+	public String festivalModify(@RequestBody Festival fest) {
+		
+		System.out.println("festivalModify.................");
+		
+		Long uc_seq_fromview = fest.getUcSeq();
+		
+		Festival festival = new Festival();
+		
+		festival.setAddr1(fest.getAddr1());
+		festival.setAddr2(fest.getAddr2());
+		festival.setCntctTel(fest.getCntctTel());
+		festival.setEndDate(fest.getEndDate());
+		festival.setGugunNm(fest.getGugunNm());
+		festival.setHomepageUrl(fest.getHomepageUrl());
+		festival.setLat(fest.getLat());
+		festival.setLng(festival.getLng());
+		//afestival.
+		
+		
+		return "";
+	}
 	
 	
 }
