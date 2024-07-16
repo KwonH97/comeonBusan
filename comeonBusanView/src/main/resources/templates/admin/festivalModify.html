@@ -170,29 +170,22 @@
 			event.preventDefault();
 			
 			const formData = new FormData(this);
-			const formObject = {};
-			formData.forEach((value, key) => {
-				console.log("value = " + value);
-				console.log("key = " + key);
-				formObject[key] = value;
-				
-			});
+
 
 			fetch('http://localhost:9002/khj/festivalModify',{
 				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(formObject)
+				body: formData //FormData 객체를 직접 전송
 			})
 			.then(response => response.json())
 			.then(data =>{
 				if(data.success){
-					alert(data);
-				}
+					alert(data.message);
+				} else {
+		            alert("축제 정보 수정에 실패했습니다.");
+		        }
 			})
 			.catch(error => {
-				console.log("축제 정보 수정 도충 에러가 발생했습니다.");
+				console.log("축제 정보 수정 도충 에러가 발생했습니다.", error);
 			});
 			
 		});

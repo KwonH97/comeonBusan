@@ -71,6 +71,7 @@
 		<th:block th:insert="~{/fragments/header2.html}"></th:block>
 	</header>
 
+<button class="hiddenButton" style="display: none;" onclick="goAddPage()">등록하기</button>
 
 <div id="container"></div>
 <div class="pagination"></div>
@@ -99,6 +100,12 @@
 				console.error("Error: " + error);
 			}
 		});
+		
+		var authValue = localStorage
+		.getItem("Authorization");
+		if (authValue != null) {
+		$(".hiddenButton").css("display", "block");
+		}
 		
 		function renderPage(page){
 			
@@ -154,6 +161,11 @@
         }
 	});
 	
+	function goAddPage(){
+		
+		window.location.href="/festivalAdd";
+		
+	}
 </script>
 <footer>
 		<th:block th:insert="~{/fragments/footer.html}"></th:block>
