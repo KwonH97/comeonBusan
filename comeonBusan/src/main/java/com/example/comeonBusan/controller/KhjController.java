@@ -574,20 +574,9 @@ public class KhjController {
 		
 		Long uc_seq_fromview = fest.getUcSeq();
 		
-		Festival festival = new Festival();
+		festivalRepository.save(fest);
 		
-		festival.setAddr1(fest.getAddr1());
-		festival.setAddr2(fest.getAddr2());
-		festival.setCntctTel(fest.getCntctTel());
-		festival.setEndDate(fest.getEndDate());
-		festival.setGugunNm(fest.getGugunNm());
-		festival.setHomepageUrl(fest.getHomepageUrl());
-		festival.setLat(fest.getLat());
-		festival.setLng(festival.getLng());
-		//afestival.
-		
-		
-		return "";
+		return "축제 정보 수정 완료!";
 	}
 	
 	

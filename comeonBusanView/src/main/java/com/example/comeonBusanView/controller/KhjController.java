@@ -45,6 +45,12 @@ public class KhjController {
 	
 	// 축제 admin 등록, 수정
 	
+	@RequestMapping("/festivalAdd")
+	public String festivalAdd() {
+		
+		return "/admin/festivalAdd";		
+	}
+	
 	@RequestMapping("/festivalModify")
 	public String festivalModify(Model model, @RequestParam("uc_seq") String uc_seq) {
 
