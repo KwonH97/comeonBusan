@@ -20,7 +20,7 @@ public class BlogSearchController {
     private SearchBlogService blogService;
 
     @GetMapping("/blog")
-    public Map<String, String> search(@RequestParam(name="lid") Long lid, HttpSession session) {
+    public Map<String, String> searchlodgment(@RequestParam(name="lid") Long lid, HttpSession session) {
         Map<String, String> result = new HashMap<>();
 
         RestTemplate restTemplate = new RestTemplate();

@@ -16,7 +16,7 @@
 		<th:block th:insert="~{/fragments/header2.html}"></th:block>
 	</header>
 	<div>
-		<button onclick="regLodgment()">등록</button>
+		<button class="hiddenButton" style="display: none" onclick="regLodgment()">등록</button>
 	</div>
 	<div id="data"></div>
 	<div id="pagination" class="pagination"></div>
@@ -50,8 +50,8 @@
                                 <p>전화번호: ${item.전화번호}</p>
                                 <p>홈페이지: ${item.홈페이지주소}</p>
                                 <p><button onclick="loadBlogPage(${item.lid})">리뷰보기</button></p>
-                                <p><button onclick="editLodgment(${item.lid})">수정</button></p>
-                                <p><button onclick="deleteLodgment(${item.lid})">삭제</button></p>
+                                <p><button class="hiddenButton" style="display: none" onclick="editLodgment(${item.lid})">수정</button></p>
+                                <p><button class="hiddenButton" style="display: none" onclick="deleteLodgment(${item.lid})">삭제</button></p>
                             </div>
                         `);
                     });
@@ -123,6 +123,12 @@
 
     $(document).ready(function() {
         loadPage(0);  // Load the first page initially
+        
+        var authValue = localStorage
+		.getItem("Authorization");
+		if (authValue != null) {
+		$(".hiddenButton").css("display", "block");
+		}
     });
 </script>
 </html>
