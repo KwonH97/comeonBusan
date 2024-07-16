@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Document;
@@ -568,16 +569,70 @@ public class KhjController {
 	}
 	
 	@PutMapping("/festivalModify")
-	public String festivalModify(@RequestBody Festival fest) {
+	public String festivalModify(@RequestPart("file") MultipartFile file, HttpServletRequest request, @RequestPart("festival") Festival fest) throws IOException {
 		
+		
+		// DTO로 받아서 ENTITY에 넣어..?
 		System.out.println("festivalModify.................");
+		System.out.println(fest);
+		String jwt = request.getHeader("Authorization");	
+		System.out.println(jwt);
 		
-		Long uc_seq_fromview = fest.getUcSeq();
+		String fileUrl = null;
+		String thumbnailUrl = null;
+		
+		Festival fest2 = new Festival();
+		
+		if(file != null && !file.isEmpty()) {
+			
+			// 파일 처리 로직 추가
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+			Path targetLocation = Paths.get(UPLOAD_DIR + fileName);
+			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+			
+			fileUrl = "http://localhost:9002/uploads/" + fileName;
+			
+			// 썸네일 생성 및 저장?
+			String thumbnailFilename ="thumb_" + fileName;
+			Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
+			Files.copy(file.getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
+			
+			thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
+	
+		}
+		
+		return "";
+/*		
+		if(jwt != null) {
+			
+			fest2.setsetTitle(title);
+			help.setContent(content);
+			help.setRegDate(LocalDate.now());
+			
+			if(fileUrl != null && thumbnailUrl != null) {
+				
+				help.setHimg(fileUrl);
+				help.setHThumbnailImg(thumbnailUrl);
+			}
+			
+			System.out.println("db에 저장할 공지 = " + help);
+			festivalRepository.save(fest);			
+			
+		}
+		
+		
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+		return "공지가 성공적으로 등록되었습니다.";
 		
 		festivalRepository.save(fest);
 		
 		return "축제 정보 수정 완료!";
 	}
+	*/
 	
+}
+
 	
 }
