@@ -20,22 +20,22 @@ public class BlogSearchController {
     private SearchBlogService blogService;
 
     @GetMapping("/blog")
-    public Map<String, String> searchlodgment(@RequestParam(name="lid") Long lid, HttpSession session) {
+    public Map<String, String> search(@RequestParam(name="lid") Long lid, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
         Map<String, String> result = new HashMap<>();
-
         RestTemplate restTemplate = new RestTemplate();
         String lodgmentUrl = "http://localhost:9002/lodgment/" + lid;
         Map<String, Object> lodgment = restTemplate.getForObject(lodgmentUrl, Map.class);
 
         if (lodgment != null && lodgment.containsKey("업체명")) {
             String 업체명 = lodgment.get("업체명").toString();
-            String response = blogService.searchBlog(업체명);
+            String response = blogService.searchBlog(업체명, (page - 1) * size + 1, size);
             result.put("result", response);
+            session.setAttribute("blogData", result);
         } else {
             result.put("result", "No lodgment data found");
+            session.setAttribute("blogData", result);
         }
 
-        session.setAttribute("blogData", result);
         return result;
     }
 }

@@ -10,29 +10,33 @@
     border: 1px solid #ddd;
     padding: 10px;
     margin: 10px 0;
-    cursor: pointer; /* Add a pointer cursor to indicate the div is clickable */
+    cursor: pointer;
 }
 </style>
 </head>
 <body>
     <header>
-		<th:block th:insert="~{/fragments/header2.html}"></th:block>
-	</header>
+        <th:block th:insert="~{/fragments/header2.html}"></th:block>
+    </header>
     <div id="reviewContainer"></div>
+    <button id="loadMoreButton">더보기</button>
 </body>
 
 <script>
-    $(document).ready(function() {
+    let currentPage = 1;
+    const pageSize = 10;
+
+    function loadReviews(page) {
         const urlParams = new URLSearchParams(window.location.search);
         const lid = urlParams.get('lid');
 
         if (lid) {
             $.ajax({
-                url: `http://localhost:9002/blog?lid=${lid}`,
+                url: `http://localhost:9002/blog`,
                 type: 'GET',
+                data: { lid: lid, page: page, size: pageSize },
                 success: function(response) {
                     const blogData = JSON.parse(response.result);
-                    $('#reviewContainer').empty();
                     if (blogData.items && blogData.items.length > 0) {
                         blogData.items.forEach(function(item) {
                             const blogLink = item.link;
@@ -45,8 +49,15 @@
                                 </div>
                             `);
                         });
+                        if (blogData.items.length < pageSize) {
+                            // If less than pageSize items are returned, hide the button
+                            $('#loadMoreButton').hide();
+                        }
                     } else {
-                        $('#reviewContainer').append('<p>No reviews found.</p>');
+                        $('#loadMoreButton').hide();
+                        if (page === 1) {
+                            $('#reviewContainer').append('<p>No reviews found.</p>');
+                        }
                     }
                 },
                 error: function(error) {
@@ -57,6 +68,15 @@
         } else {
             $('#reviewContainer').append('<p>유효한 숙박업소 ID가 제공되지 않았습니다.</p>');
         }
+    }
+
+    $(document).ready(function() {
+        loadReviews(currentPage);
+
+        $('#loadMoreButton').click(function() {
+            currentPage++;
+            loadReviews(currentPage);
+        });
     });
 </script>
 </html>

@@ -1,5 +1,6 @@
 package com.example.comeonBusan.service;
 
+import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,75 +13,73 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.stereotype.Service;
-
 @Service
 public class SearchBlogService {
-	
-	String clientId = "fOjquJtlpoSJ14Mkxb8X"; // 애플리케이션 클라이언트 아이디
-	String clientSecret = "Hj7Y_nUFJj"; // 애플리케이션 클라이언트 시크릿
 
-	 public String searchBlog(String query) {
-	        try {
-	            query = URLEncoder.encode(query, "UTF-8");
-	        } catch (UnsupportedEncodingException e) {
-	            throw new RuntimeException("검색어 인코딩 실패", e);
-	        }
+    private String clientId = "fOjquJtlpoSJ14Mkxb8X"; // 애플리케이션 클라이언트 아이디
+    private String clientSecret = "Hj7Y_nUFJj"; // 애플리케이션 클라이언트 시크릿
 
-	        String apiURL = "https://openapi.naver.com/v1/search/blog?query=" + query;
+    public String searchBlog(String query, int start, int display) {
+        try {
+            query = URLEncoder.encode(query, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("검색어 인코딩 실패", e);
+        }
 
-	        Map<String, String> requestHeaders = new HashMap<>();
-	        requestHeaders.put("X-Naver-Client-Id", clientId);
-	        requestHeaders.put("X-Naver-Client-Secret", clientSecret);
-	        return get(apiURL, requestHeaders);
-	    }
+        String apiURL = "https://openapi.naver.com/v1/search/blog?query=" + query + "&start=" + start + "&display=" + display;
 
-	    private String get(String apiUrl, Map<String, String> requestHeaders) {
-	        HttpURLConnection con = connect(apiUrl);
-	        try {
-	            con.setRequestMethod("GET");
-	            for (Map.Entry<String, String> header : requestHeaders.entrySet()) {
-	                con.setRequestProperty(header.getKey(), header.getValue());
-	            }
+        Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("X-Naver-Client-Id", clientId);
+        requestHeaders.put("X-Naver-Client-Secret", clientSecret);
+        return get(apiURL, requestHeaders);
+    }
 
-	            int responseCode = con.getResponseCode();
-	            if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
-	                return readBody(con.getInputStream());
-	            } else { // 오류 발생
-	                return readBody(con.getErrorStream());
-	            }
-	        } catch (IOException e) {
-	            throw new RuntimeException("API 요청과 응답 실패", e);
-	        } finally {
-	            con.disconnect();
-	        }
-	    }
+    private String get(String apiUrl, Map<String, String> requestHeaders) {
+        HttpURLConnection con = connect(apiUrl);
+        try {
+            con.setRequestMethod("GET");
+            for (Map.Entry<String, String> header : requestHeaders.entrySet()) {
+                con.setRequestProperty(header.getKey(), header.getValue());
+            }
 
-	    private HttpURLConnection connect(String apiUrl) {
-	        try {
-	            URL url = new URL(apiUrl);
-	            return (HttpURLConnection) url.openConnection();
-	        } catch (MalformedURLException e) {
-	            throw new RuntimeException("API URL이 잘못되었습니다. : " + apiUrl, e);
-	        } catch (IOException e) {
-	            throw new RuntimeException("연결이 실패했습니다. : " + apiUrl, e);
-	        }
-	    }
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) { // 정상 호출
+                return readBody(con.getInputStream());
+            } else { // 오류 발생
+                return readBody(con.getErrorStream());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("API 요청과 응답 실패", e);
+        } finally {
+            con.disconnect();
+        }
+    }
 
-	    private String readBody(InputStream body) {
-	        InputStreamReader streamReader = new InputStreamReader(body);
+    private HttpURLConnection connect(String apiUrl) {
+        try {
+            URL url = new URL(apiUrl);
+            return (HttpURLConnection) url.openConnection();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("API URL이 잘못되었습니다. : " + apiUrl, e);
+        } catch (IOException e) {
+            throw new RuntimeException("연결이 실패했습니다. : " + apiUrl, e);
+        }
+    }
 
-	        try (BufferedReader lineReader = new BufferedReader(streamReader)) {
-	            StringBuilder responseBody = new StringBuilder();
+    private String readBody(InputStream body) {
+        InputStreamReader streamReader = new InputStreamReader(body);
 
-	            String line;
-	            while ((line = lineReader.readLine()) != null) {
-	                responseBody.append(line);
-	            }
+        try (BufferedReader lineReader = new BufferedReader(streamReader)) {
+            StringBuilder responseBody = new StringBuilder();
 
-	            return responseBody.toString();
-	        } catch (IOException e) {
-	            throw new RuntimeException("API 응답을 읽는 데 실패했습니다.", e);
-	        }
-	    }
+            String line;
+            while ((line = lineReader.readLine()) != null) {
+                responseBody.append(line);
+            }
+
+            return responseBody.toString();
+        } catch (IOException e) {
+            throw new RuntimeException("API 응답을 읽는 데 실패했습니다.", e);
+        }
+    }
 }
