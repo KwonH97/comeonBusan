@@ -5,12 +5,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import com.example.comeonBusan.dto.FestivalDto;
 import com.example.comeonBusan.entity.Festival;
+import com.example.comeonBusan.entity.Lodgment;
 
-public interface FestivalRepository extends JpaRepository<Festival, Long> {
+public interface FestivalRepository extends JpaRepository<Festival, Long>, JpaSpecificationExecutor<Festival> {
 	
 	@Query(value ="select f.place, f.main_img_thumb, f.startDate, f.endDate from festival f where MONTH(f.startDate) = MONTH(curdate())", nativeQuery = true)
 	public List<Object[]> findFestivalsStartingThisMonth();
