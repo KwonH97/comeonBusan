@@ -812,4 +812,20 @@ public class KhjController {
 		return "축제 정보가 성공적으로 수정되었습니다..";
 	}
 
+	
+	@DeleteMapping("/festivalDelete/{uc_seq}")
+	public String deleteFestival(@PathVariable("uc_seq") String uc_seq, HttpServletRequest request){
+		
+		System.out.println("deleteFestival.........................");
+		
+		String token = request.getHeader("Authorization");
+		System.out.println(token);
+		
+		Long uc_seq_long = Long.parseLong(uc_seq);
+		
+		festivalRepository.deleteById(uc_seq_long);
+		
+		return "게시물이 성공적으로 삭제되었습니다.";
+	}
+
 }
