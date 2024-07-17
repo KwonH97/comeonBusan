@@ -72,7 +72,7 @@ public class SearchService {
             SearchResult result = new SearchResult();
             result.setType("Lodgment");
             result.setName(lodgment.get업체명());
-            result.setDescription("Lodgment description"); // 필요에 따라 실제 설명 필드로 변경
+            result.setDescription(lodgment.get홈페이지주소()); // 필요에 따라 실제 설명 필드로 변경
             results.add(result);
         }
         return results;
@@ -83,8 +83,8 @@ public class SearchService {
         for (Festival festival : festivals) {
             SearchResult result = new SearchResult();
             result.setType("Festival");
-            result.setName(festival.getMainTitle());
-            result.setDescription("Festival description"); // 필요에 따라 실제 설명 필드로 변경
+            result.setName(festival.getTitle());
+            result.setDescription(festival.getMainImgThumb()); // 필요에 따라 실제 설명 필드로 변경
             results.add(result);
         }
         return results;
