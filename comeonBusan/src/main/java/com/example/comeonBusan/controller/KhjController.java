@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.example.comeonBusan.dto.FestivalDto;
+import com.example.comeonBusan.dto.FestivalUpdateDto;
 import com.example.comeonBusan.dto.HelpDto;
 import com.example.comeonBusan.entity.Festival;
 import com.example.comeonBusan.entity.Help;
@@ -76,26 +77,25 @@ public class KhjController {
 
 	@Autowired
 	private HelpRepository helpRepository;
-	
+
 	@Autowired
 	private LikeRepository likeRepository;
 
 	@Autowired
 	private FestivalService festivalService;
-	
+
 	@Value("${spring.servlet.multipart.location}")
 	String uploadPath;
 
 	// 파일 저장 장소
 	private static final String UPLOAD_DIR = "C:/uploads/";
-	
+
 	// 파일 확장자 추출 메서드
 	private String getFileExtension(String filename) {
 		return filename.substring(filename.lastIndexOf(".") + 1);
-		
+
 	}
-	
-	
+
 	/*
 	 * //@GetMapping("/festival") public ResponseEntity<String>
 	 * receiveFestivalData(@RequestBody String xmlData) { try { // XML 데이터를 파싱하여
@@ -167,6 +167,11 @@ public class KhjController {
 
 		System.out.println("getFestivalData................");
 
+		
+		
+		
+		
+		
 		StringBuilder urlBuilder = new StringBuilder(
 				"http://apis.data.go.kr/6260000/FestivalService/getFestivalKr"); /* URL */
 		urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8")
@@ -212,10 +217,9 @@ public class KhjController {
 
 		List<Festival> entities = new ArrayList<>();
 		// JSON 파일에서 날짜 데이터를 읽어오기
-	    InputStream inputStream = new FileInputStream("src/main/resources/static/json/festival.json");
-	    JsonNode dateRootNode = objectMapper.readTree(inputStream);
-	    
-	    
+		InputStream inputStream = new FileInputStream("src/main/resources/static/json/festival.json");
+		JsonNode dateRootNode = objectMapper.readTree(inputStream);
+
 		for (JsonNode itemNode : itemsNode) {
 
 			System.out.println(itemNode.path("LAT").asText());
@@ -230,39 +234,37 @@ public class KhjController {
 			String lngString = itemNode.path("LNG").asText();
 
 			double lngDouble = Festival.parseDoubleOrDefault(lngString, 0.0);
-			
-			String main_title = itemNode.path("MAIN_TITLE").asText();
-			
-			// 날짜 데이터를 JSON 파일에서 찾기
-	        JsonNode matchingDateNode = null;
-	        for (JsonNode dateNode : dateRootNode) {
-	            if (dateNode.path("main_title").asText().equals(main_title)) {
-	                matchingDateNode = dateNode;
-	                break;
-	            }
-	        }
 
-	        String s_startDate = matchingDateNode != null ? matchingDateNode.path("startDate").asText() : null;
-	        String s_endDate = matchingDateNode != null ? matchingDateNode.path("endDate").asText() : null;
-	        
-	        Date startDate = null;
-	        Date endDate = null;
-	        
-	        // 날짜 타입으로 바꾸기
-	        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-	        if (s_startDate != null && !s_startDate.equals("2024-00-00")) {
-	            startDate = formatter.parse(s_startDate);
-	        }
-	        
-	        if (s_endDate != null && !s_endDate.equals("2024-00-00")) {
-	            endDate = formatter.parse(s_endDate);
-	        }
-	        
-	        System.out.println(startDate);
-	        System.out.println(endDate);
-			
-			
-			
+			String main_title = itemNode.path("MAIN_TITLE").asText();
+
+			// 날짜 데이터를 JSON 파일에서 찾기
+			JsonNode matchingDateNode = null;
+			for (JsonNode dateNode : dateRootNode) {
+				if (dateNode.path("main_title").asText().equals(main_title)) {
+					matchingDateNode = dateNode;
+					break;
+				}
+			}
+
+			String s_startDate = matchingDateNode != null ? matchingDateNode.path("startDate").asText() : null;
+			String s_endDate = matchingDateNode != null ? matchingDateNode.path("endDate").asText() : null;
+
+			Date startDate = null;
+			Date endDate = null;
+
+			// 날짜 타입으로 바꾸기
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			if (s_startDate != null && !s_startDate.equals("2024-00-00")) {
+				startDate = formatter.parse(s_startDate);
+			}
+
+			if (s_endDate != null && !s_endDate.equals("2024-00-00")) {
+				endDate = formatter.parse(s_endDate);
+			}
+
+			System.out.println(startDate);
+			System.out.println(endDate);
+
 			Festival entity = Festival.builder().ucSeq(Long.parseLong(itemNode.path("UC_SEQ").asText()))
 					.mainTitle(itemNode.path("MAIN_TITLE").asText()).gugunNm(itemsNode.path("GUGUN_NM").asText())
 					.lat(latDouble).lng(lngDouble).place(itemNode.path("PLACE").asText())
@@ -276,19 +278,28 @@ public class KhjController {
 					.middleSizeRm1(itemNode.path("MIDDLE_SIZE_RM1").asText())
 					.usageAmount(itemNode.path("USAGE_AMOUNT").asText())
 					.mainImgNormal(itemNode.path("MAIN_IMG_NORMAL").asText())
-					.mainImgThumb(itemNode.path("MAIN_IMG_THUMB").asText())
-					.startDate(startDate) // 추가
-	                .endDate(endDate) // 추가
-	                .build();
-					
+					.mainImgThumb(itemNode.path("MAIN_IMG_THUMB").asText()).startDate(startDate) // 추가
+					.endDate(endDate) // 추가
+					.build();
+
 			entities.add(entity);
 		}
 
-		festivalRepository.saveAll(entities);
+		List<Festival> list = festivalRepository.findAll();
+		System.out.println(list);
+		if (list != null && !list.isEmpty()) {
+			
+			return ResponseEntity.ok(list);
+		
+		} else {
 
-		List<Festival> festivalList = festivalRepository.findAll();
+			festivalRepository.saveAll(entities);
 
-		return ResponseEntity.ok(festivalList);
+			List<Festival> festivalList = festivalRepository.findAll();
+
+			return ResponseEntity.ok(festivalList);
+
+		}
 
 	}
 
@@ -305,31 +316,30 @@ public class KhjController {
 		Festival fes = result.get();
 
 		System.out.println(fes);
-		
+
 		return fes;
 
 	}
-	
+
 	@GetMapping("/like/{uc_seq}")
 	public Long getLikeCount(@PathVariable("uc_seq") String uc_seq) {
-		
+
 		System.out.println("getLikeCount..................");
-		
+
 		Long uc_seq_long = Long.parseLong(uc_seq);
 
 		System.out.println(uc_seq_long);
-		
+
 		Long likeCount = likeRepository.findLikeCountByFestivalUcSeq(uc_seq_long);
-		
+
 		System.out.println("디비에서 찾아낸 특정 uc_seq 의 좋아요 수........." + likeCount);
-		
+
 		return likeCount;
-		
-		
+
 	}
 
 	// 공지사항
-	
+
 	@GetMapping("/noticeList")
 	public List<Help> getNoticeList() {
 
@@ -374,265 +384,311 @@ public class KhjController {
 		}
 	}
 
-	//@PostMapping("/noticeAdd")
-/*	public String noticeAdd(HelpDto helpDto) {
-
-		System.out.println("파라미터로 받은 helpDto = " + helpDto);
-		System.out.println("Current directory: " + System.getProperty("user.dir"));
-		
-		Help entity = new Help();
-
-		entity.setTitle(helpDto.getTitle());
-		entity.setContent(helpDto.getContent());
-		entity.setRegDate(LocalDate.now());
-		//entity.setHorigin_name(helpDto.getFileName());
-		log.info(helpDto.getFileName());
-
-		String newName = UUID.randomUUID().toString() + "_" + helpDto.getFileName();
-
-		log.info(newName);
-
-		//entity.setHnewName(newName);
-
-		// 파일 저장
-		File file = new File(newName);
-
-		try {
-
-			helpDto.getFile().transferTo(file);
-
-			log.info("파일업로드 성공");
-
-			// 썸네일 생성
-
-			String thumbnailSaveName = "s_" + newName;
-			//entity.setHthumbnailName(thumbnailSaveName);
-
-			File thumbnailFile = new File(uploadPath + thumbnailSaveName); // 섬네일 파일 생성
-			File ufile = new File(uploadPath + newName);
-
-			// Thumbnailator.createThumbnail(file, thumbnailFile, 100, 100);
-			Thumbnails.of(ufile).size(100, 100).toFile(thumbnailFile); // 섬네일 사이즈 100 100 설정
-		} catch (IllegalStateException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		System.out.println("저장할 help = " + entity);
-		helpRepository.save(entity);
-		return "good";
-
-	}
-*/	
+	// @PostMapping("/noticeAdd")
+	/*
+	 * public String noticeAdd(HelpDto helpDto) {
+	 * 
+	 * System.out.println("파라미터로 받은 helpDto = " + helpDto);
+	 * System.out.println("Current directory: " + System.getProperty("user.dir"));
+	 * 
+	 * Help entity = new Help();
+	 * 
+	 * entity.setTitle(helpDto.getTitle()); entity.setContent(helpDto.getContent());
+	 * entity.setRegDate(LocalDate.now());
+	 * //entity.setHorigin_name(helpDto.getFileName());
+	 * log.info(helpDto.getFileName());
+	 * 
+	 * String newName = UUID.randomUUID().toString() + "_" + helpDto.getFileName();
+	 * 
+	 * log.info(newName);
+	 * 
+	 * //entity.setHnewName(newName);
+	 * 
+	 * // 파일 저장 File file = new File(newName);
+	 * 
+	 * try {
+	 * 
+	 * helpDto.getFile().transferTo(file);
+	 * 
+	 * log.info("파일업로드 성공");
+	 * 
+	 * // 썸네일 생성
+	 * 
+	 * String thumbnailSaveName = "s_" + newName;
+	 * //entity.setHthumbnailName(thumbnailSaveName);
+	 * 
+	 * File thumbnailFile = new File(uploadPath + thumbnailSaveName); // 섬네일 파일 생성
+	 * File ufile = new File(uploadPath + newName);
+	 * 
+	 * // Thumbnailator.createThumbnail(file, thumbnailFile, 100, 100);
+	 * Thumbnails.of(ufile).size(100, 100).toFile(thumbnailFile); // 섬네일 사이즈 100 100
+	 * 설정 } catch (IllegalStateException e) { e.printStackTrace(); } catch
+	 * (IOException e) { e.printStackTrace(); }
+	 * 
+	 * System.out.println("저장할 help = " + entity); helpRepository.save(entity);
+	 * return "good";
+	 * 
+	 * }
+	 */
 	@PostMapping("/noticeAdd")
-	public String noticeAdd2(@RequestParam(value="file", required= false) MultipartFile file, @RequestParam("title") String title, @RequestParam("content") String content, HttpServletRequest request) {
-		
-			
+	public String noticeAdd2(@RequestParam(value = "file", required = false) MultipartFile file,
+			@RequestParam("title") String title, @RequestParam("content") String content, HttpServletRequest request) {
+
 		System.out.println("noticeAdd2..........................");
 		System.out.println(title);
 		System.out.println(content);
 		System.out.println(file);
-		String jwt = request.getHeader("Authorization");	
+		String jwt = request.getHeader("Authorization");
 		System.out.println(jwt);
 		Help help = new Help();
-		
+
 		try {
-			
+
 			String fileUrl = null;
 			String thumbnailUrl = null;
-			
-			if(file != null && !file.isEmpty()) {
-				
+
+			if (file != null && !file.isEmpty()) {
+
 				String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 				Path targetLocation = Paths.get(UPLOAD_DIR + fileName);
 				Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-				
+
 				fileUrl = "http://localhost:9002/uploads/" + fileName;
-				
+
 				// 썸네일 생성 및 저장?
-				String thumbnailFilename ="thumb_" + fileName;
+				String thumbnailFilename = "thumb_" + fileName;
 				Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
 				Files.copy(file.getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
-				
+
 				thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
-		
+
 			}
-			
-			if(jwt != null) {
-				
+
+			if (jwt != null) {
+
 				help.setTitle(title);
 				help.setContent(content);
 				help.setRegDate(LocalDate.now());
-				
-				if(fileUrl != null && thumbnailUrl != null) {
-					
+
+				if (fileUrl != null && thumbnailUrl != null) {
+
 					help.setHimg(fileUrl);
 					help.setHThumbnailImg(thumbnailUrl);
 				}
-				
+
 				System.out.println("db에 저장할 공지 = " + help);
-				helpRepository.save(help);				
-				
+				helpRepository.save(help);
+
 			}
-			
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-			return "공지가 성공적으로 등록되었습니다.";
+		return "공지가 성공적으로 등록되었습니다.";
 	}
-	
+
 	@PostMapping("/doLikeFestival/{uc_seq}")
 	public String doLikeFestival(@PathVariable("uc_seq") String uc_seq) {
-		
+
 		System.out.println("doLike...............");
-		
-		//String likeToken = request.getHeader("Like" + uc_seq);
-		//System.out.println("likeToken = " + likeToken);
-		
+
+		// String likeToken = request.getHeader("Like" + uc_seq);
+		// System.out.println("likeToken = " + likeToken);
+
 		Likes like = new Likes();
 		Festival festival = new Festival();
 		Long uc_seq_long = Long.parseLong(uc_seq);
 		festival.setUcSeq(uc_seq_long);
 		like.setFestival(festival);
-		
-		 Optional<Likes> existingLike = likeRepository.findByFestivalUcSeq(uc_seq_long);
-	        
-	        System.out.println("existingLike = " + existingLike);
-	        
-	        if (existingLike.isPresent()) {
-	            Likes fromDB = existingLike.get();
-	            fromDB.setLikecount(fromDB.getLikecount() + 1);
-	            likeRepository.save(fromDB);
-	            
-	            return "좋아요 추가되었습니다.";
-	            
-	        } else {
-	            // 좋아요가 없는 경우 1 추가
-	            Likes newLike = Likes.builder()
-	                    .festival(Festival.builder().ucSeq(uc_seq_long).build())
-	                    .likecount(1L)
-	                    .build();
-	            
-	            likeRepository.save(newLike);
-	            
-	            return "당신이 처음으로 좋아요를 눌렀어..!";
-	        }
-		
+
+		Optional<Likes> existingLike = likeRepository.findByFestivalUcSeq(uc_seq_long);
+
+		System.out.println("existingLike = " + existingLike);
+
+		if (existingLike.isPresent()) {
+			Likes fromDB = existingLike.get();
+			fromDB.setLikecount(fromDB.getLikecount() + 1);
+			likeRepository.save(fromDB);
+
+			return "좋아요 추가되었습니다.";
+
+		} else {
+			// 좋아요가 없는 경우 1 추가
+			Likes newLike = Likes.builder().festival(Festival.builder().ucSeq(uc_seq_long).build()).likecount(1L)
+					.build();
+
+			likeRepository.save(newLike);
+
+			return "당신이 처음으로 좋아요를 눌렀어..!";
+		}
+
 	}
-	
+
 	@DeleteMapping("/deleteLikeFestival/{uc_seq}")
 	public String deleteLikeFestival(@PathVariable("uc_seq") String uc_seq) {
-		
+
 		System.out.println("deleteLike.............");
-		
+
 		Long uc_seq_long = Long.parseLong(uc_seq);
-		
+
 		Optional<Likes> existingLike = likeRepository.findByFestivalUcSeq(uc_seq_long);
-		
+
 		System.out.println("existingLike = " + existingLike);
-		
-		if(existingLike.isPresent()) {
-			
+
+		if (existingLike.isPresent()) {
+
 			Likes fromDB = existingLike.get();
 			fromDB.setLikecount(fromDB.getLikecount() - 1);
 			likeRepository.save(fromDB);
-			
+
 			return "좋아요가 취소되었습니다.";
 		} else {
-			
-			// 좋아요가 없는 경우	
+
+			// 좋아요가 없는 경우
 			return "좋아요 삭제 에러";
-			
+
 		}
 	}
-	
+
 	// 메인 축제 정렬 연습
 	@GetMapping("/getFestival")
 	public List<FestivalDto> getFestival() {
-		
-		//LocalDate today = LocalDate.now();		
-		//System.out.println(today);
-		//today.getMonthValue();
-		//System.out.println(today.getMonthValue());
-		
-		List<FestivalDto> list = festivalService.getFestivalsStartingThisMonth();	
-		
-		for(FestivalDto dto : list) {
-			
+
+		// LocalDate today = LocalDate.now();
+		// System.out.println(today);
+		// today.getMonthValue();
+		// System.out.println(today.getMonthValue());
+
+		List<FestivalDto> list = festivalService.getFestivalsStartingThisMonth();
+
+		for (FestivalDto dto : list) {
+
 			System.out.println(dto.getPlace());
 			System.out.println(dto.getMainImgThumb());
 		}
-		
+
 		return list;
 	}
-	
-	@PutMapping("/festivalModify")
-	public String festivalModify(@RequestPart("file") MultipartFile file, HttpServletRequest request, @RequestPart("festival") Festival fest) throws IOException {
-		
-		
-		// DTO로 받아서 ENTITY에 넣어..?
-		System.out.println("festivalModify.................");
-		System.out.println(fest);
-		String jwt = request.getHeader("Authorization");	
-		System.out.println(jwt);
-		
-		String fileUrl = null;
-		String thumbnailUrl = null;
-		
-		Festival fest2 = new Festival();
-		
-		if(file != null && !file.isEmpty()) {
-			
-			// 파일 처리 로직 추가
-			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-			Path targetLocation = Paths.get(UPLOAD_DIR + fileName);
-			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-			
-			fileUrl = "http://localhost:9002/uploads/" + fileName;
-			
-			// 썸네일 생성 및 저장?
-			String thumbnailFilename ="thumb_" + fileName;
-			Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
-			Files.copy(file.getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
-			
-			thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
-	
-		}
-		
-		return "";
-/*		
-		if(jwt != null) {
-			
-			fest2.setsetTitle(title);
-			help.setContent(content);
-			help.setRegDate(LocalDate.now());
-			
-			if(fileUrl != null && thumbnailUrl != null) {
-				
-				help.setHimg(fileUrl);
-				help.setHThumbnailImg(thumbnailUrl);
-			}
-			
-			System.out.println("db에 저장할 공지 = " + help);
-			festivalRepository.save(fest);			
-			
-		}
-		
-		
-	} catch (IOException e) {
-		e.printStackTrace();
-	}
-		return "공지가 성공적으로 등록되었습니다.";
-		
-		festivalRepository.save(fest);
-		
-		return "축제 정보 수정 완료!";
-	}
-	*/
-	
-}
 
-	
+	@PutMapping("/festivalModify")
+	public String festivalModify(@RequestPart(value = "file", required = false) MultipartFile file,
+			HttpServletRequest request, @RequestPart("festival") FestivalUpdateDto festDto)
+			throws IOException, ParseException {
+
+		// DTO로 받아서 ENTITY에 넣어..? YES
+		System.out.println("festivalModify.................");
+		System.out.println(festDto);
+		System.out.println(file);
+		String jwt = request.getHeader("Authorization");
+		System.out.println(jwt);
+		System.out.println(festDto.getStartDate());
+		System.out.println(festDto.getEndDate());
+
+		try {
+			String fileUrl = null;
+			String thumbnailUrl = null;
+
+			Optional<Festival> optionalEntity = festivalRepository.findById(festDto.getUcSeq());
+			if (!optionalEntity.isPresent()) {
+
+				throw new IllegalArgumentException("축제 정보를 찾을 수 없습니다....");
+			}
+
+			Festival entity = optionalEntity.get();
+
+			if (file != null && !file.isEmpty()) { // 첨부파일이 있을 경우에만 이미지 URL 업데이트
+
+				// 파일 처리 로직 추가
+				String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+				Path targetLocation = Paths.get(UPLOAD_DIR + fileName);
+				Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+				fileUrl = "http://localhost:9002/uploads/" + fileName;
+
+				// 썸네일 생성 및 저장?
+				String thumbnailFilename = "thumb_" + fileName;
+				Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
+				Files.copy(file.getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
+
+				thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
+				
+				// 이미지 URL을 엔티티에 설정
+				entity.setMainImgNormal(fileUrl);
+				entity.setMainImgThumb(thumbnailUrl);
+			}
+
+			Date startDate = null;
+			Date endDate = null;
+
+			// 날짜 타입으로 바꾸기
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+			if (festDto.getStartDate() != null && !festDto.getStartDate().isEmpty()) {
+				String s_startDate = festDto.getStartDate();
+				startDate = formatter.parse(s_startDate);
+			} else if (festDto.getStartDate() == null && festDto.getStartDate().isEmpty()) {
+				startDate = null;
+			}
+
+			if (festDto.getEndDate() != null && !festDto.getStartDate().isEmpty()) {
+				String s_endDate = festDto.getEndDate();
+				endDate = formatter.parse(s_endDate);
+			} else if (festDto.getEndDate() == null && festDto.getEndDate().isEmpty()) {
+				endDate = null;
+			}
+
+			System.out.println(startDate);
+			System.out.println(endDate);
+
+			// Date 객체를 문자열로 변환하여 출력 (그냥 해봄)
+			SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+			String formattedStartDate = startDate != null ? outputFormat.format(startDate) : null;
+			String formattedEndDate = endDate != null ? outputFormat.format(endDate) : null;
+
+			System.out.println(formattedStartDate);
+			System.out.println(formattedEndDate);
+
+			if (jwt != null) {
+
+				entity.setUcSeq(festDto.getUcSeq());
+				entity.setMainTitle(festDto.getMaintitle());
+				entity.setTitle(festDto.getTitle());
+				entity.setSubtitle(festDto.getSubtitle());
+				entity.setMainPlace(festDto.getMainPlace());
+				entity.setPlace(festDto.getPlace());
+				entity.setItemCntnts(festDto.getItemcntnts());
+				entity.setAddr1(festDto.getAddr1());
+				entity.setAddr2(festDto.getAddr2());
+				entity.setGugunNm(festDto.getGugunNm());
+				entity.setCntctTel(festDto.getCntctTel());
+				entity.setHomepageUrl(festDto.getHomepageUrl());
+				entity.setUsageDayWeekAndTime(festDto.getUsageDayWeekAndTime());
+				entity.setStartDate(startDate);
+				entity.setEndDate(endDate);
+				entity.setUsageDay(festDto.getUsageDay());
+				entity.setUsageAmount(festDto.getUsageAmount());
+				entity.setMiddleSizeRm1(festDto.getMiddleSizeRm1());
+				entity.setTrfcInfo(festDto.getTrfcInfo());
+				entity.setLat(Double.parseDouble(festDto.getLat()));
+				entity.setLng(Double.parseDouble(festDto.getLng()));
+
+				/*if (fileUrl != null && thumbnailUrl != null) {
+
+					entity.setMainImgNormal(fileUrl);
+					entity.setMainImgThumb(thumbnailUrl);
+				}
+				*/
+				
+				System.out.println("db에 저장할 축제 엔티티 = " + entity);
+				festivalRepository.save(entity);
+
+			}
+
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+		return "축제 정보가 성공적으로 수정되었습니다..";
+	}
+
 }

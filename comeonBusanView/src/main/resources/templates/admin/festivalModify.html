@@ -105,11 +105,16 @@
 					<input type="text" name="lng" id="lng" placeholder="위도">
 					<br>
 					<input type="submit" value="수정하기">
+					<button type="button" value="뒤로가기" onclick="window.location.href = document.referrer;">뒤로가기</button>
 				</ul>
 			</form>
 		</div>
 	</div>
 
+	<footer>
+		<th:block th:insert="~{/fragments/footer.html}"></th:block>
+	</footer>
+	
 	<script>
 		var uc_seq = "[[${uc_seq}]]";
 
@@ -168,38 +173,70 @@
 		document.getElementById('frm').addEventListener('submit', function(event){
 			
 			event.preventDefault();
+	
+			const formData = new FormData();
+			const token = localStorage.getItem("Authorization");
+			console.log("토큰 : " + token);
+
+			// 폼데이터에서 JSON 객체로 바꾸기
+			const festivalData = {
+			        ucSeq: document.getElementById('uc_seq').value,
+			        maintitle: document.getElementById('maintitle').value,
+			        title: document.getElementById('title').value,
+			        subtitle: document.getElementById('subtitle').value,
+			        mainPlace: document.getElementById('main_place').value,
+			        place: document.getElementById('place').value,
+			        itemcntnts: document.getElementById('itemcntnts').value,
+			        addr1: document.getElementById('addr1').value,
+			        addr2: document.getElementById('addr2').value,
+			        gugunNm: document.getElementById('gugun_nm').value,
+			        cntctTel: document.getElementById('cntct_tel').value,
+			        homepageUrl: document.getElementById('homepage_url').value,
+			        usageDayWeekAndTime: document.getElementById('usage_day_week_and_time').value,
+			        startDate: document.getElementById('start_date').value,
+			        endDate: document.getElementById('end_date').value,
+			        usageDay: document.getElementById('usage_day').value,
+			        usageAmount: document.getElementById('usage_amount').value,
+			        middleSizeRm1: document.getElementById('middle_size_rm1').value,
+			        trfcInfo: document.getElementById('trfc_info').value,
+			        lat: document.getElementById('lat').value,
+			        lng: document.getElementById('lng').value
+			    };
 			
-			const formData = new FormData(this);
-
-
-			fetch('http://localhost:9002/khj/festivalModify',{
-				method: 'PUT',
-				enctype : "multipart/form-data",
-				headers : {
-					"Authorization" : token
+			// JSON 데이터 추가
+			 formData.append('festival', new Blob([JSON.stringify(festivalData)], { type: 'application/json' }));
+			
+			// 파일 추가
+			const fileInput = document.getElementById('file');
+			if(fileInput.files.length > 0){
+				formData.append('file', fileInput.files[0]);
+			}
+			
+			$.ajax({
+				type: 'PUT',
+				enctype: 'multipart/form-data',
+				url: 'http://localhost:9002/khj/festivalModify',
+				data: formData,
+				headers: {
+					"Authorization" : "Bearer " + token
 				},
-				body: formData //FormData 객체를 직접 전송
-			})
-			.then(response => response.json())
-			.then(data =>{
-				if(data.success){
-					alert(data.message);
-				} else {
-		            alert("축제 정보 수정에 실패했습니다.");
-		        }
-			})
-			.catch(error => {
-				console.log("축제 정보 수정 도충 에러가 발생했습니다.", error);
+				//dataType: 'json',
+				processData: false,
+				contentType: false,
+				cache: false,
+				success: function(response){
+					alert(response);
+					console.log("success : ", response);
+					
+				},
+				error: function(e){
+					
+					console.log("error : ", e);
+				}
+				
 			});
-			
 		});
-		
-		
-		
 	</script>
 
-	<footer>
-		<th:block th:insert="~{/fragments/footer.html}"></th:block>
-	</footer>
 </body>
 </html>

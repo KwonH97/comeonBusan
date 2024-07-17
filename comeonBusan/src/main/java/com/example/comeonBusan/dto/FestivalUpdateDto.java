@@ -29,8 +29,6 @@ public class FestivalUpdateDto {
 	    private String trfcInfo;
 	    private String lat;
 	    private String lng;
-	    private MultipartFile file; // 파일 필드 추가
-
-	
+	   
 	
 }
