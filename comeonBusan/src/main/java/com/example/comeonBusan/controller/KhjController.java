@@ -167,11 +167,6 @@ public class KhjController {
 
 		System.out.println("getFestivalData................");
 
-		
-		
-		
-		
-		
 		StringBuilder urlBuilder = new StringBuilder(
 				"http://apis.data.go.kr/6260000/FestivalService/getFestivalKr"); /* URL */
 		urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8")
@@ -288,9 +283,9 @@ public class KhjController {
 		List<Festival> list = festivalRepository.findAll();
 		System.out.println(list);
 		if (list != null && !list.isEmpty()) {
-			
+
 			return ResponseEntity.ok(list);
-		
+
 		} else {
 
 			festivalRepository.saveAll(entities);
@@ -568,7 +563,134 @@ public class KhjController {
 		}
 
 		return list;
-	}
+	}// 연습끝
+
+	@PostMapping("/festivalAdd")
+	public String festivalAdd(@RequestPart(value = "file", required = false) MultipartFile file, HttpServletRequest request, @RequestPart("festival") FestivalUpdateDto festDto) throws ParseException {
+		
+		
+		System.out.println("festivalAdd...................");
+		System.out.println(festDto);
+		System.out.println(file);
+		
+		String jwt = request.getHeader("Authorization");
+		
+		System.out.println(jwt);
+		System.out.println(festDto.getStartDate());
+		System.out.println(festDto.getEndDate());
+		
+		Festival festival = new Festival();
+		
+		try {
+			
+			String fileUrl = null;
+			String thumbnailUrl = null;
+			
+			if(file != null && !file.isEmpty()) { // 첨부 파일이 있을 경우에만 이미지 url 등록
+				
+				// 파일 처리 로직 추가
+				String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+				Path targetLocation = Paths.get(UPLOAD_DIR + fileName);
+				Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+			
+				fileUrl = "http://localhost:9002/uploads/" + fileName;
+				
+				// 썸네일 생성 및 저장
+				String thumbnailFilename = "thumb_" + fileName;
+				Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
+				Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+			
+				thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
+			}else {
+				
+				return "이미지 파일을 첨부해주세요";
+			}
+			
+			
+			Date startDate = null;
+			Date endDate = null;
+			
+			// 날짜 타입으로 바꾸기
+			
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			
+			if(festDto.getStartDate() != null && !festDto.getStartDate().isEmpty()) {
+				String s_startDate = festDto.getStartDate();
+				startDate = formatter.parse(s_startDate);	
+			} else if (festDto.getStartDate() == null && festDto.getStartDate().isEmpty()) {
+				startDate = null;
+			}
+			
+			if(festDto.getEndDate() != null && !festDto.getStartDate().isEmpty()) {
+				
+				String s_endDate = festDto.getEndDate();
+				endDate = formatter.parse(s_endDate);
+			}else if (festDto.getEndDate() == null && festDto.getEndDate().isEmpty()) {
+				
+				endDate = null;
+			}
+			
+			System.out.println(startDate);
+			System.out.println(endDate);
+			
+			// 관리자가 입력한 ucSeq가 존재할 경우 등록거부
+	/*		Optional<Festival> list = festivalRepository.findById(festDto.getUcSeq());
+			Festival result = list.get();
+			
+			System.out.println("관리자가 입력한 ucSeq로 데이터 조회 : " + result);
+			
+			if(result != null) {
+				
+				return "이미 존재하는 축제번호입니다. 새로운 등로번호를 입력해주세요";
+			}
+			
+		*/	
+			if(jwt != null) {
+				
+				Festival entity = new Festival();
+				
+				entity.setUcSeq(festDto.getUcSeq());
+				entity.setMainTitle(festDto.getMaintitle());
+				entity.setTitle(festDto.getTitle());
+				entity.setSubtitle(festDto.getSubtitle());
+				entity.setMainPlace(festDto.getMainPlace());
+				entity.setPlace(festDto.getPlace());
+				entity.setItemCntnts(festDto.getItemcntnts());
+				entity.setAddr1(festDto.getAddr1());
+				entity.setAddr2(festDto.getAddr2());
+				entity.setGugunNm(festDto.getGugunNm());
+				entity.setCntctTel(festDto.getCntctTel());
+				entity.setHomepageUrl(festDto.getHomepageUrl());
+				entity.setUsageDayWeekAndTime(festDto.getUsageDayWeekAndTime());
+				entity.setStartDate(startDate);
+				entity.setEndDate(endDate);
+				entity.setUsageDay(festDto.getUsageDay());
+				entity.setUsageAmount(festDto.getUsageAmount());
+				entity.setMiddleSizeRm1(festDto.getMiddleSizeRm1());
+				entity.setTrfcInfo(festDto.getTrfcInfo());
+				entity.setLat(Double.parseDouble(festDto.getLat()));
+				entity.setLng(Double.parseDouble(festDto.getLng()));
+
+				
+				 if (fileUrl != null && thumbnailUrl != null) {
+				 
+				 entity.setMainImgNormal(fileUrl); 
+				 entity.setMainImgThumb(thumbnailUrl); 
+				 
+				 }
+
+					System.out.println("DB에 저장할 축제 엔티티 = " + entity);
+					festivalRepository.save(entity);
+
+				}
+
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
+			return "축제 정보가 성공적으로 등록되었습니다..";
+		}
+	
 
 	@PutMapping("/festivalModify")
 	public String festivalModify(@RequestPart(value = "file", required = false) MultipartFile file,
@@ -611,7 +733,7 @@ public class KhjController {
 				Files.copy(file.getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
 
 				thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
-				
+
 				// 이미지 URL을 엔티티에 설정
 				entity.setMainImgNormal(fileUrl);
 				entity.setMainImgThumb(thumbnailUrl);
@@ -672,13 +794,12 @@ public class KhjController {
 				entity.setLat(Double.parseDouble(festDto.getLat()));
 				entity.setLng(Double.parseDouble(festDto.getLng()));
 
-				/*if (fileUrl != null && thumbnailUrl != null) {
+				/*
+				 * if (fileUrl != null && thumbnailUrl != null) {
+				 * 
+				 * entity.setMainImgNormal(fileUrl); entity.setMainImgThumb(thumbnailUrl); }
+				 */
 
-					entity.setMainImgNormal(fileUrl);
-					entity.setMainImgThumb(thumbnailUrl);
-				}
-				*/
-				
 				System.out.println("db에 저장할 축제 엔티티 = " + entity);
 				festivalRepository.save(entity);
 
