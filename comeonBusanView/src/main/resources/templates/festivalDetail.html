@@ -136,7 +136,10 @@ h1 {
 
 	<button class="hiddenButton" style="display: none;"
 		onclick="gomodifyPage()">수정하기</button>
-	<button type="button" value="뒤로가기" onclick="window.location.href = document.referrer;">뒤로가기</button>
+	<button class="hiddenButton" style="display: none;"
+		onclick="goToDelete()">삭제하기</button>
+	<button type="button" value="뒤로가기"
+		onclick="window.location.href = document.referrer;">뒤로가기</button>
 
 	<div class="container">
 		<h3 id="title"></h3>
@@ -223,19 +226,19 @@ h1 {
 
 											// 지도와 마커를 추가하는 함수 호출
 											initMap(lat, lng);
-											
+
 											// 좋아요 여부 확인 후 하트색 결정하는 함수 호출
 											checkIfLiked();
-									
+
 										},
 										error : function(error) {
 											console.log("Error : " + error);
 										}
 									});
-							
+
 							// 좋아요 수 조회 함수 호출
 							getLikeCount();
-							
+
 							var authValue = localStorage
 									.getItem("Authorization");
 							if (authValue != null) {
@@ -245,6 +248,36 @@ h1 {
 
 		function gomodifyPage() {
 			window.location.href = "/festivalModify?uc_seq=" + uc_seq;
+		}
+
+		function goToDelete() {
+
+			if (confirm("정말 이 게시글을 삭제하시겠습니까?") == true) {
+
+				console.log("uc_seq = " + uc_seq);
+
+				const token = localStorage.getItem("Authorization");
+				console.log("토큰 : " + token);
+
+				$.ajax({
+					type : "DELETE",
+					url : "http://localhost:9002/khj/festivalDelete/" + uc_seq,
+					headers : {
+						"Authorization" : "Bearer " + token
+					},
+					success : function(response) {
+						alert(response);
+						console.log(response);
+					},
+					error : function(xhr, statis, error) {
+						console.log("Error : ", error);
+					}
+
+				});
+			} else {
+				
+				console.log("삭제 취소함");
+			}
 		}
 
 		function doLike() {
@@ -271,7 +304,7 @@ h1 {
 						alert(response);
 						// 하트 빨간색으로 바꾸기
 						heartIcon.classList.add('liked');
-						
+
 						// 좋아요 수 업데이트
 						getLikeCount();
 					},
@@ -322,36 +355,35 @@ h1 {
 				map : map
 			});
 		}
-		
+
 		// 좋아요 수 업데이트
-		function getLikeCount(){
-			
-			$.ajax({
-				url : 'http://localhost:9002/khj/like/' + uc_seq,
-				method : 'GET',
-				success: function(response){
-					console.log("찾아온 좋아요 수" + response);
-					
-					if(response == ''){
-						document.querySelector("#likecount").textContent = 0;
-					}else{
-						document.querySelector("#likecount").textContent = response;
-					}
-					
-				},
-				error : function(error) {
-					console.log("Error : " + error);
-				}
-			});
+		function getLikeCount() {
+
+			$
+					.ajax({
+						url : 'http://localhost:9002/khj/like/' + uc_seq,
+						method : 'GET',
+						success : function(response) {
+							console.log("찾아온 좋아요 수" + response);
+
+							if (response == '') {
+								document.querySelector("#likecount").textContent = 0;
+							} else {
+								document.querySelector("#likecount").textContent = response;
+							}
+
+						},
+						error : function(error) {
+							console.log("Error : " + error);
+						}
+					});
 		}
-		
-		
-		
+
 		// 페이지 로드될때, localStorage key 유무로 좋아요 하트색 결정
 		function checkIfLiked() {
 
 			let likeYN = localStorage.getItem("Like" + uc_seq);
-			
+
 			console.log("페이지 로드 시 좋아요 키값" + likeYN);
 			const heartIcon = document.querySelector('.heart-icon');
 
