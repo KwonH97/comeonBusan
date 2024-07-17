@@ -50,6 +50,11 @@ public class CcmViewController {
     public String safeArea() {
         return "safeArea";
     }
+    
+    @GetMapping("/cityTour")
+    public String cityTour() {
+        return "cityTour";
+    }
 
 
 }

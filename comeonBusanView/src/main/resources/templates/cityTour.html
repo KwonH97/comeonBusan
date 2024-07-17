@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>부산 시티투어</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; flex-direction: column; min-height: 100vh; margin: 0; background-color: #f0f8ff; }
+
+  .main { display: flex; flex-grow: 2; }
+
+  .sidebar { 
+    width: 180px; 
+    padding: 15px; 
+    background-color: #87ceeb; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: flex-start; /* 위쪽으로 정렬 */
+    flex-shrink: 0; 
+  }
+
+  .sidebar img { 
+    width: 100%; 
+    margin-bottom: 20px; 
+  }
+
+  .content-wrapper {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .content {
+    max-width: 100%;
+    width: 90%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .menu-item { 
+    padding: 8px 0; 
+    cursor: pointer; 
+    color: #fff; 
+    font-weight: bold; 
+    font-size: 14px; 
+    text-align: center;
+    width: 160px; /* 기본 너비 */
+    margin-bottom: 30px; /* 메뉴 간 간격 조정 */
+    transition: background-color 0.3s, font-size 0.3s, padding 0.3s, width 0.3s;
+  }
+
+  .menu-item:hover { background-color: #ff69b4; padding: 10px 0; }
+
+  .tabs { display: flex; cursor: pointer; margin-top: 30px; }
+
+  .tab { 
+    padding: 10px 20px; 
+    border: 1px solid #ccc; 
+    border-bottom: none; 
+    background-color: #87ceeb; 
+    color: white; 
+    width: 30%; 
+    max-width: 300px; 
+    text-align: center; 
+    margin: 0 10px; /* 가운데 정렬을 위한 마진 조절 */
+  }
+
+  .tab-content { 
+    border: 1px solid #ccc; 
+    padding: 20px; 
+    display: none; 
+    background-color: white; 
+    width: 90%; 
+    max-width: 1200px; 
+    margin: 20px auto; /* 가운데 정렬 */
+  }
+  .tab-content.active { display: block; }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+
+  th { background-color: #f2f2f2; }
+
+   iframe { width: 65%; height: 400px; margin: 20px auto; display: block; }
+
+  img { width: 70%; height: auto; margin: 0 auto; display: block; }
+
+  #pdf-viewer { display: flex; flex-direction: column; align-items: center; position: relative; }
+
+  .pdf-canvas { width: 75%; height: auto; margin-bottom: 20px; margin-right: 220px; }
+
+  .download-btn { 
+    position: absolute; 
+    top: 10px; 
+    right: 10px; 
+    padding: 10px 20px; 
+    background-color: #4CAF50; 
+    color: white; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    z-index: 1000; 
+  }
+
+  .scrolling-content {
+    overflow-y: auto;
+    height: 100vh;
+    padding-left: 220px;
+    box-sizing: border-box;
+  }
+
+  #template {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  
+   #fare {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: left;
+    text-align: left;
+  }
+
+  #fare table {
+    margin: 20px 0;
+    width: 80%; /* 테이블 넓이를 적절히 조정 */
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+</head>
+<body>
+  <header>
+    <th:block th:insert="~{/fragments/header2.html}"></th:block>
+  </header>
+
+  <div class="main">
+    <div class="sidebar">
+      <img src="/img/bus.gif" alt="Bus">
+      <div class="menu-item" onclick="showMainContent('home')">시티투어홈</div>
+      <div class="menu-item" onclick="showMainContent('red', 'red-course')">레드라인</div>
+      <div class="menu-item" onclick="showMainContent('green', 'green-course')">그린라인</div>
+      <div class="menu-item" onclick="showMainContent('orange', 'orange-course')">오렌지라인</div>
+      <div class="menu-item" onclick="showMainContent('fare')">요금&제휴할인</div>
+      <div class="menu-item" onclick="showMainContent('template')">템플릿보기&내려받기</div>
+    </div>
+
+    <div class="content scrolling-content">
+      <div id="home" class="main-content">
+        <h2>시티투어 코스</h2>
+        <p>Home 아이콘 HOME > 시티투어코스 > 시티투어 코스</p>
+        <p>2층버스로 부산의 명소들을 편리하게 연결하는 관광 대중교통</p>
+        <p>시티투어 코스는 단일권 티켓으로 레드라인(부산역↔해운대순환), 블루라인(용호만유람선터미널↔해동용궁사),</p> <p>그린라인(부산역↔태종대), 오렌지라인(부산역↔다대포) 각 노선을 이용할 수 있습니다.</p>
+        <img src="/img/coursebusan.jpg" alt="부산 시티투어">
+        <h3>시티투어코스 노선도</h3>
+        <h4>이용방법</h4>
+        <p>시티투어 코스(순환형코스)</p>
+        <ul>
+          <li>레드라인(부산역↔해운대순환)</li>
+          <li>그린라인(부산역↔태종대)</li>
+          <li>블루라인(용호만유람선터미널↔해동용궁사)</li>
+          <li>오렌지라인(부산역↔다대포)</li>
+        </ul>
+        <h4>순환형코스 이용방법</h4>
+        <ul>
+          <li>레드라인(부산역↔해운대순환) 2층버스 시간표 바로가기</li>
+          <li>블루라인(용호만유람선터미널↔해동용궁사) 1층버스 시간표 바로가기</li>
+          <li>그린라인(부산역↔태종대) 2층버스 시간표 바로가기</li>
+          <li>오렌지라인(부산역↔다대포) 1층버스 시간표 바로가기</li>
+        </ul>
+        <h4>순환형코스 환승안내</h4>
+        <p>부산역 : 레드라인-그린라인-오렌지라인 환승</p>
+        <p>용호만유람선터미널 : 레드라인-그린라인-블루라인 환승</p>
+        <p>해운대해수욕장 : 레드라인-블루라인 환승</p>
+        <p>평화공원 : 레드라인-그린라인 환승</p>
+        <p>송도해수욕장 : 그린라인-오렌지라인 환승</p>
+        <p>※ 기상상황등 유사시 레드라인 및 그린라인에 1층버스가 투입되는 경우가 있으며, 이로 인한 환불은 불가합니다.</p>
+        <p>※ 모든 정류장에서 탑승 가능하며 최초 탑승 시 승무원으로부터 선착순으로 구매할 수 있습니다(현금/카드 모두 사용가능)</p>
+        <h4>휴무일</h4>
+        <p>매주 월요일, 화요일</p>
+      </div>
+
+      <div id="red" class="main-content" style="display:none;">
+        <div class="tabs">
+          <div class="tab active" onclick="showTabContent('red-course')">코스정보</div>
+          <div class="tab" onclick="showTabContent('red-timetable')">시간표</div>
+        </div>
+        <div id="red-course" class="tab-content active">
+          <h2>레드라인 코스정보</h2>
+          <ul>
+            <li><strong>부산역 출발</strong> - 부산의 대표적인 기차역으로, 여행의 시작점입니다.</li>
+            <li><strong>부산항대교</strong> - 부산항을 연결하는 다리로, 멋진 경치를 감상할 수 있습니다.</li>
+            <li><strong>UN 기념공원</strong> - 전쟁 희생자를 기리기 위한 기념공원으로, 아름다운 경관을 자랑합니다.</li>
+            <li><strong>부산 박물관</strong> - 부산의 역사와 문화를 한눈에 볼 수 있는 곳입니다.</li>
+            <li><strong>용호만 유람선 터미널</strong> - 부산항을 바라보며 유람선을 탈 수 있는 곳입니다.</li>
+            <li><strong>광안리 해수욕장</strong> - 넓은 백사장과 푸른 바다로 유명한 해수욕장입니다.</li>
+            <li><strong>수영만 요트경기장</strong> - 다양한 요트와 해양 스포츠를 즐길 수 있는 장소입니다.</li>
+            <li><strong>동백섬</strong> - 아름다운 자연 경관을 자랑하는 작은 섬입니다.</li>
+            <li><strong>센텀시티(영화의전당)</strong> - 다양한 영화와 문화 행사가 열리는 복합 문화 공간입니다.</li>
+            <li><strong>시립미술관, 벡스코</strong> - 현대 미술 작품을 감상할 수 있는 미술관과 다양한 전시회가 열리는 곳입니다.</li>
+            <li><strong>광안대교</strong> - 아름다운 야경을 자랑하는 다리로, 부산의 상징적인 구조물입니다.</li>
+            <li><strong>부산항대교</strong> - 부산항을 연결하는 다리로, 멋진 경치를 감상할 수 있습니다.</li>
+            <li><strong>광복로</strong> - 부산의 주요 쇼핑 거리로, 다양한 상점과 먹거리를 즐길 수 있습니다.</li>
+            <li><strong>부산역 도착</strong> - 다시 여행의 시작점으로 돌아오는 지점입니다.</li>
+          </ul>
+          <iframe src="https://www.youtube.com/embed/4unP4DI53jw" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div id="red-timetable" class="tab-content">
+          <h2>레드라인 시간표</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>정류장</th>
+                <th>1회차</th>
+                <th>2회차</th>
+                <th>3회차</th>
+                <th>4회차</th>
+                <th>5회차</th>
+                <th>6회차</th>
+                <th>7회차</th>
+                <th>8회차</th>
+                <th>9회차</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>부산역 출발</td>
+                <td>09:45</td>
+                <td>10:35</td>
+                <td>11:25</td>
+                <td>12:25</td>
+                <td>13:15</td>
+                <td>14:05</td>
+                <td>14:55</td>
+                <td>15:45</td>
+                <td>16:35</td>
+              </tr>
+              <tr>
+                <td>부산대교·부산항대교</td>
+                <td colspan="9">경유</td>
+              </tr>
+              <tr>
+                <td>UN기념공원</td>
+                <td>10:10</td>
+                <td>11:00</td>
+                <td>11:50</td>
+                <td>12:50</td>
+                <td>13:40</td>
+                <td>14:30</td>
+                <td>15:20</td>
+                <td>16:10</td>
+                <td>17:00</td>
+              </tr>
+              <tr>
+                <td>부산박물관</td>
+                <td>10:12</td>
+                <td>11:02</td>
+                <td>11:52</td>
+                <td>12:52</td>
+                <td>13:42</td>
+                <td>14:32</td>
+                <td>15:22</td>
+                <td>16:12</td>
+                <td>17:02</td>
+              </tr>
+              <tr>
+                <td>용호만유람선터미널</td>
+                <td>10:20</td>
+                <td>11:10</td>
+                <td>12:00</td>
+                <td>13:00</td>
+                <td>13:50</td>
+                <td>14:40</td>
+                <td>15:30</td>
+                <td>16:20</td>
+                <td>17:10</td>
+              </tr>
+              <tr>
+                <td>광안리해수욕장</td>
+                <td>10:30</td>
+                <td>11:20</td>
+                <td>12:10</td>
+                <td>13:10</td>
+                <td>14:00</td>
+                <td>14:50</td>
+                <td>15:40</td>
+                <td>16:30</td>
+                <td>17:20</td>
+              </tr>
+              <tr>
+                <td>마린시티(수영만요트경기장)</td>
+                <td>10:39</td>
+                <td>11:29</td>
+                <td>12:19</td>
+                <td>13:19</td>
+                <td>14:09</td>
+                <td>14:59</td>
+                <td>15:49</td>
+                <td>16:39</td>
+                <td>17:29</td>
+              </tr>
+              <tr>
+                <td>동백섬</td>
+                <td>10:43</td>
+                <td>11:33</td>
+                <td>12:23</td>
+                <td>13:23</td>
+                <td>14:13</td>
+                <td>15:03</td>
+                <td>15:53</td>
+                <td>16:43</td>
+                <td>17:33</td>
+              </tr>
+              <tr>
+                <td>해운대해수욕장</td>
+                <td>10:50</td>
+                <td>11:40</td>
+                <td>12:30</td>
+                <td>13:30</td>
+                <td>14:20</td>
+                <td>15:10</td>
+                <td>16:00</td>
+                <td>16:50</td>
+                <td>17:40</td>
+              </tr>
+              <tr>
+                <td>센텀시티(영화의전당)</td>
+                <td>11:03</td>
+                <td>11:53</td>
+                <td>12:43</td>
+                <td>13:43</td>
+                <td>14:33</td>
+                <td>15:23</td>
+                <td>16:13</td>
+                <td>17:03</td>
+                <td>17:53</td>
+              </tr>
+              <tr>
+                <td>시립미술관.벡스코</td>
+                <td>11:13</td>
+                <td>12:03</td>
+                <td>12:53</td>
+                <td>13:53</td>
+                <td>14:43</td>
+                <td>15:33</td>
+                <td>16:23</td>
+                <td>17:13</td>
+                <td>18:03</td>
+              </tr>
+              <tr>
+                <td>광안대교</td>
+                <td colspan="9">경유</td>
+              </tr>
+              <tr>
+                <td>평화공원</td>
+                <td>11:20</td>
+                <td>12:10</td>
+                <td>13:00</td>
+                <td>14:00</td>
+                <td>14:50</td>
+                <td>15:40</td>
+                <td>16:30</td>
+                <td>17:20</td>
+                <td>18:10</td>
+              </tr>
+              <tr>
+                <td>부산항대교</td>
+                <td colspan="9">경유</td>
+              </tr>
+              <tr>
+                <td>광복로</td>
+                <td>11:40</td>
+                <td>12:30</td>
+                <td>13:20</td>
+                <td>14:20</td>
+                <td>15:10</td>
+                <td>16:00</td>
+                <td>16:50</td>
+                <td>17:40</td>
+                <td>18:30</td>
+              </tr>
+              <tr>
+                <td>부산역 도착</td>
+                <td>11:55</td>
+                <td>12:45</td>
+                <td>13:35</td>
+                <td>14:35</td>
+                <td>15:25</td>
+                <td>16:15</td>
+                <td>17:05</td>
+                <td>17:55</td>
+                <td>18:45</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="green" class="main-content" style="display:none;">
+        <div class="tabs">
+          <div class="tab active" onclick="showTabContent('green-course')">코스정보</div>
+          <div class="tab" onclick="showTabContent('green-timetable')">시간표</div>
+        </div>
+        <div id="green-course" class="tab-content active">
+          <h2>그린라인 코스정보</h2>
+          <ul>
+            <li><strong>부산역 출발</strong> - 부산의 대표적인 기차역으로, 여행의 시작점입니다.</li>
+            <li><strong>영도대교(유라리광장)</strong> - 아름다운 경관과 역사적인 의미가 있는 다리입니다.</li>
+            <li><strong>흰여울 문화마을</strong> - 예술과 문화를 즐길 수 있는 마을입니다.</li>
+            <li><strong>하늘전망대</strong> - 멋진 전망을 감상할 수 있는 곳입니다.</li>
+            <li><strong>영도해녀촌(노을전망대)</strong> - 도로정비로 임시 중단됩니다.</li>
+            <li><strong>태종대</strong> - 부산의 대표적인 관광지로, 자연경관이 아름답습니다.</li>
+            <li><strong>국립해양박물관</strong> - 해양과학을 배울 수 있는 박물관입니다.</li>
+            <li><strong>오륙도스카이워크</strong> - 스릴 넘치는 스카이워크를 즐길 수 있습니다.</li>
+            <li><strong>용호만 유람선터미널</strong> - 유람선을 탈 수 있는 터미널입니다.</li>
+            <li><strong>평화공원</strong> - 휴식과 여가를 즐길 수 있는 공원입니다.</li>
+            <li><strong>송도해수욕장(구름산책로)</strong> - 아름다운 해변과 산책로가 있는 해수욕장입니다.</li>
+            <li><strong>자갈치·BIFF광장(용두산공원)</strong> - 다양한 먹거리와 즐길거리가 있는 장소입니다.</li>
+            <li><strong>부산역 도착</strong> - 다시 여행의 시작점으로 돌아오는 지점입니다.</li>
+          </ul>
+          <iframe src="https://www.youtube.com/embed/XrKqAqGLqEQ" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div id="green-timetable" class="tab-content">
+          <h2>그린라인 시간표</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>정류장</th>
+                <th>1회차</th>
+                <th>2회차</th>
+                <th>3회차</th>
+                <th>4회차</th>
+                <th>5회차</th>
+                <th>6회차</th>
+                <th>7회차</th>
+                <th>8회차</th>
+                <th>9회차</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>부산역 출발</td>
+                <td>09:30</td>
+                <td>10:20</td>
+                <td>11:10</td>
+                <td>12:10</td>
+                <td>13:00</td>
+                <td>13:50</td>
+                <td>14:40</td>
+                <td>15:30</td>
+                <td>16:20</td>
+              </tr>
+              <tr>
+                <td>영도대교(유라리광장)</td>
+                <td>09:38</td>
+                <td>10:28</td>
+                <td>11:18</td>
+                <td>12:18</td>
+                <td>13:08</td>
+                <td>13:58</td>
+                <td>14:48</td>
+                <td>15:38</td>
+                <td>16:28</td>
+              </tr>
+              <tr>
+                <td>흰여울 문화마을</td>
+                <td>09:48</td>
+                <td>10:38</td>
+                <td>11:28</td>
+                <td>12:28</td>
+                <td>13:18</td>
+                <td>14:08</td>
+                <td>14:58</td>
+                <td>15:48</td>
+                <td>16:38</td>
+              </tr>
+              <tr>
+                <td>하늘전망대</td>
+                <td>09:51</td>
+                <td>10:41</td>
+                <td>11:31</td>
+                <td>12:31</td>
+                <td>13:21</td>
+                <td>14:11</td>
+                <td>15:01</td>
+                <td>15:51</td>
+                <td>16:41</td>
+              </tr>
+              <tr>
+                <td>태종대</td>
+                <td>10:05</td>
+                <td>10:55</td>
+                <td>11:45</td>
+                <td>12:45</td>
+                <td>13:35</td>
+                <td>14:25</td>
+                <td>15:15</td>
+                <td>16:05</td>
+                <td>16:55</td>
+              </tr>
+              <tr>
+                <td>국립해양박물관</td>
+                <td>10:12</td>
+                <td>11:02</td>
+                <td>11:52</td>
+                <td>12:52</td>
+                <td>13:42</td>
+                <td>14:32</td>
+                <td>15:22</td>
+                <td>16:12</td>
+                <td>17:02</td>
+              </tr>
+              <tr>
+                <td>오륙도스카이워크</td>
+                <td>10:38</td>
+                <td>11:28</td>
+                <td>12:18</td>
+                <td>13:18</td>
+                <td>14:08</td>
+                <td>14:58</td>
+                <td>15:48</td>
+                <td>16:38</td>
+                <td>17:28</td>
+              </tr>
+              <tr>
+                <td>용호만유람선터미널</td>
+                <td>10:49</td>
+                <td>11:39</td>
+                <td>12:29</td>
+                <td>13:29</td>
+                <td>14:19</td>
+                <td>15:09</td>
+                <td>15:59</td>
+                <td>16:49</td>
+                <td>17:39</td>
+              </tr>
+              <tr>
+                <td>평화공원</td>
+                <td>10:56</td>
+                <td>11:46</td>
+                <td>12:36</td>
+                <td>13:36</td>
+                <td>14:26</td>
+                <td>15:16</td>
+                <td>16:06</td>
+                <td>16:56</td>
+                <td>17:46</td>
+              </tr>
+              <tr>
+                <td>송도해수욕장(구름산책로)</td>
+                <td>11:13</td>
+                <td>12:03</td>
+                <td>12:53</td>
+                <td>13:53</td>
+                <td>14:43</td>
+                <td>15:33</td>
+                <td>16:23</td>
+                <td>17:13</td>
+                <td>18:03</td>
+              </tr>
+              <tr>
+                <td>자갈치·BIFF광장(용두산공원)</td>
+                <td>11:23</td>
+                <td>12:13</td>
+                <td>13:03</td>
+                <td>14:03</td>
+                <td>14:53</td>
+                <td>15:43</td>
+                <td>16:33</td>
+                <td>17:23</td>
+                <td>18:13</td>
+              </tr>
+              <tr>
+                <td>부산역 도착</td>
+                <td>11:40</td>
+                <td>12:30</td>
+                <td>13:20</td>
+                <td>14:20</td>
+                <td>15:10</td>
+                <td>16:00</td>
+                <td>16:50</td>
+                <td>17:40</td>
+                <td>18:30</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="orange" class="main-content" style="display:none;">
+        <div class="tabs">
+          <div class="tab active" onclick="showTabContent('orange-course')">코스정보</div>
+          <div class="tab" onclick="showTabContent('orange-timetable')">시간표</div>
+        </div>
+        <div id="orange-course" class="tab-content active">
+          <h2>오렌지라인 코스정보</h2>
+          <ul>
+            <li><strong>부산역 출발</strong> - 부산의 대표적인 기차역으로, 여행의 시작점입니다.</li>
+            <li><strong>송도해수욕장(송도구름산책로)</strong> - 아름다운 해변과 산책로가 있는 해수욕장입니다.</li>
+            <li><strong>암남공원(용궁구름다리)</strong> - 멋진 전망을 감상할 수 있는 곳입니다.</li>
+            <li><strong>감천문화마을(감천사거리)</strong> - 예술과 문화를 즐길 수 있는 마을입니다.</li>
+            <li><strong>다대포해수욕장(몰운대)</strong> - 아름다운 해변과 일몰을 감상할 수 있는 곳입니다.</li>
+            <li><strong>아미산전망대</strong> - 멋진 전망을 감상할 수 있는 곳입니다.</li>
+            <li><strong>부네치아 장림항</strong> - 이탈리아 베네치아를 연상시키는 아름다운 항구입니다.</li>
+            <li><strong>부산현대미술관(을숙도)</strong> - 현대 미술 작품을 감상할 수 있는 미술관입니다.</li>
+            <li><strong>낙동강하구 에코센타</strong> - 자연과 생태를 배울 수 있는 센터입니다.</li>
+            <li><strong>석당박물관(부산임시수도청사)</strong> - 부산의 역사를 배울 수 있는 박물관입니다.</li>
+            <li><strong>국제시장(보수동책방골목)</strong> - 다양한 상점과 먹거리를 즐길 수 있는 시장입니다.</li>
+            <li><strong>용두산공원(부산근현대역사관)</strong> - 부산의 역사와 문화를 배울 수 있는 공원입니다.</li>
+            <li><strong>부산역 도착</strong> - 다시 여행의 시작점으로 돌아오는 지점입니다.</li>
+          </ul>
+          <iframe src="https://www.youtube.com/embed/4EIGD-03RDU" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div id="orange-timetable" class="tab-content">
+          <h2>오렌지라인 시간표</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>정류장</th>
+                <th>1회차</th>
+                <th>2회차</th>
+                <th>3회차</th>
+                <th>4회차</th>
+                <th>5회차</th>
+                <th>6회차</th>
+                <th>7회차</th>
+                <th>8회차</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>부산역 출발</td>
+                <td>09:20</td>
+                <td>10:20</td>
+                <td>11:20</td>
+                <td>12:20</td>
+                <td>13:20</td>
+                <td>14:20</td>
+                <td>15:20</td>
+                <td>16:20</td>
+              </tr>
+              <tr>
+                <td>송도해수욕장(송도구름산책로)</td>
+                <td>09:43</td>
+                <td>10:43</td>
+                <td>11:43</td>
+                <td>12:43</td>
+                <td>13:43</td>
+                <td>14:43</td>
+                <td>15:43</td>
+                <td>16:43</td>
+              </tr>
+              <tr>
+                <td>암남공원(용궁구름다리)</td>
+                <td>09:50</td>
+                <td>10:50</td>
+                <td>11:50</td>
+                <td>12:50</td>
+                <td>13:50</td>
+                <td>14:50</td>
+                <td>15:50</td>
+                <td>16:50</td>
+              </tr>
+              <tr>
+                <td>감천문화마을(감천사거리)</td>
+                <td>10:01</td>
+                <td>11:01</td>
+                <td>12:01</td>
+                <td>13:01</td>
+                <td>14:01</td>
+                <td>15:01</td>
+                <td>16:01</td>
+                <td>17:01</td>
+              </tr>
+              <tr>
+                <td>다대포해수욕장(몰운대)</td>
+                <td>10:24</td>
+                <td>11:24</td>
+                <td>12:24</td>
+                <td>13:24</td>
+                <td>14:24</td>
+                <td>15:24</td>
+                <td>16:24</td>
+                <td>17:24</td>
+              </tr>
+              <tr>
+                <td>아미산전망대</td>
+                <td>10:32</td>
+                <td>11:32</td>
+                <td>12:32</td>
+                <td>13:32</td>
+                <td>14:32</td>
+                <td>15:32</td>
+                <td>16:32</td>
+                <td>17:32</td>
+              </tr>
+              <tr>
+                <td>부네치아 장림항</td>
+                <td>10:42</td>
+                <td>11:42</td>
+                <td>12:42</td>
+                <td>13:42</td>
+                <td>14:42</td>
+                <td>15:42</td>
+                <td>16:42</td>
+                <td>17:42</td>
+              </tr>
+              <tr>
+                <td>부산현대미술관(을숙도)</td>
+                <td>10:50</td>
+                <td>11:50</td>
+                <td>12:50</td>
+                <td>13:50</td>
+                <td>14:50</td>
+                <td>15:50</td>
+                <td>16:50</td>
+                <td>17:50</td>
+              </tr>
+              <tr>
+                <td>낙동강하구 에코센타</td>
+                <td>10:56</td>
+                <td>11:56</td>
+                <td>12:56</td>
+                <td>13:56</td>
+                <td>14:56</td>
+                <td>15:56</td>
+                <td>16:56</td>
+                <td>17:56</td>
+              </tr>
+              <tr>
+                <td>석당박물관(부산임시수도청사)</td>
+                <td>11:26</td>
+                <td>12:26</td>
+                <td>13:26</td>
+                <td>14:26</td>
+                <td>15:26</td>
+                <td>16:26</td>
+                <td>17:26</td>
+                <td>18:26</td>
+              </tr>
+              <tr>
+                <td>국제시장(보수동책방골목)</td>
+                <td>11:28</td>
+                <td>12:28</td>
+                <td>13:28</td>
+                <td>14:28</td>
+                <td>15:28</td>
+                <td>16:28</td>
+                <td>17:28</td>
+                <td>18:28</td>
+              </tr>
+              <tr>
+                <td>용두산공원(부산근현대역사관)</td>
+                <td>11:29</td>
+                <td>12:29</td>
+                <td>13:29</td>
+                <td>14:29</td>
+                <td>15:29</td>
+                <td>16:29</td>
+                <td>17:29</td>
+                <td>18:29</td>
+              </tr>
+              <tr>
+                <td>부산역 도착</td>
+                <td>11:40</td>
+                <td>12:40</td>
+                <td>13:40</td>
+                <td>14:40</td>
+                <td>15:40</td>
+                <td>16:40</td>
+                <td>17:40</td>
+                <td>18:40</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="fare" class="main-content" style="display:none;">
+        <h2>요금&제휴할인</h2>
+        <h3>부산의 명소들을 편리하게 연결하는 관광 대중교통!</h3>
+        <p>티켓 한 장으로 부티와 함께 떠나는 낭만여행!</p>
+        <h3>요금안내</h3>
+        <h4>순환코스 [레드/그린/ 블루라인/ 오렌지 라인]</h4>
+        <p>
+          레드라인(부산역↔해운대순환), 그린라인(부산역↔태종대), 블루라인(용호만유람선터미널↔해동용궁사), 오렌지라인(부산역↔다대포)
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>레드+그린+오렌지 및 블루 단독요금</th>
+              <th>레드+그린+오렌지 ↔ 블루라인 환승요금</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>대인</td>
+              <td>20,000원</td>
+              <td>+5,000원</td>
+            </tr>
+            <tr>
+              <td>소인(48개월~ 13세)</td>
+              <td>10,000원</td>
+              <td>+3,000원</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          * 처음부터 환승요금까지 전부 결제 가능(대인 20,000원, 소인 11,000원)하며, 단일권만 구매하셔도 추가 환승요금 결제 가능합니다.<br>
+          * 단일권(레드+그린+오렌지)은 순환코스를 해당 코스(3라인) 내에서 별도로 추가요금 없이 승하차 가능합니다.<br>
+          * 단일권(레드+그린+오렌지)에서 블루라인 추가시 대인 5,000원, 소인 3,000원의 환승요금이 청구됩니다.<br>
+          * 단일권으로 블루 단독 이용도 가능합니다. 하지만 레드+블루, 그린+블루, 오렌지+블루는 환승요금이 추가 청구됩니다.<br>
+          * 당일권은 티켓팅 완료된 해당일만 이용이 가능하며, 테마코스(역사, 야경, 이벤트코스)는 제외됩니다.<br>
+          * 요금할인은 제휴혜택 메뉴에서 확인 가능합니다. <a href="#">[제휴혜택 바로보기]</a> 영수증 필히 지참, 미소지시 할인이 불가합니다.
+        </p>
+        <h4>야경투어(브릿지투어)</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>요금</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>대인</td>
+              <td>20,000원</td>
+            </tr>
+            <tr>
+              <td>소인(48개월~ 13세)</td>
+              <td>10,000원</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>* 야경투어는 할인적용 없습니다.</p>
+      </div>
+
+      <div id="template" class="main-content" style="display:none; position: relative;">
+        <h2>템플릿 보기</h2>
+        <button class="download-btn" onclick="downloadPDF()">PDF 다운로드</button>
+        <div id="pdf-viewer"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <th:block th:insert="~{/fragments/footer.html}"></th:block>
+  </footer>
+
+  <script>
+    function showMainContent(contentId, tabId = null) {
+      const contents = document.querySelectorAll('.main-content');
+      contents.forEach(content => content.style.display = 'none');
+      document.getElementById(contentId).style.display = 'block';
+      
+      if (tabId) {
+        showTabContent(tabId);
+      }
+
+      if (contentId === 'template') {
+        showPDF();
+      }
+    }
+
+    function showTabContent(tabId) {
+      const contents = document.querySelectorAll('.tab-content');
+      contents.forEach(content => content.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    function showPDF() {
+      const pdfViewer = document.getElementById('pdf-viewer');
+      pdfViewer.innerHTML = ''; // Clear previous content
+      const url = '/pdf/citytourbusan.pdf';
+
+      pdfjsLib.getDocument(url).promise.then(function(pdf) {
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+          pdf.getPage(pageNum).then(function(page) {
+            const scale = 1.0;
+            const viewport = page.getViewport({ scale: scale });
+            const canvas = document.createElement('canvas');
+            canvas.className = 'pdf-canvas';
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            pdfViewer.appendChild(canvas);
+
+            const renderContext = {
+              canvasContext: context,
+              viewport: viewport
+            };
+            page.render(renderContext);
+          });
+        }
+      });
+    }
+
+    function downloadPDF() {
+      const link = document.createElement('a');
+      link.href = '/pdf/citytourbusan.pdf';
+      link.download = 'citytourbusan.pdf';
+      link.click();
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      showMainContent('home');
+      showTabContent('red-course');
+      showTabContent('green-course');
+      showTabContent('orange-course');
+    });
+  </script>
+</body>
+</html>
