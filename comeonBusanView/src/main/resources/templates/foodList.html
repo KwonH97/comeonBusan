@@ -1,121 +1,168 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js"
-	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-	crossorigin="anonymous"></script>
-		<style>
-  .foodTour-item {
-  	width: 23%;
-  	margin: 1%;
-  	box-sizing: border-box;
-  	float: left;
-  	text-align: center;
-  }
-  .foodTour-title {
-    font-weight: bold;
-    margin: 10px 0;
-  }
-  .foodTour-thumbnail {
-    width: 100%;
-    height: auto;
-  }
-  .pagination {
-    display: flex;
-    justify-content: center;
-    clear: both;
-    margin-top: 20px;
-  }
-  .pagination button {
-    margin: 0 5px;
-    padding: 5px 10px;
-  }
-	</style>	
+<title>맛집 목록</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<style>
+    body.food {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1.food {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    #container-food {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto; /* 가운데 정렬 */
+    }
+
+    .foodTour-item {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+    }
+
+    .foodTour-title {
+        font-weight: bold;
+        margin: 10px 0;
+    }
+
+    .foodTour-thumbnail {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        max-height: 150px; /* 사진 전체 크기 줄이기 */
+    }
+
+    .pagination-food {
+        text-align: center;
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination-food button {
+        margin: 0 5px;
+        padding: 10px 20px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .pagination-food button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .pagination-food button:hover:not(:disabled) {
+        background-color: #0056b3;
+    }
+</style>
 </head>
-<body>
-<h1>맛집 목록</h1>
+<body class="food">
+    <header>
+        <th:block th:insert="~{/fragments/header2.html}"></th:block>
+    </header>
+
+<h1 class="food">맛집 목록</h1>
 <hr>
 
-<div id="container"></div>
-<div class="pagination"></div>
+<div id="container-food"></div>
+<div class="pagination-food"></div>
+<footer>
+    <th:block th:insert="~{/fragments/footer.html}"></th:block>
+</footer>
 
 <script>
+    $(document).ready(function(){
+        const itemsPerPage = 12;
+        let currentPage = 1;
+        let foodData = [];
 
-	$(document).ready(function(){
-		const itemsPerPage = 12;
-		let currentPage = 1;
-		let foodData = [];
-		
-		
-		$.ajax({
-			url: "http://localhost:9002/kibTest/food",
-			method: "GET",
-			success: function(response){
-				foodData = response;
-				console.log(foodData);
-				
-				renderPage(currentPage);
+        $.ajax({
+            url: "http://localhost:9002/kibTest/food",
+            method: "GET",
+            success: function(response){
+                foodData = response;
+                console.log(foodData);
+                
+                renderPage(currentPage);
                 renderPagination(foodData.length, itemsPerPage);
-			},
-			error: function(Error){
-				console.log("Error: " + error);	
-			}
-		});
-		
-		
-		function renderPage(page) {
-        	$('#container').empty();
-        	
-        	const start = (page - 1) * itemsPerPage;
-        	const end = start + itemsPerPage;
-        	const items = foodData.slice(start, end);
-        	
-        	//console.log(item[0].main_img_thumb);
-        	
-        	items.forEach(item => {
-        		const thumbnailSrc = (item.main_img_thumb && item.main_img_thumb !== 'null') ? item.main_img_thumb : 'http://localhost:9002/uploads/restIcon.png';
-        		//const thumbnailSrc = item.main_img_thumb ? item.main_img_thumb : 'imges/restIcon.png';
-        		        		
-        		//src="${item.main_img_thumb}"
-        		const tourItem = `
-        			<div class="foodTour-item">
-        				<div class="foodTour-title">${item.title}</div>
-        				<a href="/foodDetail?uc_seq=${item.uc_SEQ}">
-        					<img class="foodTour-thumbnail" src="${thumbnailSrc}" alt="${item.maintitle}">
-        				</a>
-        			</div>
-        		`;
-        		$('#container').append(tourItem);
-        	});
-        }
-        
-        function renderPagination(totalItems, itemsPerPage) {
-        	$('.pagination').empty();
-        	const totalPages = Math.ceil(totalItems / itemsPerPage);
-        	
-        	const prevButton = `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo;</button>`;
-        	$('.pagination').append(prevButton);
-        	
-        	for(let i = 1; i <= totalPages; i++){
-        		const pageButton = `<button onclick="changePage(${i})" ${i === currentPage ? 'disabled' : ''}>${i}</button>`;
-        		$('.pagination').append(pageButton);
-        	}
-        	
-        	const nextButton = `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disable' : ''}>&raquo;</button>`;
-        	$('.pagination').append(nextButton);
-        }
-        
-        window.changePage = function(page){
-        	if(page < 1 || page > Math.ceil(foodData.length / itemsPerPage)) return;
-        	currentPage = page;
-        	renderPage(currentPage);
-        	renderPagination(foodData.length, itemsPerPage);
-        }
-        
-	});
+            },
+            error: function(error){
+                console.log("Error: " + error); 
+            }
+        });
 
+        function renderPage(page) {
+            $('#container-food').empty();
+            
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const items = foodData.slice(start, end);
+            
+            items.forEach(item => {
+                const thumbnailSrc = (item.main_img_thumb && item.main_img_thumb !== 'null') ? item.main_img_thumb : 'http://localhost:9002/uploads/restIcon.png';
+                const foodItem = `
+                    <div class="foodTour-item">
+                        <div class="foodTour-title">${item.title}</div>
+                        <a href="/foodDetail?uc_seq=${item.uc_SEQ}">
+                            <img class="foodTour-thumbnail" src="${thumbnailSrc}" alt="${item.maintitle}">
+                        </a>
+                    </div>
+                `;
+                $('#container-food').append(foodItem);
+            });
+        }
+
+        function renderPagination(totalItems, itemsPerPage) {
+            $('.pagination-food').empty();
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            
+            const prevButton = `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo;</button>`;
+            $('.pagination-food').append(prevButton);
+            
+            let startPage = Math.max(1, currentPage - 4);
+            let endPage = Math.min(totalPages, currentPage + 5);
+
+            if (currentPage <= 5) {
+                endPage = Math.min(10, totalPages);
+            } else if (currentPage + 4 >= totalPages) {
+                startPage = Math.max(1, totalPages - 9);
+            }
+
+            for(let i = startPage; i <= endPage; i++){
+                const pageButton = `<button onclick="changePage(${i})" ${i === currentPage ? 'disabled' : ''}>${i}</button>`;
+                $('.pagination-food').append(pageButton);
+            }
+            
+            const nextButton = `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>&raquo;</button>`;
+            $('.pagination-food').append(nextButton);
+        }
+
+        window.changePage = function(page){
+            if(page < 1 || page > Math.ceil(foodData.length / itemsPerPage)) return;
+            currentPage = page;
+            renderPage(currentPage);
+            renderPagination(foodData.length, itemsPerPage);
+        }
+    });
 </script>
 </body>
 </html>

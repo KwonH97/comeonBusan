@@ -5,71 +5,72 @@
 <title>Insert title here</title>
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <style>
-	body {
-	
-		font-family: Arial, sans-serif;
-	}
-	
-	h1 {
-	
-		text-align: center;
-	}
-	
-	#container {
-	
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 20px;
-		padding: 20px;
-		
-	}
-	
-	.festival-item{
-		border: 1px solid #ccc;
-		border-radius: 5px;
-		padding: 10px;
-		text-align: center;
-		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-	
-	}
-	
-	.festival-item img {
-		
-		max-width: 100%;
-		height: auto;
-		border-radius: 5px;
-	}
-	
-	.pagination	{
-		
-		text-align: center;
-		margin: 20px 0;
-		
-	}
-	
-	.pagination button {
-		
-		margin: 0 5px;
-		padding: 10px 20px;
-		border: none;
-		background-color: #007bff;
-		color: white;
-		border-radius: 5px;
-		cursor: pointer;
-		
-	}
-	
-	.pagination button:disabled {
-		
-		background-color: #ccc;
-		cursor: not-allowed;
-	}
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    
+    h1 {
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    #container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto; /* 가운데 정렬 */
+    }
+    
+    .festival-item {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .festival-item img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        max-height: 150px; /* 사진 전체 크기 줄이기 */
+    }
+    
+    .pagination {
+        text-align: center;
+        margin: 20px 0;
+    }
+    
+    .pagination button {
+        margin: 0 5px;
+        padding: 10px 20px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .pagination button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+    
+    header, footer {
+        margin: 20px 0; /* 헤더 및 푸터와의 마진 */
+    }
 </style>
 </head>
 <body>
-	<header>
-		<th:block th:insert="~{/fragments/header2.html}"></th:block>
-	</header>
+<header>
+    <th:block th:insert="~{/fragments/header2.html}"></th:block>
+</header>
+
+<h1>부산 축제</h1>
 
 <button class="hiddenButton" style="display: none;" onclick="goAddPage()">등록하기</button>
 
@@ -77,99 +78,87 @@
 <div class="pagination"></div>
 
 <script>
-	$(document).ready(function(){
-		
-		const itemsPerPage = 12;
-		let currentPage = 1;
-		let festivalData = [];
-		
-		$.ajax({
-			url: "http://localhost:9002/khj/festival",
-			type: 'GET',
-			success: function(response){
-				console.log("응답: ", response);
-				console.log(response[0].title);
-				
-				festivalData = response;
-				console.log(festivalData.length);
-				renderPage(currentPage);
-				renderPagination(festivalData.length, itemsPerPage);
-				
-			},
-			error: function(xhr, status, error){
-				console.error("Error: " + error);
-			}
-		});
-		
-		var authValue = localStorage
-		.getItem("Authorization");
-		if (authValue != null) {
-		$(".hiddenButton").css("display", "block");
-		}
-		
-		function renderPage(page){
-			
-			$('#container').empty();
-			
-			const start = (page - 1) * itemsPerPage;
-			const end = start + itemsPerPage;
-			const items = festivalData.slice(start, end);
-			
-			console.log(items); // 12개
-			
-		
-			
-			items.forEach(item => {
+    $(document).ready(function(){
+        const itemsPerPage = 12;
+        let currentPage = 1;
+        let festivalData = [];
 
-				
-				const festivalItem = `
-					<div class="festival-item">
-						<a href="/festivalDetail?uc_seq=${item.ucSeq}">
-						<img class="festival-thumbnail" src="${item.mainImgThumb}" alt="${item.title}">
-						</a>
-						<div class="tour-title">${item.title}</div>
-					</div>
-				`;
-				
-				
-				$('#container').append(festivalItem);
-				
-			});
-		}
-		
+        $.ajax({
+            url: "http://localhost:9002/khj/festival",
+            type: 'GET',
+            success: function(response){
+                console.log("응답: ", response);
+                console.log(response[0].title);
+                
+                festivalData = response;
+                console.log(festivalData.length);
+                renderPage(currentPage);
+                renderPagination(festivalData.length, itemsPerPage);
+                
+            },
+            error: function(xhr, status, error){
+                console.error("Error: " + error);
+            }
+        });
+
+        var authValue = localStorage.getItem("Authorization");
+        if (authValue != null) {
+            $(".hiddenButton").css("display", "block");
+        }
+
+        function renderPage(page){
+            $('#container').empty();
+            
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const items = festivalData.slice(start, end);
+            
+            items.forEach(item => {
+                const festivalItem = `
+                    <div class="festival-item">
+                        <a href="/festivalDetail?uc_seq=${item.ucSeq}">
+                            <img class="festival-thumbnail" src="${item.mainImgThumb}" alt="${item.title}">
+                        </a>
+                        <div class="tour-title">${item.title}</div>
+                    </div>
+                `;
+                
+                $('#container').append(festivalItem);
+            });
+        }
+
         function renderPagination(totalItems, itemsPerPage) {
-        	$('.pagination').empty();
-        	const totalPages = Math.ceil(totalItems / itemsPerPage);
-        	
-        	const prevButton = `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo;</button>`;
-        	$('.pagination').append(prevButton);
-        	
-        	for(let i = 1; i <= totalPages; i++){
-        		const pageButton = `<button onclick="changePage(${i})" ${i === currentPage ? 'disabled' : ''}>${i}</button>`;
-        		$('.pagination').append(pageButton);
-        	}
-        	
-        	const nextButton = `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disable' : ''}>&raquo;</button>`;
-        	$('.pagination').append(nextButton);
+            $('.pagination').empty();
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            
+            const prevButton = `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo;</button>`;
+            $('.pagination').append(prevButton);
+            
+            for(let i = 1; i <= totalPages; i++){
+                const pageButton = `<button onclick="changePage(${i})" ${i === currentPage ? 'disabled' : ''}>${i}</button>`;
+                $('.pagination').append(pageButton);
+            }
+            
+            const nextButton = `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>&raquo;</button>`;
+            $('.pagination').append(nextButton);
         }
-        
+
         window.changePage = function(page){
-        	if(page < 1 || page > Math.ceil(festivalData.length / itemsPerPage)) return;
-        	currentPage = page;
-        	renderPage(currentPage);
-        	renderPagination(festivalData.length, itemsPerPage);
+            if(page < 1 || page > Math.ceil(festivalData.length / itemsPerPage)) return;
+            currentPage = page;
+            renderPage(currentPage);
+            renderPagination(festivalData.length, itemsPerPage);
         }
-	});
-	
-	function goAddPage(){
-		
-		window.location.href="/festivalAdd";
-		
-	}
+    });
+
+    function goAddPage(){
+        window.location.href="/festivalAdd";
+    }
 </script>
+
 <footer>
-		<th:block th:insert="~{/fragments/footer.html}"></th:block>
-	</footer>
+    <th:block th:insert="~{/fragments/footer.html}"></th:block>
+</footer>
 
 </body>
 </html>

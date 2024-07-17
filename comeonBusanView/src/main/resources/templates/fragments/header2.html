@@ -103,6 +103,8 @@ header {
     width: 100%;
     padding: 10px 0;
     background-color: #f9f9f9;
+    display: flex;  /* 추가: 네비게이션 바에 flex 적용 */
+    justify-content: center;  /* 추가: 콘텐츠를 가운데 정렬 */
 }
 
 .nav ul {
@@ -152,7 +154,7 @@ header {
         <div class="head">
             <div class="head-top">
                 <div class="logo">
-                    <img src="/img/busan.png" alt="Logo">
+                    <a href="/main"><img src="/img/busan.png" alt="Logo"></a>
                 </div>
                 <h1 class="title">온 나 부 산</h1>
                 <div class="search-bar">

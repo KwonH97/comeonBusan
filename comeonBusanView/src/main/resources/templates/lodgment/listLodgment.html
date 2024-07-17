@@ -6,9 +6,66 @@
 <script src="/js/common.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <style>
-.pagination button.active {
-    font-weight: bold;
-}
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    #data {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto; /* 가운데 정렬 */
+    }
+
+    .lodgment-item {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        text-align: center; /* 중앙 정렬 */
+    }
+
+    .pagination {
+        text-align: center;
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination button {
+        margin: 0 5px;
+        padding: 10px 20px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    .pagination button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .pagination button:hover:not(:disabled) {
+        background-color: #0056b3;
+    }
+
+    .pagination button.active {
+        font-weight: bold;
+    }
 </style>
 </head>
 <body>
@@ -20,10 +77,12 @@
     </div>
     <div id="data"></div>
     <div id="pagination" class="pagination"></div>
-</body>
+    <footer>
+        <th:block th:insert="~{/fragments/footer.html}"></th:block>
+    </footer>
 
 <script>
-    const pageSize = 10;
+    const pageSize = 12; // 한 페이지에 표시할 아이템 수
     let currentGroup = 0;
     const pagesPerGroup = 10;
 
@@ -136,4 +195,6 @@
         loadPage(0);  // Load the first page initially
     });
 </script>
+</body>
 </html>
+
