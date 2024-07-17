@@ -7,6 +7,10 @@
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
 <style>
+
+
+
+
 </style>
 </head>
 <body>
@@ -72,7 +76,7 @@
 						id="usage_day_week_and_time" placeholder="운영 및 시간">
 					<br>
 					<li>축제 시작일</li>
-					<input type="date" value="2024-01-01" name="start_date"
+					<input type="date" name="start_date"
 						id="start_date" />
 					<li>~ 축제 종료일</li>
 					<input type="date" name="end_date" id="end_date" />
@@ -99,10 +103,10 @@
 					<br>
 					<br>
 					<li>경도</li>
-					<input type="text" name="lat" id="lat" placeholder="경도">
+					<input type="text" name="lat" id="lat" placeholder="경도" required>
 					<br>
 					<li>위도</li>
-					<input type="text" name="lng" id="lng" placeholder="위도">
+					<input type="text" name="lng" id="lng" placeholder="위도" required>
 					<br>
 					<input type="submit" value="수정하기">
 					<button type="button" value="뒤로가기" onclick="window.location.href = document.referrer;">뒤로가기</button>
