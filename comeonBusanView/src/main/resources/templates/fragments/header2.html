@@ -103,8 +103,8 @@ header {
     width: 100%;
     padding: 10px 0;
     background-color: #f9f9f9;
-    display: flex;  /* 추가: 네비게이션 바에 flex 적용 */
-    justify-content: center;  /* 추가: 콘텐츠를 가운데 정렬 */
+    display: flex;
+    justify-content: center;
 }
 
 .nav ul {
@@ -114,6 +114,10 @@ header {
     list-style: none;
     margin: 0;
     padding: 0;
+}
+
+.nav ul li {
+    position: relative; /* 드롭다운을 위한 상대 위치 */
 }
 
 .nav ul li a {
@@ -126,6 +130,27 @@ header {
 }
 
 .nav ul li a:hover {
+    background-color: #007BFF;
+    color: white;
+}
+
+.nav ul .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #f9f9f9;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.nav ul .dropdown a {
+    display: block;
+    padding: 10px 15px;
+    white-space: nowrap;
+}
+
+.nav ul .dropdown a:hover {
     background-color: #007BFF;
     color: white;
 }
@@ -180,8 +205,15 @@ header {
                     <li><a href="/festivalList">✨축제·행사</a></li>
                     <li><a href="/recommand">🔎AI코스추천</a></li>
                     <li><a href="/cityTour">🚌시티투어</a></li>
-                    <li><a href="/showTheWay">📝관광지도 · 길찾기</a></li>
-                    <li><a href="/dangerArea">🆘안전지도</a></li>
+                    <li>
+                        <a href="" onmouseover="showDropdown()">📝관광지도 · 길찾기</a>
+                        <div class="dropdown" onmouseleave="hideDropdown()">
+                            <a href="/showTheWay">길찾기</a>
+                            <a href="/roadView">로드뷰</a>
+                            <a href="/dangerArea">위험안내지도</a>
+                        </div>
+                    </li>
+                  
                 </ul>
             </div>
         </div>
@@ -232,7 +264,13 @@ header {
             }, 200);
         }
 
-        
+        function showDropdown() {
+            document.querySelector('.dropdown').style.display = 'block';
+        }
+
+        function hideDropdown() {
+            document.querySelector('.dropdown').style.display = 'none';
+        }
     </script>
 </body>
 </html>
