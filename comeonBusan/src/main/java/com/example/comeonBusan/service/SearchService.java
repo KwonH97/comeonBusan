@@ -106,7 +106,7 @@ public class SearchService {
         for (TourList tourList : tourLists) {
             SearchResult result = new SearchResult();
             result.setType("TourList");
-            result.setName(tourList.getMaintitle());
+            result.setName(tourList.getTitle());
             result.setDescription(tourList.getMain_img_thumb());
             results.add(result);
         }
