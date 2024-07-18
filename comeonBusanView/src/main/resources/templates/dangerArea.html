@@ -223,9 +223,17 @@
                 details.style.display = 'none';
             }
         }
+        
+        function loadDangerAreaAPI(){
+        	
+        	const script = document.createElement('script');
+        	script.src = '/proxy/dangerArea-api?callback=initMap';
+        	script.defer = true;
+        	document.head.appendChild(script);
+        }
     </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU&callback=initMap">
+    <script>
+    document.addEventListener('DOMContentLoaded', loadDangerAreaAPI);
     </script>
 </body>
 </html>

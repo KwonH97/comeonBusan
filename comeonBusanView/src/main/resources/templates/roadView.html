@@ -186,6 +186,13 @@ function processStreetViewData(data, status, latLng) {
 }
 
 window.initialize = initialize;
+
+function loadGoogleMapsAPI(){
+	const script = document.createElement('script');
+	script.src = '/proxy/maps-api?callback=initialize&libraries=places&v=weekly';
+	script.defer = true;
+	document.head.appendChild(script);
+}
 </script>
 </head>
 <body class="custom-body">
@@ -201,6 +208,8 @@ window.initialize = initialize;
     <footer>
         <th:block th:insert="~{/fragments/footer.html}"></th:block>
     </footer>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU&callback=initialize&libraries=places&v=weekly" defer></script>
-</body>
+    <script>
+    document.addEventListener('DOMContentLoaded', loadGoogleMapsAPI);
+    </script>
+    </body>
 </html>
