@@ -4,183 +4,203 @@
 <meta charset="utf-8">
 <title>Street View와 지도 통합</title>
 <style>
-html, body {
-	height: 100%;
-	margin: 0;
-	padding: 0;
+.custom-html, .custom-body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
 }
 
-#map {
-	height: 100%;
-	width: 100%;
+.custom-map-container {
+    height: 60%;
+    width: 60%;
+    margin: 40px auto;
+    position: relative;
 }
 
-#pano {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	height: 50%;
-	width: 50%;
-	z-index: 1;
-	border: 2px solid black;
-	border-radius: 8px;
-	background: white;
+.custom-map {
+    height: 100%;
+    width: 100%;
 }
 
-#pac-input {
-	background-color: #fff;
-	font-family: Roboto;
-	font-size: 15px;
-	font-weight: 300;
-	margin-top: 10px;
-	margin-left: 12px;
-	padding: 0 11px 0 13px;
-	text-overflow: ellipsis;
-	width: 300px;
-	height: 40px;
+.custom-pano {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    height: 40%;
+    width: 40%;
+    z-index: 1;
+    border: 2px solid black;
+    border-radius: 8px;
+    background: white;
+    display: none;
 }
 
-#pac-input:focus {
-	border-color: #4d90fe;
+.custom-pac-input {
+    background-color: #fff;
+    font-family: Roboto;
+    font-size: 15px;
+    font-weight: 300;
+    margin-top: 10px;
+    margin-left: 12px;
+    padding: 0 11px 0 13px;
+    text-overflow: ellipsis;
+    width: 300px;
+    height: 40px;
 }
 
-#search-button {
-	height: 40px;
-	margin-left: 12px;
-	margin-top: 10px;
-	padding: 0 11px;
-	font-size: 15px;
-	cursor: pointer;
+.custom-pac-input:focus {
+    border-color: #4d90fe;
+}
+
+.custom-search-button {
+    height: 40px;
+    margin-left: 12px;
+    margin-top: 10px;
+    padding: 0 11px;
+    font-size: 15px;
+    cursor: pointer;
 }
 </style>
 <script>
-        let map, panorama, streetViewService, searchBox;
+let map, panorama, streetViewService, searchBox, streetViewMarker;
 
-        function initialize() {
-            const busan = { lat: 35.1796, lng: 129.0756 }; // 부산 중심 좌표
-            map = new google.maps.Map(document.getElementById("map"), {
-                center: busan,
-                zoom: 12,
-                mapTypeId: "roadmap",
-            });
+function initialize() {
+    const busan = { lat: 35.1796, lng: 129.0756 }; // 부산 중심 좌표
+    map = new google.maps.Map(document.getElementById("map"), {
+        center: busan,
+        zoom: 12,
+        mapTypeId: "roadmap",
+    });
 
-            panorama = new google.maps.StreetViewPanorama(
-                document.getElementById("pano"),
-                {
-                    pov: {
-                        heading: 34,
-                        pitch: 10,
-                    },
-                }
-            );
-
-            streetViewService = new google.maps.StreetViewService();
-
-            map.addListener("click", (event) => {
-                getStreetView(event.latLng);
-            });
-
-            const streetViewLayer = new google.maps.StreetViewCoverageLayer();
-            streetViewLayer.setMap(map);
-
-            const input = document.getElementById("pac-input");
-            searchBox = new google.maps.places.SearchBox(input);
-            map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-            map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById("search-button"));
-
-            map.addListener("bounds_changed", () => {
-                searchBox.setBounds(map.getBounds());
-            });
-
-            let markers = [];
-            searchBox.addListener("places_changed", () => {
-                searchPlaces(markers);
-            });
-
-            document.getElementById("search-button").addEventListener("click", () => {
-                const event = new Event('places_changed');
-                searchBox.input.dispatchEvent(event);
-            });
+    panorama = new google.maps.StreetViewPanorama(
+        document.getElementById("pano"),
+        {
+            pov: {
+                heading: 34,
+                pitch: 10,
+            },
         }
+    );
 
-        function searchPlaces(markers) {
-            const places = searchBox.getPlaces();
-            if (places.length == 0) {
-                return;
-            }
-            markers.forEach((marker) => {
-                marker.setMap(null);
-            });
-            markers = [];
-            const bounds = new google.maps.LatLngBounds();
-            places.forEach((place) => {
-                if (!place.geometry || !place.geometry.location) {
-                    console.log("Returned place contains no geometry");
-                    return;
-                }
-                const icon = {
-                    url: place.icon,
-                    size: new google.maps.Size(71, 71),
-                    origin: new google.maps.Point(0, 0),
-                    anchor: new google.maps.Point(17, 34),
-                    scaledSize: new google.maps.Size(25, 25),
-                };
-                const marker = new google.maps.Marker({
-                    map,
-                    icon,
-                    title: place.name,
-                    position: place.geometry.location,
-                });
-                marker.addListener('click', () => {
-                    getStreetView(place.geometry.location);
-                });
-                markers.push(marker);
-                if (place.geometry.viewport) {
-                    bounds.union(place.geometry.viewport);
-                } else {
-                    bounds.extend(place.geometry.location);
-                }
-            });
-            map.fitBounds(bounds);
+    streetViewService = new google.maps.StreetViewService();
+
+    map.addListener("click", (event) => {
+        getStreetView(event.latLng);
+    });
+
+    const streetViewLayer = new google.maps.StreetViewCoverageLayer();
+    streetViewLayer.setMap(map);
+
+    const input = document.getElementById("pac-input");
+    searchBox = new google.maps.places.SearchBox(input);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById("search-button"));
+
+    map.addListener("bounds_changed", () => {
+        searchBox.setBounds(map.getBounds());
+    });
+
+    let markers = [];
+    searchBox.addListener("places_changed", () => {
+        searchPlaces(markers);
+    });
+
+    document.getElementById("search-button").addEventListener("click", () => {
+        const event = new Event('places_changed');
+        searchBox.input.dispatchEvent(event);
+    });
+
+    streetViewMarker = new google.maps.Marker({
+        map: map,
+        icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+        visible: false
+    });
+}
+
+function searchPlaces(markers) {
+    const places = searchBox.getPlaces();
+    if (places.length == 0) {
+        return;
+    }
+    markers.forEach((marker) => {
+        marker.setMap(null);
+    });
+    markers = [];
+    const bounds = new google.maps.LatLngBounds();
+    places.forEach((place) => {
+        if (!place.geometry || !place.geometry.location) {
+            console.log("Returned place contains no geometry");
+            return;
         }
-
-        function getStreetView(latLng) {
-            streetViewService.getPanorama({
-                location: latLng,
-                radius: 50,
-            }, processStreetViewData);
+        const icon = {
+            url: place.icon,
+            size: new google.maps.Size(71, 71),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(17, 34),
+            scaledSize: new google.maps.Size(25, 25),
+        };
+        const marker = new google.maps.Marker({
+            map,
+            icon,
+            title: place.name,
+            position: place.geometry.location,
+        });
+        marker.addListener('click', () => {
+            getStreetView(place.geometry.location);
+        });
+        markers.push(marker);
+        if (place.geometry.viewport) {
+            bounds.union(place.geometry.viewport);
+        } else {
+            bounds.extend(place.geometry.location);
         }
+    });
+    map.fitBounds(bounds);
+}
 
-        function processStreetViewData(data, status) {
-            if (status === "OK") {
-                panorama.setPosition(data.location.latLng);
-                panorama.setPov({
-                    heading: 34,
-                    pitch: 10,
-                });
-                panorama.setVisible(true);
-            } else {
-                alert("스트리트 뷰가 없는 장소 입니다.");
-            }
-        }
+function getStreetView(latLng) {
+    streetViewService.getPanorama({
+        location: latLng,
+        radius: 50,
+    }, (data, status) => processStreetViewData(data, status, latLng));
+}
 
-        window.initialize = initialize;
-    </script>
+function processStreetViewData(data, status, latLng) {
+    if (status === "OK") {
+        document.getElementById("pano").style.display = "block";
+        panorama.setPosition(data.location.latLng);
+        panorama.setPov({
+            heading: 34,
+            pitch: 10,
+        });
+        panorama.setVisible(true);
+
+        streetViewMarker.setPosition(latLng);
+        streetViewMarker.setVisible(true);
+    } else {
+        alert("스트리트 뷰가 없는 장소 입니다.");
+        document.getElementById("pano").style.display = "none";
+        streetViewMarker.setVisible(false);
+    }
+}
+
+window.initialize = initialize;
+</script>
 </head>
-<body>
-	<header>
-		<th:block th:insert="~{/fragments/header2.html}"></th:block>
-	</header>
-	<input id="pac-input" class="controls" type="text"
-		placeholder="원하는 장소를 입력하세요." />
-	<button id="search-button">검색</button>
-	<div id="map"></div>
-	<div id="pano"></div>
-	<script
-		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU&callback=initialize&libraries=places&v=weekly"
-		defer></script>
-	<footer>
-		<th:block th:insert="~{/fragments/footer.html}"></th:block>
-	</footer>
+<body class="custom-body">
+    <header>
+        <th:block th:insert="~{/fragments/header2.html}"></th:block>
+    </header>
+    <input id="pac-input" class="custom-pac-input" type="text" placeholder="원하는 장소를 입력하세요." />
+    <button id="search-button" class="custom-search-button">검색</button>
+    <div class="custom-map-container">
+        <div id="map" class="custom-map"></div>
+        <div id="pano" class="custom-pano"></div>
+    </div>
+    <footer>
+        <th:block th:insert="~{/fragments/footer.html}"></th:block>
+    </footer>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU&callback=initialize&libraries=places&v=weekly" defer></script>
 </body>
 </html>
