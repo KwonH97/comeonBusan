@@ -6,7 +6,9 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
 <body>
-
+<header>
+        <th:block th:insert="~{/fragments/header2.html}"></th:block>
+</header>
 <h1>공지</h1>
 <button class="hiddenButton" style="display: none;" id="addButton" onclick="goAddPage(event)">등록하기</button>
 <table border="1">
