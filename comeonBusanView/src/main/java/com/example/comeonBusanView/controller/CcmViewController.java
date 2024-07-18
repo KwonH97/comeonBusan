@@ -18,9 +18,7 @@ public class CcmViewController {
 	@Value("${weather.api.key}")
 	private String weatherApiKey;
 	
-	@Value("${dangerArea.api.key}")
-	private String dangerAreaApikey;
-	
+	// ComeonBusanViewApplication.java 에서 RestTemplate 빈으로 등록시켜야 에러안남
 	private final RestTemplate restTemplate;
 
 	public CcmViewController(RestTemplate restTemplate) {
@@ -28,11 +26,7 @@ public class CcmViewController {
 		this.restTemplate = restTemplate;
 	}
 	
-    @GetMapping("/weather")
-    public String loadWeather() {
-        return "weather";
-    }
-    
+	// 날씨
 	@GetMapping("/proxy/weather-api")
 	public ResponseEntity<String> proxyWeatherApi(@RequestParam Map<String, String> params) {
 
@@ -43,7 +37,23 @@ public class CcmViewController {
 		return restTemplate.getForEntity(url.toString(), String.class);
 
 	}
+	
+	// 지도
+    @GetMapping("/proxy/maps-api")
+	public ResponseEntity<String> proxyMapsApi(@RequestParam Map<String, String> params) {
+		StringBuilder url = new StringBuilder("https://maps.googleapis.com/maps/api/js?key=" + googleMapsApiKey);
+		for (Map.Entry<String, String> entry : params.entrySet()) {
+			url.append("&").append(entry.getKey()).append("=").append(entry.getValue());
+		}
+		return restTemplate.getForEntity(url.toString(), String.class);
+	}
     
+	
+    @GetMapping("/weather")
+    public String loadWeather() {
+        return "weather";
+    }
+       
     @GetMapping("/showMap")
     public String showMap() {
         return "mapTest";
@@ -58,26 +68,6 @@ public class CcmViewController {
     public String roadView() {
         return "roadView";
     }
-    
-    @GetMapping("/proxy/maps-api")
-	public ResponseEntity<String> proxyMapsApi(@RequestParam Map<String, String> params) {
-		StringBuilder url = new StringBuilder("https://maps.googleapis.com/maps/api/js?key=" + googleMapsApiKey);
-		for (Map.Entry<String, String> entry : params.entrySet()) {
-			url.append("&").append(entry.getKey()).append("=").append(entry.getValue());
-		}
-		return restTemplate.getForEntity(url.toString(), String.class);
-	}
-
-	/*
-	 * @GetMapping("/proxy/places-api") public ResponseEntity<String>
-	 * proxyPlacesApi(@RequestParam Map<String, String> params) { StringBuilder url
-	 * = new StringBuilder(
-	 * "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=" +
-	 * googleMapsApiKey); for (Map.Entry<String, String> entry : params.entrySet())
-	 * {
-	 * url.append("&").append(entry.getKey()).append("=").append(entry.getValue());
-	 * } return restTemplate.getForEntity(url.toString(), String.class); }
-	 */
     
     @GetMapping("/rainInfo")
     public String rainInfo() {
@@ -98,16 +88,6 @@ public class CcmViewController {
     public String dangerArea() {
         return "dangerArea";
     }
-    
-    @GetMapping("/proxy/dangerArea-api")
-	public ResponseEntity<String> proxyDangerAreaApi(@RequestParam Map<String, String> params) {
-		StringBuilder url = new StringBuilder("https://maps.googleapis.com/maps/api/js?key=" + dangerAreaApikey);
-		for (Map.Entry<String, String> entry : params.entrySet()) {
-			url.append("&").append(entry.getKey()).append("=").append(entry.getValue());
-		}
-		return restTemplate.getForEntity(url.toString(), String.class);
-	}
-    
     
     @GetMapping("/safeArea")
     public String safeArea() {

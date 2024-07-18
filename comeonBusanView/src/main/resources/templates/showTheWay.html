@@ -413,10 +413,19 @@
         $('#busan-directions-panel').hide();
         startSelected = false;
     }
+    
+    function googleMapAPI(){
+    	 const script = document.createElement('script');
+    	 script.src= '/proxy/maps-api?callback=initMap&libraries=places';
+    	 script.defer = true;
+    	 document.head.appendChild(script);
+    }
 
     window.initMap = initMap;
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU&callback=initMap&libraries=places" defer></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', googleMapAPI);
+	</script>
 </body>
 </html>
 

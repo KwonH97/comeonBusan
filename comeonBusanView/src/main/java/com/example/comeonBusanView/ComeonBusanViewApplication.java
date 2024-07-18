@@ -12,7 +12,6 @@ public class ComeonBusanViewApplication {
 		SpringApplication.run(ComeonBusanViewApplication.class, args);
 	}
 	
-	
 	@Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
