@@ -7,79 +7,134 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .busan-content {
-    		flex-grow: 1;
-   			 display: flex;
-    		flex-direction: column;
-    		padding-bottom: 40px; /* 전체 컨텐츠 영역의 하단 패딩 추가 */
-}
-        .busan-map-container {
-            height: 500px;
-            width: 100%;
-            margin-top: 20px;
-        }
-        .busan-map {
+        .custom-body, .custom-html {
             height: 100%;
-            width: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #e6f3ff;
         }
-        .busan-info-container {
-            flex-grow: 1;
+        .custom-container-fluid {
+            height: calc(100vh - 56px);
+            padding: 20px;
             display: flex;
-            margin-top: 20px;
-        }
-        .busan-list-section {
-            flex: 1;
-            margin: 0 10px;
-        }
-        .busan-arrow {
-            display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 2em;
+        }
+        .custom-content-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1400px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .custom-controls-container {
+            width: 250px;
+            padding: 20px;
+            background-color: #1e90ff;
+            color: white;
+        }
+        .custom-map-container {
+            flex-grow: 1;
+            height: calc(100vh - 96px);
+        }
+        #busan-map {
+            width: 100%;
+            height: 100%;
+        }
+        #busan-directions-panel {
+            width: 300px;
+            padding: 20px;
+            background-color: #f0f8ff;
+        }
+        .custom-form-control, .custom-form-select {
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        .custom-btn {
+            width: 100%;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        .custom-btn-primary {
+            background-color: #00a8e8;
+        }
+        .custom-btn-secondary {
+            background-color: #3d5a80;
+        }
+        .custom-h3 {
+            color: white;
+            border-bottom: 2px solid white;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .gm-style-iw {
+            max-width: 300px !important;
+            max-height: 400px !important;
+        }
+        .gm-style-iw-d {
+            overflow: hidden !important;
         }
         .busan-card {
-            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            width: 100%;
         }
         .busan-card-img {
-            max-height: 200px;
+            width: 100%;
+            max-width: 200px;
+            max-height: 150px;
             object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .busan-card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            text-align: center;
+        }
+        .busan-card-title {
+            margin: 10px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .busan-card-text {
+            margin-bottom: 10px;
+        }
+        .busan-card-button {
+            width: 80%;
+            margin: 5px 0;
         }
     </style>
 </head>
-<body>
+<body class="custom-body">
     <header>
         <th:block th:insert="~{/fragments/header2.html}"></th:block>
     </header>
     
-    <div class="container busan-content">
-        <div class="busan-map-container">
-            <div id="busan-map" class="busan-map"></div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <input id="busan-start" type="text" placeholder="출발지" class="form-control mb-2">
-                <input id="busan-end" type="text" placeholder="도착지" class="form-control mb-2">
-                <select id="busan-mode" class="form-select mb-2">
-                    <option value="DRIVING">자동차</option>
+    <div class="custom-container-fluid">
+        <div class="custom-content-wrapper">
+            <div class="custom-controls-container">
+                <h3 class="custom-h3">경로 찾기</h3>
+                <input id="busan-start" type="text" placeholder="출발지" class="form-control custom-form-control">
+                <input id="busan-end" type="text" placeholder="도착지" class="form-control custom-form-control">
+                <select id="busan-mode" class="form-select custom-form-select">
                     <option value="TRANSIT">대중교통</option>
-                    <option value="WALKING">도보</option>
                 </select>
-                <button onclick="calculateAndDisplayRoute()" class="btn btn-primary">경로 찾기</button>
-                <button onclick="resetRoute()" class="btn btn-secondary">경로 초기화</button>
+                <button onclick="calculateAndDisplayRoute()" class="btn custom-btn custom-btn-primary">경로 찾기</button>
+                <button onclick="resetRoute()" class="btn custom-btn custom-btn-secondary">경로 초기화</button>
             </div>
-            <div class="col-md-6">
-                <div id="busan-directions-panel"></div>
+            <div class="custom-map-container">
+                <div id="busan-map"></div>
             </div>
-        </div>
-        <div class="busan-info-container">
-            <div id="busan-start-list" class="busan-list-section"></div>
-            <div id="busan-arrow" class="busan-arrow"></div>
-            <div id="busan-end-list" class="busan-list-section"></div>
+            <div id="busan-directions-panel" style="display: none;"></div>
         </div>
     </div>
 
@@ -98,6 +153,7 @@
     let directionsService;
     let directionsRenderer;
     let startSelected = false;
+    let infoWindow;
 
     function initMap() {
         const busan = { lat: 35.1796, lng: 129.0756 };
@@ -106,14 +162,13 @@
             zoom: 12,
         });
 
-        const trafficLayer = new google.maps.TrafficLayer();
-        trafficLayer.setMap(map);
-
         directionsService = new google.maps.DirectionsService();
         directionsRenderer = new google.maps.DirectionsRenderer({
             map: map,
-            panel: document.getElementById('busan-directions-panel')
+            panel: null
         });
+
+        infoWindow = new google.maps.InfoWindow();
 
         loadLodgments();
         loadFoodData();
@@ -126,9 +181,10 @@
             type: 'GET',
             data: {
                 page: 1,
-                size: 50
+                size: 100
             },
             success: function(response) {
+                console.log("Lodgment data loaded:", response);
                 allData.lodgment = response.content;
                 response.content.forEach(item => {
                     if (item.위도 && item.경도) {
@@ -147,6 +203,7 @@
             url: "http://localhost:9002/kibTest/food",
             method: "GET",
             success: function(response) {
+                console.log("Food data loaded:", response);
                 allData.food = response;
                 response.forEach(item => {
                     if (item.lat && item.lng) {
@@ -165,6 +222,7 @@
             url: "http://localhost:9002/kibTest/tourList",
             type: 'GET',
             success: function(response) {
+                console.log("Tour data loaded:", response);
                 allData.tour = response;
                 response.forEach(item => {
                     if (item.lat && item.lng) {
@@ -183,9 +241,11 @@
         if (type === 'lodgment') {
             position = new google.maps.LatLng(item.위도, item.경도);
         } else {
-            position = new google.maps.LatLng(item.lat, item.lng);
+            position = new google.maps.LatLng(parseFloat(item.lat), parseFloat(item.lng));
         }
         
+        console.log(`Adding marker for ${type}:`, position);
+
         const marker = new google.maps.Marker({
             position: position,
             map: map,
@@ -193,7 +253,7 @@
         });
 
         marker.addListener('click', () => {
-            showInfo(item, type);
+            showInfo(item, type, marker);
         });
 
         markers.push(marker);
@@ -212,50 +272,53 @@
         }
     }
 
-    function showInfo(item, type) {
+    function showInfo(item, type, marker) {
         let content = '';
+        let name, lat, lng;
+        
         if (type === 'lodgment') {
+            name = item.업체명;
+            lat = item.위도;
+            lng = item.경도;
             content = `
                 <div class="busan-card card">
-                    <div class="card-body">
-                        <h5 class="card-title">${item.업체명}</h5>
-                        <p class="card-text">${item.카테고리명}</p>
-                        <p class="card-text">주소: ${item.시도명} ${item.시군구명} ${item.읍면동명} ${item.리명} ${item.번지}</p>
-                        <p class="card-text">전화번호: ${item.전화번호}</p>
+                    <div class="busan-card-body">
+                        <h5 class="busan-card-title">${name}</h5>
+                        <button onclick="selectLocation('start', '${name} (${lat}, ${lng})')" class="btn btn-primary btn-sm busan-card-button">출발지로 선택</button>
+                        <button onclick="selectLocation('end', '${name} (${lat}, ${lng})')" class="btn btn-secondary btn-sm busan-card-button">도착지로 선택</button>
                     </div>
                 </div>
             `;
         } else if (type === 'food' || type === 'tour') {
+            name = item.main_title || item.maintitle || item.place || '이름 없음';
+            lat = item.lat;
+            lng = item.lng;
             content = `
                 <div class="busan-card card">
-                    <img src="${item.main_img_thumb}" class="card-img-top busan-card-img" alt="${item.maintitle}">
-                    <div class="card-body">
-                        <h5 class="card-title">${item.title}</h5>
-                        <p class="card-text">${item.maintitle}</p>
+                    <img src="${item.main_img_thumb || '#'}" class="busan-card-img" alt="${name}">
+                    <div class="busan-card-body">
+                        <h5 class="busan-card-title">${name}</h5>
+                        <button onclick="selectLocation('start', '${name} (${lat}, ${lng})')" class="btn btn-primary btn-sm busan-card-button">출발지로 선택</button>
+                        <button onclick="selectLocation('end', '${name} (${lat}, ${lng})')" class="btn btn-secondary btn-sm busan-card-button">도착지로 선택</button>
                     </div>
                 </div>
             `;
         }
 
-        if (!startSelected) {
-            content += `<button onclick="selectStart('${type}', ${item.id})" class="btn btn-primary">출발지로 선택</button>`;
-            $('#busan-start-list').html(content);
+        console.log(`Showing info for ${type}:`, item);
+
+        infoWindow.setContent(content);
+        infoWindow.open(map, marker);
+    }
+
+    function selectLocation(type, info) {
+        if (type === 'start') {
+            document.getElementById('busan-start').value = info;
+            startSelected = true;
         } else {
-            content += `<button onclick="selectEnd('${type}', ${item.id})" class="btn btn-primary">도착지로 선택</button>`;
-            $('#busan-end-list').html(content);
-            $('#busan-arrow').html('→');
+            document.getElementById('busan-end').value = info;
         }
-    }
-
-    function selectStart(type, id) {
-        const item = allData[type].find(i => i.id === id);
-        document.getElementById('busan-start').value = item.title || item.업체명;
-        startSelected = true;
-    }
-
-    function selectEnd(type, id) {
-        const item = allData[type].find(i => i.id === id);
-        document.getElementById('busan-end').value = item.title || item.업체명;
+        infoWindow.close();
     }
 
     function calculateAndDisplayRoute() {
@@ -263,21 +326,26 @@
         const end = document.getElementById('busan-end').value;
         const mode = document.getElementById('busan-mode').value;
 
+        const startCoords = extractCoordinates(start);
+        const endCoords = extractCoordinates(end);
+
+        if (!startCoords || !endCoords) {
+            window.alert('올바른 출발지와 도착지를 선택해주세요.');
+            return;
+        }
+
         directionsService.route(
             {
-                origin: start,
-                destination: end,
+                origin: startCoords,
+                destination: endCoords,
                 travelMode: google.maps.TravelMode[mode],
-                provideRouteAlternatives: true,
-                drivingOptions: {
-                    departureTime: new Date(Date.now() + 10 * 60 * 1000),  // 10분 후 출발
-                    trafficModel: 'bestguess'
-                }
+                provideRouteAlternatives: false
             },
             function(response, status) {
                 if (status === 'OK') {
                     directionsRenderer.setDirections(response);
                     showRouteDetails(response);
+                    adjustLayout();
                 } else {
                     window.alert('경로를 찾을 수 없습니다: ' + status);
                 }
@@ -285,33 +353,64 @@
         );
     }
 
-    function showRouteDetails(response) {
-        const routes = response.routes;
-        let detailsHtml = '<h3>경로 상세 정보</h3>';
+    function extractCoordinates(value) {
+        const match = value.match(/\(([-\d.]+),\s*([-\d.]+)\)/);
+        return match ? new google.maps.LatLng(parseFloat(match[1]), parseFloat(match[2])) : null;
+    }
 
-        routes.forEach((route, index) => {
-            const leg = route.legs[0]; // 출발지에서 도착지까지의 단일 구간
-            detailsHtml += `
-                <div class="route-detail">
-                    <h4>경로 ${index + 1}</h4>
-                    <p>총 거리: ${leg.distance.text}</p>
-                    <p>예상 소요 시간: ${leg.duration.text}</p>
-                    <p>교통 상황 반영 시간: ${leg.duration_in_traffic ? leg.duration_in_traffic.text : '정보 없음'}</p>
-                </div>
-            `;
+    function showRouteDetails(response) {
+        const route = response.routes[0];
+        let detailsHtml = '<h3>대중교통 경로 정보</h3>';
+
+        const leg = route.legs[0];
+        detailsHtml += `
+            <div class="route-detail">
+                <p><strong>출발:</strong> ${leg.start_address}</p>
+                <p><strong>도착:</strong> ${leg.end_address}</p>
+                <p><strong>총 거리:</strong> ${leg.distance.text}</p>
+                <p><strong>예상 소요 시간:</strong> ${leg.duration.text}</p>
+                <h4>상세 경로:</h4>
+                <ol>
+        `;
+
+        leg.steps.forEach((step, index) => {
+            if (step.travel_mode === "TRANSIT") {
+                const vehicle = step.transit.line.vehicle.name;
+                const line = step.transit.line.short_name || step.transit.line.name;
+                const departureTime = new Date(step.transit.departure_time.value);
+                const arrivalTime = new Date(step.transit.arrival_time.value);
+                
+                detailsHtml += `
+                    <li>
+                        <strong>${vehicle} - ${line}</strong><br>
+                        출발: ${departureTime.toLocaleTimeString()} (${step.transit.departure_stop.name})<br>
+                        도착: ${arrivalTime.toLocaleTimeString()} (${step.transit.arrival_stop.name})<br>
+                        소요 시간: ${step.duration.text}
+                    </li>
+                `;
+            } else {
+                detailsHtml += `
+                    <li>
+                        ${step.instructions} (${step.distance.text}, ${step.duration.text})
+                    </li>
+                `;
+            }
         });
 
-        $('#busan-directions-panel').html(detailsHtml);
+        detailsHtml += '</ol></div>';
+
+        $('#busan-directions-panel').html(detailsHtml).css('overflow-y', 'hidden').show();
+    }
+
+    function adjustLayout() {
+        $('#busan-directions-panel').show();
     }
 
     function resetRoute() {
         directionsRenderer.setDirections({routes: []});
         document.getElementById('busan-start').value = '';
         document.getElementById('busan-end').value = '';
-        document.getElementById('busan-start-list').innerHTML = '';
-        document.getElementById('busan-end-list').innerHTML = '';
-        document.getElementById('busan-arrow').innerHTML = '';
-        $('#busan-directions-panel').html('');
+        $('#busan-directions-panel').hide();
         startSelected = false;
     }
 
@@ -320,3 +419,4 @@
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU&callback=initMap&libraries=places" defer></script>
 </body>
 </html>
+
