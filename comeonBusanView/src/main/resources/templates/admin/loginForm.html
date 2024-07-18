@@ -23,7 +23,9 @@
 <button onclick="requestAdmin()">Admin Page요청하기</button>
 <div id="demo2"></div>
 
-
+<footer>
+	<th:block th:insert="~{/fragments/footer.html}"></th:block>
+</footer>
 <script>
 	function submitForm(event){
 		event.preventDefault();  // 기본 폼 전송을 막기 위해 필요합니다.

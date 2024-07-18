@@ -20,7 +20,9 @@
     </form>
 	
 	<button type="submit" value="메인" onclick="getInfo(event)">메인 통신</button>
-	
+	  <footer>
+    <th:block th:insert="~{/fragments/footer.html}"></th:block>
+  </footer>
     <script>
         function submitForm2(event) {
             event.preventDefault();
