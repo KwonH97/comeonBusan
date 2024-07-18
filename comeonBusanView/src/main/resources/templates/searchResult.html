@@ -15,6 +15,9 @@
     <p>검색어: <span id="query-display"></span></p>
     <div id="results"></div>
 </body>
+  <footer>
+    <th:block th:insert="~{/fragments/footer.html}"></th:block>
+  </footer>
 <script>
     function search(query) {
         $.ajax({

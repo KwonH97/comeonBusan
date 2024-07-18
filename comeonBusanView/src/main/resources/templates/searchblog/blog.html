@@ -21,7 +21,9 @@
     <div id="reviewContainer"></div>
     <button id="loadMoreButton">더보기</button>
 </body>
-
+<footer>
+	<th:block th:insert="~{/fragments/footer.html}"></th:block>
+</footer>
 <script>
     let currentPage = 1;
     const pageSize = 10;

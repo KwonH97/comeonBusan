@@ -20,7 +20,9 @@
 </header>
 <h1>안전 구역 지도</h1>
 <div id="map"></div> <!-- 지도를 표시할 div 추가 -->
-
+  <footer>
+    <th:block th:insert="~{/fragments/footer.html}"></th:block>
+  </footer>
 <script>
     $(document).ready(function(){
         var busanCenter = { lat: 35.1796, lng: 129.0756 }; // 부산의 중심 좌표

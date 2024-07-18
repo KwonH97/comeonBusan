@@ -27,7 +27,9 @@
         <input type="text" name="홈페이지주소" placeholder="홈페이지 주소"><br>
         <input type="submit" value="등록">
     </form>
-    
+<footer>
+	<th:block th:insert="~{/fragments/footer.html}"></th:block>
+</footer>
     <script>
     document.getElementById('frm').addEventListener('submit', function(event) {
         event.preventDefault(); // 폼 제출 기본 동작 막기

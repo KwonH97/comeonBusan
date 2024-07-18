@@ -26,10 +26,15 @@
     </style>
 </head>
 <body>
+  <header>
+    <th:block th:insert="~{/fragments/header2.html}"></th:block>
+  </header>
     <h3>위험 지역 표시 지도</h3>
     <div id="map"></div>
     <div id="danger-list"></div>
-
+  <footer>
+    <th:block th:insert="~{/fragments/footer.html}"></th:block>
+  </footer>
     <script>
         var map;
         var dangerMarkers = [];

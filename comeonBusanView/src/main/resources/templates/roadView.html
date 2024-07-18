@@ -1,60 +1,59 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8">
-    <title>Street View와 지도 통합</title>
-    <style>
-        html,
-        body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="utf-8">
+<title>Street View와 지도 통합</title>
+<style>
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
 
-        #map {
-            height: 100%;
-            width: 100%;
-        }
+#map {
+	height: 100%;
+	width: 100%;
+}
 
-        #pano {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            height: 50%;
-            width: 50%;
-            z-index: 1;
-            border: 2px solid black;
-            border-radius: 8px;
-            background: white;
-        }
+#pano {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	height: 50%;
+	width: 50%;
+	z-index: 1;
+	border: 2px solid black;
+	border-radius: 8px;
+	background: white;
+}
 
-        #pac-input {
-            background-color: #fff;
-            font-family: Roboto;
-            font-size: 15px;
-            font-weight: 300;
-            margin-top: 10px;
-            margin-left: 12px;
-            padding: 0 11px 0 13px;
-            text-overflow: ellipsis;
-            width: 300px;
-            height: 40px;
-        }
+#pac-input {
+	background-color: #fff;
+	font-family: Roboto;
+	font-size: 15px;
+	font-weight: 300;
+	margin-top: 10px;
+	margin-left: 12px;
+	padding: 0 11px 0 13px;
+	text-overflow: ellipsis;
+	width: 300px;
+	height: 40px;
+}
 
-        #pac-input:focus {
-            border-color: #4d90fe;
-        }
+#pac-input:focus {
+	border-color: #4d90fe;
+}
 
-        #search-button {
-            height: 40px;
-            margin-left: 12px;
-            margin-top: 10px;
-            padding: 0 11px;
-            font-size: 15px;
-            cursor: pointer;
-        }
-    </style>
-    <script>
+#search-button {
+	height: 40px;
+	margin-left: 12px;
+	margin-top: 10px;
+	padding: 0 11px;
+	font-size: 15px;
+	cursor: pointer;
+}
+</style>
+<script>
         let map, panorama, streetViewService, searchBox;
 
         function initialize() {
@@ -169,16 +168,19 @@
     </script>
 </head>
 <body>
-<header>
-        <th:block th:insert="~{/fragments/header2.html}"></th:block>
-</header>
-    <input id="pac-input" class="controls" type="text" placeholder="원하는 장소를 입력하세요." />
-    <button id="search-button">검색</button>
-    <div id="map"></div>
-    <div id="pano"></div>
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU&callback=initialize&libraries=places&v=weekly"
-      defer
-    ></script>
+	<header>
+		<th:block th:insert="~{/fragments/header2.html}"></th:block>
+	</header>
+	<input id="pac-input" class="controls" type="text"
+		placeholder="원하는 장소를 입력하세요." />
+	<button id="search-button">검색</button>
+	<div id="map"></div>
+	<div id="pano"></div>
+	<script
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU&callback=initialize&libraries=places&v=weekly"
+		defer></script>
+	<footer>
+		<th:block th:insert="~{/fragments/footer.html}"></th:block>
+	</footer>
 </body>
 </html>
