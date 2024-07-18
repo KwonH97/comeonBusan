@@ -12,9 +12,13 @@ import org.springframework.web.client.RestTemplate;
 @Controller
 public class MainViewController {
 	
-	@Value("${main.weather.api.key}")
+	@Value("${weather.api.key}")
 	private String weatherApiKey;
-
+	
+	@Value("${ipinfo.api.token}")
+	private String ipToken;
+	
+	// ComeonBusanViewApplication.java 에서 RestTemplate 빈으로 등록시켜야 에러안남
 	private final RestTemplate restTemplate;
 
 	public MainViewController(RestTemplate restTemplate) {
@@ -37,4 +41,10 @@ public class MainViewController {
 		return restTemplate.getForEntity(url.toString(), String.class);
 
 	}
+	
+	@GetMapping("/proxy/ipToken")
+    public ResponseEntity<String> proxyIpToken() {
+        StringBuilder url = new StringBuilder("https://ipinfo.io?token=" + ipToken);
+        return restTemplate.getForEntity(url.toString(), String.class);
+    }
 }

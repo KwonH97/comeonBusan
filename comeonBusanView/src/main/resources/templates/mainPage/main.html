@@ -179,7 +179,7 @@ footer {
         // IP 기반 위치 정보를 가져오는 함수
         function getLocationByIP() {
             $.ajax({
-                url: "https://ipinfo.io?token=5e87744dae8849", // 여기에서 YOUR_API_TOKEN을 실제 ipinfo.io API 토큰으로 변경하세요.
+                url: "/proxy/ipToken", // 여기에서 YOUR_API_TOKEN을 실제 ipinfo.io API 토큰으로 변경하세요.
                 type: 'GET',
                 success: function(response) {
                     const loc = response.loc.split(',');
