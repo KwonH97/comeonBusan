@@ -34,7 +34,7 @@ public class SearchService {
     @Autowired
     private TourlistRepository tourListRepository;
 
-    // 통합 검색 메서드
+//     통합 검색 메서드
     public List<SearchResult> search(String query) {
         List<SearchResult> results = new ArrayList<>();
         results.addAll(convertLodgmentsToSearchResult(searchLodgments(query)));
@@ -44,7 +44,7 @@ public class SearchService {
         return results;
     }
 
-    // 개별 엔티티 검색 메서드
+//     개별 엔티티 검색 메서드
     private List<Lodgment> searchLodgments(String query) {
         Specification<Lodgment> specification = getLodgmentSpecification(query);
         return lodgmentRepository.findAll(specification);
@@ -65,14 +65,13 @@ public class SearchService {
         return tourListRepository.findAll(specification);
     }
 
-    // 엔티티를 SearchResult DTO로 변환하는 메서드들
+//     엔티티를 SearchResult DTO로 변환하는 메서드들
     private List<SearchResult> convertLodgmentsToSearchResult(List<Lodgment> lodgments) {
         List<SearchResult> results = new ArrayList<>();
         for (Lodgment lodgment : lodgments) {
             SearchResult result = new SearchResult();
             result.setType("Lodgment");
             result.setName(lodgment.get업체명());
-            result.setDescription(lodgment.get홈페이지주소()); // 필요에 따라 실제 설명 필드로 변경
             results.add(result);
         }
         return results;
@@ -96,7 +95,7 @@ public class SearchService {
             SearchResult result = new SearchResult();
             result.setType("Food");
             result.setName(food.getMain_title());
-            result.setDescription("Food description"); // 필요에 따라 실제 설명 필드로 변경
+            result.setDescription(food.getMain_img_thumb()); // 필요에 따라 실제 설명 필드로 변경
             results.add(result);
         }
         return results;
@@ -108,13 +107,13 @@ public class SearchService {
             SearchResult result = new SearchResult();
             result.setType("TourList");
             result.setName(tourList.getMaintitle());
-            result.setDescription("TourList description"); // 필요에 따라 실제 설명 필드로 변경
+            result.setDescription(tourList.getMain_img_thumb());
             results.add(result);
         }
         return results;
     }
 
-    // Specification 메서드들
+//     Specification 메서드들
     private Specification<Lodgment> getLodgmentSpecification(String query) {
         return (root, queryObj, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -130,6 +129,7 @@ public class SearchService {
             List<Predicate> predicates = new ArrayList<>();
             if (query != null && !query.isEmpty()) {
                 predicates.add(criteriaBuilder.like(root.get("mainTitle"), "%" + query + "%"));
+                predicates.add(criteriaBuilder.like(root.get("subtitle"), "%" + query + "%"));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
@@ -140,6 +140,7 @@ public class SearchService {
             List<Predicate> predicates = new ArrayList<>();
             if (query != null && !query.isEmpty()) {
                 predicates.add(criteriaBuilder.like(root.get("main_title"), "%" + query + "%"));
+                predicates.add(criteriaBuilder.like(root.get("itemcntnts"), "%" + query + "%"));
             }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
