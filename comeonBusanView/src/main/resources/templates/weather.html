@@ -34,10 +34,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const apiKey = '07ad361c368f829e92fb66148a3a35dc';
             const cityName = 'Busan';
-            const url = `http://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}`;
-
+            const url = `/proxy/weather-api?q=${cityName}`;
+            
             const weatherMapping = {
                 'clear sky': '맑음',
                 'few clouds': '맑음',

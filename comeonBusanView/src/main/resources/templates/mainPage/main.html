@@ -201,8 +201,7 @@ footer {
 
         // 부산의 날씨 정보를 가져오는 함수
         function getBusanWeather() {
-            const apiKey = '07ad361c368f829e92fb66148a3a35dc';
-            const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${busanLat}&lon=${busanLon}&appid=${apiKey}`;
+        	const weatherUrl = `/proxy/main-weather-api?lat=${busanLat}&lon=${busanLon}`;
 
             const weatherMapping = {
                 'clear sky': '맑음',
