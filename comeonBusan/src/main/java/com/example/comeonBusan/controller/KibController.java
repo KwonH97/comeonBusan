@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.comeonBusan.entity.Festival;
 import com.example.comeonBusan.entity.Food;
 import com.example.comeonBusan.entity.Photo;
 import com.example.comeonBusan.entity.TourList;
@@ -115,13 +116,23 @@ public class KibController {
 
             entities.add(entity);
         }
-
-        // 데이터베이스에 저장
-        tourRepo.saveAll(entities);
         
-        List<TourList> tourlist = tourRepo.findAll();
+        List<TourList> list = tourRepo.findAll();
+        
+        if (list != null && !list.isEmpty()) {
 
-        return ResponseEntity.ok(tourlist);
+			return ResponseEntity.ok(list);
+
+		} else {
+
+			tourRepo.saveAll(entities);
+
+			List<TourList> tourList = tourRepo.findAll();
+
+			return ResponseEntity.ok(tourList);
+
+		}
+
 	}
 	
 	@GetMapping("/tour/{uc_seq}")
@@ -201,9 +212,9 @@ public class KibController {
 	            String thumbnailFilename = "thumb_" + fileName;
 	            Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
 	            //File thumbnailFile = thumbnailPath.toFile();
-	            Files.copy(file.getInputStream(),thumbnailPath , StandardCopyOption.REPLACE_EXISTING);
+	            //Files.copy(file.getInputStream(),thumbnailPath , StandardCopyOption.REPLACE_EXISTING);
 	            
-	            //Thumbnails.of(targetLocation.toFile()).size(100, 100).toFile(thumbnailFile);
+	            Thumbnails.of(file.getInputStream()).size(200, 200).toFile(thumbnailPath.toFile());
 	            
 	            thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
 	         }
@@ -387,12 +398,24 @@ public class KibController {
             
         }
         
-        // 데이터베이스에 저장
-        foodRepo.saveAll(entities);
+        List<Food> list = foodRepo.findAll();
         
-        List<Food> foodlist = foodRepo.findAll();
+        
+        if (list != null && !list.isEmpty()) {
 
-        return ResponseEntity.ok(foodlist);
+			return ResponseEntity.ok(list);
+
+		} else {
+
+			foodRepo.saveAll(entities);
+
+			List<Food> foodList = foodRepo.findAll();
+
+			return ResponseEntity.ok(foodList);
+
+		}
+
+        
         
     }
 	
