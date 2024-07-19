@@ -263,7 +263,7 @@
 	
 	function getLikeCount(){
 		$.ajax({
-			url: "http://localhost:9002/like/likeTour/" + uc_seq,
+			url: "http://localhost:9002/like/GetlikeTour/" + uc_seq,
 			method: "GET",
 			success: function(response){
 				console.log("찾아온 좋아요 수 " + response);
