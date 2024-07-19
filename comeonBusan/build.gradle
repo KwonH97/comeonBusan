@@ -49,6 +49,7 @@ dependencies {
 	implementation 'net.coobird:thumbnailator:0.4.8' // 썸네일 제작에 필요..
 	
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	
 }
 

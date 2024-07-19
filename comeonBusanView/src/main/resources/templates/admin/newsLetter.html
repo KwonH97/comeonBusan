@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>부산 관광 뉴스레터 구독자 관리</title>
+    <style>
+        :root {
+            --bsn-main-color: #005baa;
+            --bsn-secondary-color: #ff6b6b;
+            --bsn-background-color: #e0f7ff;
+        }
+
+        .bsn_body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, var(--bsn-background-color) 0%, #87CEFA 100%);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .bsn_container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .bsn_title {
+            color: var(--bsn-main-color);
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .bsn_table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(0, 91, 170, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .bsn_table th, .bsn_table td {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            text-align: left;
+        }
+        .bsn_table th {
+            background-color: var(--bsn-main-color);
+            color: white;
+            font-weight: bold;
+        }
+        .bsn_table tr:nth-child(even) {
+            background-color: rgba(224, 247, 255, 0.5);
+        }
+        .bsn_btn {
+            background-color: var(--bsn-secondary-color);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .bsn_btn:hover {
+            background-color: #ff4757;
+            transform: translateY(-2px);
+        }
+        .bsn_btn-danger {
+            background-color: #ff4757;
+        }
+        .bsn_btn-danger:hover {
+            background-color: var(--bsn-secondary-color);
+        }
+        .bsn_controls {
+            margin: 20px 0;
+            text-align: right;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        #bsn_selectAll {
+            margin-right: 10px;
+        }
+        .bsn_checkbox-container {
+            display: inline-block;
+            position: relative;
+            padding-left: 35px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            user-select: none;
+        }
+        .bsn_checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        .bsn_checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 25px;
+            width: 25px;
+            background-color: #eee;
+            border-radius: 5px;
+        }
+        .bsn_checkbox-container:hover input ~ .bsn_checkmark {
+            background-color: #ccc;
+        }
+        .bsn_checkbox-container input:checked ~ .bsn_checkmark {
+            background-color: var(--bsn-main-color);
+        }
+        .bsn_checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        .bsn_checkbox-container input:checked ~ .bsn_checkmark:after {
+            display: block;
+        }
+        .bsn_checkbox-container .bsn_checkmark:after {
+            left: 9px;
+            top: 5px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            transform: rotate(45deg);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+            color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+        @keyframes slideIn {
+            from {transform: translateY(-50px); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
+        }
+        .close {
+            color: #fff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-body {
+            margin: 20px 0;
+        }
+        .modal-body input, .modal-body textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+        }
+        .modal-body input[type="file"] {
+            padding: 0;
+        }
+        .modal-footer {
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body class="bsn_body">
+    <header>
+        <th:block th:insert="~{/fragments/header2.html}"></th:block>
+    </header>
+    <div class="bsn_container">
+        <h1 class="bsn_title">🌊 부산 관광 뉴스레터 구독자 관리 🏖️</h1>
+        <div class="bsn_controls">
+            <label class="bsn_checkbox-container">전체 선택
+                <input type="checkbox" id="bsn_selectAll" onchange="bsn_toggleAllCheckboxes()">
+                <span class="bsn_checkmark"></span>
+            </label>
+            <button class="bsn_btn" onclick="openEmailModal()">선택한 구독자에게 메일 보내기</button>
+        </div>
+        <table class="bsn_table">
+            <thead>
+                <tr>
+                    <th>선택</th>
+                    <th>ID</th>
+                    <th>이메일</th>
+                    <th>관리</th>
+                </tr>
+            </thead>
+            <tbody id="bsn_subscriber-list">
+                <!-- 구독자 리스트가 여기에 동적으로 추가됩니다. -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 이메일 전송 모달 -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>이메일 보내기</h2>
+            <div class="modal-body">
+                <form id="emailForm" enctype="multipart/form-data">
+                    <input type="text" name="subject" placeholder="제목" required>
+                    <textarea name="body" placeholder="내용" rows="5" required></textarea>
+                    <input type="file" name="attachment">
+                    <div class="modal-footer">
+                        <button type="button" class="bsn_btn" onclick="sendEmail()">보내기</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function bsn_loadSubscribers() {
+            fetch('http://localhost:9002/api/newsletter')
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById('bsn_subscriber-list');
+                    list.innerHTML = '';
+                    data.forEach(subscriber => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>
+                                <label class="bsn_checkbox-container">
+                                    <input type="checkbox" class="bsn_subscriber-checkbox" value="${subscriber.email}">
+                                    <span class="bsn_checkmark"></span>
+                                </label>
+                            </td>
+                            <td>${subscriber.id}</td>
+                            <td>${subscriber.email}</td>
+                            <td><button class="bsn_btn bsn_btn-danger" onclick="bsn_deleteSubscriber(${subscriber.id})">삭제</button></td>
+                        `;
+                        list.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function bsn_deleteSubscriber(id) {
+            fetch(`http://localhost:9002/api/newsletter/${id}`, {
+                method: 'DELETE',
+            })
+            .then(response => {
+                if (response.ok) {
+                    bsn_loadSubscribers();
+                } else {
+                    alert('삭제 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function bsn_toggleAllCheckboxes() {
+            const checkboxes = document.querySelectorAll('.bsn_subscriber-checkbox');
+            const selectAllCheckbox = document.getElementById('bsn_selectAll');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        }
+
+        function openEmailModal() {
+            const selectedEmails = Array.from(document.querySelectorAll('.bsn_subscriber-checkbox:checked'))
+                .map(checkbox => checkbox.value);
+            
+            if (selectedEmails.length === 0) {
+                alert('선택된 구독자가 없습니다.');
+                return;
+            }
+
+            document.getElementById('emailModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('emailModal').style.display = 'none';
+        }
+
+        function sendEmail() {
+            const form = document.getElementById('emailForm');
+            const formData = new FormData(form);
+
+            const selectedEmails = Array.from(document.querySelectorAll('.bsn_subscriber-checkbox:checked'))
+                .map(checkbox => checkbox.value);
+            formData.append('emails', selectedEmails);
+
+            fetch('http://localhost:9002/api/newsletter/send-email', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                closeModal();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('이메일 발송 중 오류가 발생했습니다.');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', bsn_loadSubscribers);
+    </script>
+    <footer>
+        <th:block th:insert="~{/fragments/footer.html}"></th:block>
+    </footer>
+</body>
+</html>
+
