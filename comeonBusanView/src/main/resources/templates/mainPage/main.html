@@ -56,7 +56,7 @@ main {
 	font-size: 1em;
 }
 
-#container, #upcoming-festival-container {
+#container, #upcoming-festival-container, #middle {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
@@ -66,10 +66,9 @@ main {
 
 #current-festival-container {
 	display: flex;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	justify-content: left;
 	gap: 20px;
-	width: 90%;
 }
 
 .tour-item {
@@ -137,6 +136,51 @@ footer {
 	left: 50%;
 	z-index: 100;
 }
+
+#middle {
+	display: flex;
+	flex-wrap: nowrap;
+	box-sizing: border-box; /* 패딩과 테두리를 포함하여 크기를 계산 */
+}
+
+#festival-container, #notice-container {
+	display: flex;
+	flex-direction: column;
+	width: 50%; /* 좌우 각각 50% */
+	height: 100%; /* 전체 높이 */
+}
+
+#festival-container>div, #notice-container>div {
+	flex: 1; /* 남은 공간을 균등하게 분배 */
+}
+
+#festival-title, #current-festival-container, #notice-title,
+	#notice-content-container {
+	box-sizing: border-box;
+}
+
+#festival-title, #notice-title {
+	display: flex; /* Flexbox 활성화 */
+	align-items: center; /* 수직 중앙 정렬 */
+	justify-content: center; /* 수평 중앙 정렬 */
+	height: 20px; /* 기존 높이 유지 */
+	box-sizing: border-box; /* 기존 스타일 유지 */
+	padding: 0 10px; /* 여백 추가 (선택 사항) */
+	    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+#festival-title h2, #notice-title h2 {
+	margin: 0; /* 기본 여백 제거 */
+	/*font-size: 1.2em; 글자 크기 조정 (선택 사항) */
+}
+
+.upcoming-tour-thumbnail {
+	
+	width: 247.5px;
+	height: 193.922px;
+}
+
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
@@ -160,12 +204,25 @@ footer {
 		<div id="weather-container" class="weather-container"></div>
 		<h2 class="section-title">현 위치 주변 관광지</h2>
 		<div id="container"></div>
-		<h2 class="section-title">현재 진행 중인 행사</h2>
-		<div id="current-festival-container"></div>
-		<div>
-			<table id="notice-table">
-				<tbody></tbody>
-			</table>
+		<div id="middle">
+			<div id="festival-container">
+				<!-- left -->
+				<div id="festival-title">
+					<h2>현재 진행중인 행사</h2>
+				</div>
+				<div id="current-festival-container"></div>
+			</div>
+			<div id="notice-container">
+				<!-- right -->
+				<div id="notice-title">
+					<h2>공지사항</h2>
+				</div>
+				<div id="notice-content-container">
+					<table id="notice-table">
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
 		</div>
 		<h2 class="section-title">축제 예정</h2>
 		<div id="upcoming-festival-container"></div>
@@ -391,19 +448,43 @@ footer {
 
         function renderFestivals(festivals, containerId, isUpcoming = false) {
             $(containerId).empty();
-            festivals.forEach(item => {
-                const festivalItem = `
-                    <div class="tour-item">
-                        <div class="tour-title">${item.title}</div>
-                        <p>${item.startDate.split('T')[0]} ~ ${item.endDate.split('T')[0]}</p>
-                        <a href="/festivalDetail?uc_seq=${item.ucSeq}">
-                            <img class="tour-thumbnail" src="${item.mainImgThumb}" alt="${item.title}">
-                        </a>
-                        ${isUpcoming ? '<div class="upcoming-label">축제 예정</div>' : ''}
-                    </div>
-                `;
-                $(containerId).append(festivalItem);
-            });
+            
+            if(isUpcoming){
+            	
+                festivals.forEach(item => {
+                    const festivalItem = `
+                        <div class="tour-item">
+                            <div class="tour-title">${item.title}</div>
+                            <p>${item.startDate.split('T')[0]} ~ ${item.endDate.split('T')[0]}</p>
+                            <a href="/festivalDetail?uc_seq=${item.ucSeq}">
+                                <img class="tour-thumbnail" src="${item.mainImgThumb}" alt="${item.title}">
+                            </a>
+                           <div class="upcoming-label">축제 예정</div>
+                        </div>
+                    `;
+                    $(containerId).append(festivalItem);
+                });
+            	
+            	
+            }else {
+            	
+            	festivals.forEach(item => {
+            		const festivalItem = `
+            			<div class="upcoming-festival-item">
+            				<a href="/festivalDetail?uc_seq=${item.ucSeq}">
+            					<img class="upcoming-tour-thumbnail" src="${item.mainImgThumb}" alt="${item.title}">
+            				</a>            				
+            				<div class="upcoming-tour-title">${item.title}</div>
+            				<p>${item.startDate.split('T')[0]} ~ ${item.endDate.split('T')[0]}</p>
+            				
+            				</div>
+            			`;
+            			 $(containerId).append(festivalItem);
+
+            	});
+
+            }
+    
         }
         
         function noticeList(){
@@ -419,7 +500,7 @@ footer {
             		response.slice(0, 5).forEach(notice =>{
             			const noticeRow = `
             				<tr>
-            					<td><a href="#">${notice.title}</a></td>
+            					<td><a href="/notice/noticeDetail?hnum=${notice.hnum}">${notice.title}</a></td>
             					<td>${notice.regDate}</td>       					
             				</tr>       			
             			`;

@@ -42,6 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 
 @RequestMapping("/khj")
 @RestController
@@ -183,7 +184,69 @@ public class FestivalController {
 
 			entities.add(entity);
 		}
-
+		
+		Festival additionalFestival = Festival.builder()
+				.ucSeq(450L)
+				.mainTitle("노릇노릇 부산(한,영,중간,중번,일)")
+				.gugunNm("부산 동래구")
+				.lat(35.2050)
+				.lng(129.0795)
+				.place("노릇노릇 부산")
+				.mainPlace("노릇노릇 부산")
+				.title("국립민속박물관 2024 k-museums 공동기획전, '노릇노릇 부산'")
+				.subtitle("부산시어 고등어와 부산의 해양민속문화에 대한 전시")
+		        .addr1("부산 동래구 우장춘로 175")
+		        .addr2("")
+		        .cntctTel("051-550-8824")
+		        .homepageUrl("https://www.busan.go.kr/sea/onnews/1630246")
+		        .trfcInfo("부산해양자연사박물관 앞 하차")
+		        .usageDay("2024-06-25 ~ 2024-12-01")
+		        .usageDayWeekAndTime("화~일 09:00~18:00, 월요일 휴관")
+		        .itemCntnts("이번 전시는 박물관이 지난해 12월 국립민속박물관의 ‘k-museums 공모’에 선정돼 국비를 지원받아 공동 기획한 전시입니다.\r\n"
+		        		+ "\r\n"
+		        		+ "부산시어(市魚) 고등어와 부산의 해양수산문화를 쉽고 재미있게 알리고자 기획하였습니다.\r\n"
+		        		+ "\r\n"
+		        		+ "6월 24일 오후 2시 개막식을 시작으로 6월 25일부터 12월 1일까지 138일간 개최됩니다.\r\n"
+		        		+ "\r\n"
+		        		+ "특히, 고등어의 생물학적·영양학적 특징뿐만 아니라 잊혀가는 고갈비 문화와 부산만의 독특한 해양수산문화를 즐길 수 있도록 국·공립박물관의 대여유물 및 박물관 소장 표본 100여 점을 선보일 예정입니다.\r\n"
+		        		+ "\r\n"
+		        		+ "\r\n"
+		        		+ "\r\n"
+		        		+ "\r\n"
+		        		+ "\r\n"
+		        		+ "전시는 ▲1부 <부며들다> ▲2부 <고며들다>, 총 2부로 구성되었습니다.\r\n"
+		        		+ "\r\n"
+		        		+ " -1부 <부며들다 –파닥파닥 고등어>에서는 고등어가 부산에 스며든 과정을 유물과 영상매체 등을 통해 살펴봅니다.\r\n"
+		        		+ "\r\n"
+		        		+ "특히 부산공동어시장과 자갈치시장 등 부산이 고등어 유통의 중심지가 된 과정을 살펴보고, 시어로 지정된 이유를 알기 쉽게 설명합니다.\r\n"
+		        		+ "\r\n"
+		        		+ " - 2부 <고며들다 –노릇노릇 고갈비>에서는 고등어가 부산에 스며들었듯 부산 사람들이 고등어에 스며드는 과정을 유물과 재현품, 시·청각 자료 등을 통해 살펴봅니다.\r\n"
+		        		+ "\r\n"
+		        		+ "특히 7080 광복동의 고갈비골목을 재현해 그 시대의 향수를 불러일으키고 고등어가 밥상 위에 오르기까지의 과정, 고등어 요리 조리법, 맛집 지도 등\r\n"
+		        		+ "\r\n"
+		        		+ "      고등어가 국민 생선이 될 수 있었던 이유를 설명합니다. \r\n"
+		        		+ "\r\n"
+		        		+ "\r\n"
+		        		+ "\r\n"
+		        		+ " 이외에도, 고등어와 관련한 다양한 체험을 할 수 있는 \r\n"
+		        		+ "\r\n"
+		        		+ "  ▲엘피(LP)판·씨디(CD)플레이어를 통해 고등어 관련 노래를 듣고 ▲고등어 요리 체험과 함께 \r\n"
+		        		+ "\r\n"
+		        		+ "  ▲고등어 관련 책을 읽어보고 ▲고등어에게 하고 싶은 말을 글로 전할 수 있습니다.\r\n"
+		        		+ "\r\n"
+		        		+ "\r\n"
+		        		+ "\r\n"
+		        		+ "이번 전시를 통해 부산 시민들이 부산시어 고등어와 고등어에 얽힌 부산의 독특한 해양수산문화를 재인식하는 계기가 되길 바라겠습니다.")
+		        .middleSizeRm1("장애인 화장실, 장애인 주차구역, 휠체어접근 가능")
+		        .usageAmount("무료")
+		        .mainImgNormal("http://localhost:9002/uploads/노릇노릇 부산_웹배너.jpg")
+		        .mainImgThumb("http://localhost:9002/uploads/thumb_노릇노릇 부산_웹배너.jpg")
+		        .startDate(new SimpleDateFormat("yyyy-MM-dd").parse("2024-06-25"))
+		        .endDate(new SimpleDateFormat("yyyy-MM-dd").parse("2024-12-01"))
+		        .build();
+		
+		entities.add(additionalFestival);
+		
 		List<Festival> list = festivalRepository.findAll();
 		System.out.println(list);
 		if (list != null && !list.isEmpty()) {
@@ -253,8 +316,8 @@ public class FestivalController {
 				// 썸네일 생성 및 저장
 				String thumbnailFilename = "thumb_" + fileName;
 				Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
-				Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-			
+				Thumbnails.of(file.getInputStream()).size(200, 200).toFile(thumbnailPath.toFile());
+				
 				thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
 			}else {
 				
