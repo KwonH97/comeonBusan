@@ -259,70 +259,41 @@
 				}
 			});
 		}
-		
-		function getLikeCount(){
-			$.ajax({
-				url: "http://localhost:9002/like/likeTour/" + uc_seq,
-				method: "GET",
-				success: function(response){
-					console.log("찾아온 좋아요 수 " + response);
-					
-					if(response == ''){
-						document.querySelector("#likecount").textContent = 0;
-					} else {
-						document.querySelector("#likecount").textContent = response;
-					}
-				},
-				error: function(error) {
-					console.log("Error: " + error);
+	}
+	
+	function getLikeCount(){
+		$.ajax({
+			url: "http://localhost:9002/like/likeTour/" + uc_seq,
+			method: "GET",
+			success: function(response){
+				console.log("찾아온 좋아요 수 " + response);
+				
+				if(response == ''){
+					document.querySelector("#likecount").textContent = 0;
+				} else {
+					document.querySelector("#likecount").textContent = response;
 				}
-			});
-		}
-		
-		function checkIfLiked(){
-			let likeYN = localStorage.getItem("Like" + uc_seq);
-			
-			console.log("페이지 로드시 좋아요 키값: " + likeYN);
-			const heartIcon = docoument.querySelector('.heart-icon');
-			
-			if (likeYN != null) {
-				heartIcon.classList.add('liked');
-			}else {
-				heartIcon.classList.remove('liked');
+			},
+			error: function(error) {
+				console.log("Error: " + error);
 			}
+		});
+	}
+	
+	function checkIfLiked(){
+		let likeYN = localStorage.getItem("Like" + uc_seq);
+		
+		console.log("페이지 로드시 좋아요 키값: " + likeYN);
+		const heartIcon = document.querySelector('.heart-icon');
+		
+		if (likeYN != null) {
+			heartIcon.classList.add('liked');
+		}else {
+			heartIcon.classList.remove('liked');
 		}
 	}
 </script>
 
-<script src="https://www.youtube.com/iframe_api"></script>
-<!--  
-    <script>
-        var API_KEY = 'AIzaSyAHM0PE1VR2JBfFxnbT4yiboKbAkGpChbw';
-        var videoId = 'o_FlQvFotwQ'; // YouTube 영상 ID
 
-        // 유튜브 iframe API 준비
-        function onYouTubeIframeAPIReady() {
-            new YT.Player('video-container', {
-                height: '390',
-                width: '640',
-                videoId: videoId,
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            event.target.playVideo();
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.PLAYING) {
-                console.log('Video is playing');
-            }
-        }
-    </script>
--->
 </body>
 </html>
