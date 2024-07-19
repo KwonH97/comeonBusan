@@ -14,7 +14,7 @@ public class NoticeController {
 	@RequestMapping("/noticeList")
 	public String noticeList() {
 		
-		return "noticeList";
+		return "/notice/noticeList";
 	}
 	
 	@RequestMapping("/noticeDetail")
