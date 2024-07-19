@@ -25,6 +25,13 @@ public class AdminController {
 		
 		return "/admin/adminPage";
 	}
+	
+	@RequestMapping("/newsLetter")
+	public String newsLetter() {
+		
+		return "/admin/newsLetter";
+	}
+
 
 	
 }
