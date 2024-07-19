@@ -56,10 +56,18 @@ main {
 	font-size: 1em;
 }
 
-#container, #current-festival-container, #upcoming-festival-container {
+#container, #upcoming-festival-container {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
+	gap: 20px;
+	width: 90%;
+}
+
+#current-festival-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: left;
 	gap: 20px;
 	width: 90%;
 }
@@ -111,23 +119,23 @@ footer {
 }
 
 #load {
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    position: fixed;
-    display: block;
-    opacity: 0.8;
-    background: white;
-    z-index: 99;
-    text-align: center;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	position: fixed;
+	display: block;
+	opacity: 0.8;
+	background: white;
+	z-index: 99;
+	text-align: center;
 }
 
-#load > img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    z-index: 100;
+#load>img {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: 100;
 }
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.js"
@@ -136,10 +144,10 @@ footer {
 </head>
 <body>
 
-<div id="load">
-    <img src="/img/loading.gif" alt="loading">
-</div>
-<!-- loading.gif -->
+	<div id="load">
+		<img src="/img/loading.gif" alt="loading">
+	</div>
+	<!-- loading.gif -->
 	<header>
 		<th:block th:insert="~{/fragments/header2.html}"></th:block>
 	</header>
@@ -154,6 +162,11 @@ footer {
 		<div id="container"></div>
 		<h2 class="section-title">현재 진행 중인 행사</h2>
 		<div id="current-festival-container"></div>
+		<div>
+			<table id="notice-table">
+				<tbody></tbody>
+			</table>
+		</div>
 		<h2 class="section-title">축제 예정</h2>
 		<div id="upcoming-festival-container"></div>
 	</main>
@@ -392,6 +405,42 @@ footer {
                 $(containerId).append(festivalItem);
             });
         }
+        
+        function noticeList(){
+            
+            $.ajax({
+            	url: "http://localhost:9002/khj/noticeList",
+            	type: 'GET',
+            	success: function(response){
+            		
+            		console.log(response);
+            		const noticeTableBody = $('#notice-table tbody');
+           			noticeTableBody.empty();
+            		response.slice(0, 5).forEach(notice =>{
+            			const noticeRow = `
+            				<tr>
+            					<td><a href="#">${notice.title}</a></td>
+            					<td>${notice.regDate}</td>       					
+            				</tr>       			
+            			`;
+            			noticeTableBody.append(noticeRow);
+            		});
+            		
+            	},
+            	error: function(xhr, status, error){
+            		
+            		console.error("noticeList error : ", error);
+            		
+            	}
+            		
+            });
+            
+            	
+            	
+            }
+            
+            noticeList();
+        
     });
 </script>
 
