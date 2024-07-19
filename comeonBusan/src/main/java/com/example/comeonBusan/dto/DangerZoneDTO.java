@@ -1,12 +1,12 @@
-package com.example.comeonBusanView.model;
+package com.example.comeonBusan.dto;
 
-public class DangerZone {
+public class DangerZoneDTO {
     private String name;
     private double lat;
     private double lon;
     private double radius;
 
-    public DangerZone(String name, double lat, double lon, double radius) {
+    public DangerZoneDTO(String name, double lat, double lon, double radius) {
         this.name = name;
         this.lat = lat;
         this.lon = lon;

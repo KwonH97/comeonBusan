@@ -1,13 +1,12 @@
-package com.example.comeonBusanView.controller;
-
-import com.example.comeonBusanView.model.DangerZone;
-import com.example.comeonBusanView.model.LocationUpdate;
+package com.example.comeonBusan.controller;
 
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import com.example.comeonBusan.dto.DangerZoneDTO;
+import com.example.comeonBusan.dto.LocationUpdate;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,20 +19,20 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LocationController {
 
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
-    private final List<DangerZone> dangerZones;
+    private final List<DangerZoneDTO> dangerZones;
 
     public LocationController() {
         // 위험 지역 초기화
         dangerZones = new ArrayList<>();
-        dangerZones.add(new DangerZone("위험 지역 1", 35.1796, 129.0656, 100));
-        dangerZones.add(new DangerZone("위험 지역 2", 35.1696, 129.0756, 100));
-        dangerZones.add(new DangerZone("위험 지역 3", 35.1896, 129.0856, 100));
+        dangerZones.add(new DangerZoneDTO("위험 지역 1", 35.1796, 129.0656, 100));
+        dangerZones.add(new DangerZoneDTO("위험 지역 2", 35.1696, 129.0756, 100));
+        dangerZones.add(new DangerZoneDTO("위험 지역 3", 35.1896, 129.0856, 100));
     }
 
     @PostMapping("/location/update")
     public void updateLocation(@RequestBody LocationUpdate update, HttpSession session) {
         String sessionId = session.getId();
-        for (DangerZone zone : dangerZones) {
+        for (DangerZoneDTO zone : dangerZones) {
             if (isNearDangerZone(update.getLat(), update.getLon(), zone)) {
                 sendAlert(sessionId, "위험 지역 '" + zone.getName() + "'에 접근했습니다!");
                 break;
@@ -51,7 +50,7 @@ public class LocationController {
         return emitter;
     }
 
-    private boolean isNearDangerZone(double lat, double lon, DangerZone zone) {
+    private boolean isNearDangerZone(double lat, double lon, DangerZoneDTO zone) {
         double distance = calculateDistance(lat, lon, zone.getLat(), zone.getLon());
         return distance <= zone.getRadius();
     }

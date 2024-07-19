@@ -19,5 +19,12 @@ public class AdminController {
 		
 		return "/admin/loginForm";
 	}
+	
+	@RequestMapping("/adminPage")
+	public String adminPage() {
+		
+		return "/admin/adminPage";
+	}
 
+	
 }

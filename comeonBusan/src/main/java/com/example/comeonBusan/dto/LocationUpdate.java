@@ -1,4 +1,4 @@
-package com.example.comeonBusanView.model;
+package com.example.comeonBusan.dto;
 
 public class LocationUpdate {
     private double lat;
