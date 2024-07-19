@@ -35,11 +35,6 @@ public class Likes {
     @JsonBackReference
     @ToString.Exclude
     private Festival festival;
-
-    @ManyToOne
-    @JoinColumn(name = "lodgment_lid", referencedColumnName = "lid")
-    @JsonBackReference
-    private Lodgment lodgment;
     
     @ManyToOne
     @JoinColumn(name = "food_uc_seq", referencedColumnName = "UC_SEQ")

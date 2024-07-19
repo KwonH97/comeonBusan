@@ -144,7 +144,8 @@ h1 {
 	<div class="container">
 		<h3 id="title"></h3>
 		<h4 id="subtitle"></h4>
-		<img id="main_img" alt="축제 홍보사진"><br> <span>조회수</span>
+		<img id="main_img" alt="축제 홍보사진"><br>
+		조회수 : <span id="viewcount"></span><br>
 		<button class="heart-button" onclick="doLike()">
 			<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
 				<path
@@ -178,10 +179,34 @@ h1 {
 	<script>
 		var uc_seq = "[[${uc_seq}]]";
 
-		$(document)
-		.ready(
-		function() {
+		$(document).ready(function() {
 		console.log("uc_seq = " + uc_seq);
+		
+		// 조회수 증가 요청 보내기
+		$.ajax({
+			url: 'http://localhost:9002/views/festival/' + uc_seq,
+			method: 'POST',
+			success: function() {
+				console.log("View count incremented");
+			},
+			error: function(error) {
+				console.error("Error incrementing view count: " + error);
+			}
+		});
+
+		// 조회수 가져오기
+		$.ajax({
+			url: 'http://localhost:9002/views/festival/' + uc_seq,
+			method: 'GET',
+			success: function(viewCount) {
+				console.log("Current view count: " + viewCount);
+				document.querySelector("#viewcount").textContent = viewCount;
+			},
+			error: function(error) {
+				console.error("Error fetching view count: " + error);
+			}
+		});
+		
 		$.ajax({
 				url : 'http://localhost:9002/khj/festival2/'
 						+ uc_seq,

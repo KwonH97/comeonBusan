@@ -24,17 +24,12 @@ public class Views {
     private TourList tourlist;
 
     @ManyToOne
-    @JoinColumn(name = "festival_uc_seq", referencedColumnName = "UC_SEQ")
+    @JoinColumn(name = "festival_uc_seq", referencedColumnName = "uc_seq")
     @JsonBackReference
     private Festival festival;
 
     @ManyToOne
-    @JoinColumn(name = "lodgment_lid", referencedColumnName = "lid")
-    @JsonBackReference
-    private Lodgment lodgment;
-
-    @ManyToOne
-    @JoinColumn(name = "food_uc_seq", referencedColumnName = "UC_SEQ")
+    @JoinColumn(name = "food_uc_seq", referencedColumnName = "uc_seq")
     @JsonBackReference
     private Food food;
     

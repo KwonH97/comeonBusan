@@ -49,11 +49,4 @@ public class Lodgment {
     private String 점자유도로유무;
     private LocalDate 등록일자;
 
-    @OneToMany(mappedBy = "lodgment", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<Likes> likes;
-    
-    @OneToMany(mappedBy = "lodgment", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<Views> views;
 }
