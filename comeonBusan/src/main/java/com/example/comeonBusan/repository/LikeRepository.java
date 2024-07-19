@@ -16,6 +16,14 @@ public interface LikeRepository extends JpaRepository<Likes, Long>{
 	// 축제 좋아요
 	Optional<Likes> findByFestivalUcSeq(Long uc_seq_long);
 	
+	// 관광지 좋아요
+	@Query("SELECT l FROM Likes l WHERE l.tourlist.uc_seq = :uc_seq")
+	Optional<Likes> findByTourUcSeq(@Param("uc_seq") String uc_seq);
+	
+	//식당 좋아요 
+	@Query("SELECT l FROM Likes l WHERE l.food.UC_SEQ = :UC_SEQ")
+	Optional<Likes> findByFoodUcSeq(@Param("UC_SEQ")String uc_seq);
+	
 	
 	 @Modifying
 	 @Transactional
@@ -27,5 +35,9 @@ public interface LikeRepository extends JpaRepository<Likes, Long>{
 	 @Query("SELECT l.likecount FROM Likes l WHERE l.festival.ucSeq = :ucSeq")
 	 Long findLikeCountByFestivalUcSeq(@Param("ucSeq") Long ucSeq);
 	 
+	@Query("SELECT l.likecount FROM Likes l WHERE l.tourlist.uc_seq = :uc_seq")
+	Long findLikeCountByTourUcSeq(@Param("uc_seq") String uc_seq);
 	
+	@Query("SELECT l.likecount FROM Likes l WHERE l.food.UC_SEQ= :UC_SEQ")
+	Long findLikeCountByFoodUcSeq(@Param("UC_SEQ") String uc_seq);
 }

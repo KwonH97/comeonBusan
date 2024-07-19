@@ -47,6 +47,32 @@
 		width: 100%; /* 원하는 너비로 설정 */
 		margin: 20px 0; /* 위아래 여백 설정 */
 	}
+	
+	.heart-button {
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+	outline: none;
+	padding: 0;
+	width: 50px;
+	height: 50px;
+}
+
+.heart-icon {
+	fill: transparent;
+	stroke: black;
+	stroke-width: 1; /*테두리 더 굴게 얇게 조정*/
+	transition: transform 0.2s;
+}
+
+.heart-button:hover .heart-icon {
+	transform: scale(1.1);
+}
+
+.heart-icon.liked {
+	fill: red;
+	stroke: red;
+}
 </style>
 </head>
 <body>
@@ -63,13 +89,24 @@
 	<h4 id="subtitle"></h4>
 	<h4 id="place"></h4>
 	<img id="main_img" alt="관광지 홍보사진"><br>
-	<span>조회수</span> <input type="button" onclick="">좋아요 <br>
+	<span>조회수</span> 
+	<button class="heart-button" onclick="doLike()">
+		<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
+				<path
+					d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+			</svg>
+	</button>
+	<span>( </span><span id="likecount"></span><span> )</span><br>
+	
+	<span class="info">관광지 배경</span><br>
 	<div id="itemcntnts"><!-- 관광지 설명 --></div>
 	
-	<div id="video-container"><!-- 유튜브 영상 --></div>
+	 <!--  
+	<div id="video-container"></div>
 	<video style="width:100%;" src="https://vod.visitbusan.net:8080/upload/encoding/video/2024/06/c0a49b6312a84e2ea5a74ec9efd3f293_media_1280x720.mp4" controls="" controlslist="nodownload" loop="" playsinline="" poster="https://vod.visitbusan.net:8080//upload/encoding/video/2024/06/c0a49b6312a84e2ea5a74ec9efd3f293_mplayer1_3.png"> Sorry, your browser doesn't support embedded videos,
  but don't worry, you can <a href="videofile.ogg">download it</a> and watch it with your favorite video player!
 	</video>
+	-->
 	
 	<div id="placeInfo">
 		<div class="info-section">
@@ -141,11 +178,16 @@
 				
 				// 지도와 마커를 추가하는 함수 호출
 				initMap(lat, lng);
+				
+				checkIfLiked();
+				
 			},
 			error: function(error){
 				console.log("Error: " + error);
 			}
 		});
+		
+		getLikeCount();
 		
 		var authValue = localStorage.getItem("Authorization");
 		if(authValue != null){
@@ -167,6 +209,88 @@
 
 	function gomodifyPage() {
 		window.location.href = "/modi_tour?uc_seq=" + uc_seq;
+	}
+	
+	function doLike(){
+		console.log("doLike uc_seq....." + uc_seq); //좋아요 할 컨텐츠ID 확인
+		
+		let likeYN = localStorage.getItem("Like" + uc_seq);
+		console.log(likeYN);
+		
+		const heartIcon = document.querySelector(".heart-icon");
+		
+		if(likeYN == null){
+			//좋아요를 누르면 토큰 발급
+			localStorage.setItem("Like" + uc_seq, uc_seq);
+			let likeToken = localStorage.getItem("Like" + uc_seq);
+			
+			$.ajax({
+				type: "POST",
+				url: "http://localhost:9002/like/doLikeTour/" + uc_seq,
+				success: function(response){
+					console.log(response);
+					alert(response);
+					heartIcon.classList.add('liked');
+					
+					getLikeCount();
+				},
+				error: function(xhr, status, error){
+					console.log("Error: ", error);
+				}
+			});
+		} else {
+			//좋아요 취소
+			$.ajax({
+				type:"DELETE",
+				url: "http://localhost:9002/like/deleteLikeTour/" + uc_seq,
+				success: function(response) {
+					console.log(response);
+					alert(response);
+					//local 저장된 좋아요토큰 삭제
+					localStorage.removeItem("Like" + uc_seq);
+					
+					heartIcon.classList.remove("liked");
+					
+					//좋아요 수 업데이트
+					getLikeCount();
+				},
+				error: function(xhr, status, error){
+					console.log("Error: " + error);
+				}
+			});
+		}
+		
+		function getLikeCount(){
+			$.ajax({
+				url: "http://localhost:9002/like/likeTour/" + uc_seq,
+				method: "GET",
+				success: function(response){
+					console.log("찾아온 좋아요 수 " + response);
+					
+					if(response == ''){
+						document.querySelector("#likecount").textContent = 0;
+					} else {
+						document.querySelector("#likecount").textContent = response;
+					}
+				},
+				error: function(error) {
+					console.log("Error: " + error);
+				}
+			});
+		}
+		
+		function checkIfLiked(){
+			let likeYN = localStorage.getItem("Like" + uc_seq);
+			
+			console.log("페이지 로드시 좋아요 키값: " + likeYN);
+			const heartIcon = docoument.querySelector('.heart-icon');
+			
+			if (likeYN != null) {
+				heartIcon.classList.add('liked');
+			}else {
+				heartIcon.classList.remove('liked');
+			}
+		}
 	}
 </script>
 
