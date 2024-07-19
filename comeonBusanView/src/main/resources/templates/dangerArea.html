@@ -1,12 +1,139 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>위험 지역 알림 시스템</title>
+    <title>부산 관광 안전 정보 시스템</title>
     <style>
-        #map { height: 400px; width: 100%; }
-        #danger-list { margin-top: 20px; }
-        .danger-item { padding: 10px; margin: 10px 0; border: 1px solid #ddd; cursor: pointer; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #e0f7ff 0%, #87CEFA 100%);
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1350px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(0, 91, 170, 0.3);
+            border-radius: 15px;
+        }
+        h1 {
+            color: #005baa;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        #map { 
+            height: 500px; 
+            width: 100%; 
+            border: 3px solid #005baa;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        #user-controls {
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #005baa;
+        }
+        #danger-list { 
+            margin-top: 20px; 
+        }
+        .danger-item { 
+            padding: 15px; 
+            margin: 10px 0; 
+            border: 1px solid #ff6b6b; 
+            cursor: pointer; 
+            background-color: #fff0f0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .danger-item:hover {
+            background-color: #ffe0e0;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .admin-controls { 
+            margin-top: 20px; 
+            display: none; 
+            background: linear-gradient(135deg, #005baa 0%, #00a5ff 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        .admin-button { 
+            margin-right: 10px;
+            background-color: #ff6b6b;
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+        .admin-button:hover {
+            background-color: #ff4f4f;
+            transform: scale(1.05);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+            color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s;
+        }
+        @keyframes slideIn {
+            from {transform: translateY(-50px); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
+        }
+        .close {
+            color: #fff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #alertMessage {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -14,40 +141,51 @@
         <th:block th:insert="~{/fragments/header2.html}"></th:block>
     </header>
 
-    <h1>위험 지역 알림 시스템</h1>
-    <div id="map"></div>
-    <div id="user-controls">
-        <h4>사용자 위치</h4>
-        <p id="current-location">위도: -, 경도: -</p>
-        <p>지도를 클릭하여 사용자 위치를 변경하세요.</p>
+    <div class="container">
+        <h1>🌊 부산 관광 안전 정보 시스템 🏖️</h1>
+        <div id="map"></div>
+        <div id="user-controls">
+            <h4>🚶‍♂️ 사용자 위치</h4>
+            <p id="current-location">위도: -, 경도: -</p>
+            <p>지도를 클릭하여 사용자 위치를 변경하세요.</p>
+        </div>
+        <div id="danger-list"></div>
+
+        <div id="admin-controls" class="admin-controls">
+            <h3>👨‍💼 관리자 기능</h3>
+            <button onclick="startDrawingDangerZone()" class="admin-button">위험 구역 추가</button>
+            <button onclick="enableAddMarkerMode()" class="admin-button">위험 장소 추가</button>
+            <button onclick="enableEditMode()" class="admin-button">위험 지역 수정</button>
+            <button onclick="enableDeleteMode()" class="admin-button">위험 지역 삭제</button>
+        </div>
     </div>
-    <div id="danger-list"></div>
+
+    <div id="alertModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>⚠️ 안전 주의 알림</h2>
+            <p id="alertMessage"></p>
+        </div>
+    </div>
 
     <footer>
         <th:block th:insert="~{/fragments/footer.html}"></th:block>
     </footer>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+        crossorigin="anonymous"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU&libraries=drawing,geometry"></script>
     <script>
         var map;
         var userMarker;
         var userCircle;
-        var dangerZones = [
-            { name: "위험 구역 1", type: "circle", center: {lat: 35.1796, lng: 129.0656}, radius: 100 },
-            { name: "위험 구역 2", type: "circle", center: {lat: 35.1696, lng: 129.0756}, radius: 150 },
-            { name: "위험 지역 1", type: "polygon", coords: [
-                {lat: 35.1846, lng: 129.0706},
-                {lat: 35.1826, lng: 129.0726},
-                {lat: 35.1806, lng: 129.0706},
-                {lat: 35.1826, lng: 129.0686}
-            ]},
-            { name: "위험 지역 2", type: "polygon", coords: [
-                {lat: 35.1746, lng: 129.0806},
-                {lat: 35.1726, lng: 129.0826},
-                {lat: 35.1706, lng: 129.0806},
-                {lat: 35.1726, lng: 129.0786}
-            ]}
-        ];
+        var drawingManager;
+        var selectedDangerZone = null;
+        var isEditMode = false;
+        var isDeleteMode = false;
+        var isAddMarkerMode = false;
+        var dangerZones = [];
 
         function initMap() {
             map = new google.maps.Map(document.getElementById('map'), {
@@ -73,26 +211,66 @@
                 fillOpacity: 0.35,
                 map: map,
                 center: userMarker.getPosition(),
-                radius: 100
+                radius: 300 // 사용자 원의 반경 설정
             });
 
             map.addListener('click', function(e) {
-                updateUserLocation(e.latLng);
+                if (isAddMarkerMode) {
+                    addMarkerDangerZone(e.latLng);
+                    isAddMarkerMode = false;
+                } else {
+                    updateUserLocation(e.latLng);
+                }
             });
 
             userMarker.addListener('dragend', function(e) {
                 updateUserLocation(e.latLng);
             });
 
-            displayDangerZones();
+            drawingManager = new google.maps.drawing.DrawingManager({
+                drawingMode: null,
+                drawingControl: false,
+                polygonOptions: {
+                    editable: true
+                },
+                circleOptions: {
+                    editable: true
+                }
+            });
+            drawingManager.setMap(map);
+
+            google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
+                if (event.type === google.maps.drawing.OverlayType.POLYGON) {
+                    var name = prompt("위험 지역의 이름을 입력하세요:");
+                    if (name) {
+                        var coords = event.overlay.getPath().getArray().map(coord => ({lat: coord.lat(), lng: coord.lng()}));
+                        addDangerZone(name, "polygon", coords);
+                    } else {
+                        event.overlay.setMap(null);
+                    }
+                } else if (event.type === google.maps.drawing.OverlayType.CIRCLE) {
+                    var name = prompt("위험 구역의 이름을 입력하세요:");
+                    if (name) {
+                        var center = event.overlay.getCenter();
+                        var radius = event.overlay.getRadius();
+                        addDangerZone(name, "circle", {center: {lat: center.lat(), lng: center.lng()}, radius: radius});
+                    } else {
+                        event.overlay.setMap(null);
+                    }
+                }
+                drawingManager.setDrawingMode(null);
+            });
+
+            loadDangerZones();
             updateLocationDisplay(userMarker.getPosition());
+            checkLoginStatus();
         }
 
         function updateUserLocation(latLng) {
             userMarker.setPosition(latLng);
             userCircle.setCenter(latLng);
             updateLocationDisplay(latLng);
-            checkDangerZones(latLng);
+            checkDangerZones();
         }
 
         function updateLocationDisplay(position) {
@@ -100,47 +278,229 @@
                 `위도: ${position.lat().toFixed(6)}, 경도: ${position.lng().toFixed(6)}`;
         }
 
+        function startDrawingDangerZone() {
+            var drawingType = confirm("다각형을 그리려면 확인을, 원형을 그리려면 취소를 클릭하세요.") 
+                ? google.maps.drawing.OverlayType.POLYGON 
+                : google.maps.drawing.OverlayType.CIRCLE;
+            drawingManager.setDrawingMode(drawingType);
+        }
+
+        function enableAddMarkerMode() {
+            isAddMarkerMode = true;
+            alert("위험 장소를 추가할 위치를 클릭하세요.");
+        }
+
+        function enableEditMode() {
+            isEditMode = true;
+            isDeleteMode = false;
+            alert("수정할 위험 지역을 클릭하세요.");
+        }
+
+        function enableDeleteMode() {
+            isDeleteMode = true;
+            isEditMode = false;
+            alert("삭제할 위험 지역을 클릭하세요.");
+        }
+
+        function addMarkerDangerZone(latLng) {
+            var name = prompt("위험 장소의 이름을 입력하세요:");
+            if (name) {
+                var newZone = { name: name, type: "marker", latitude: latLng.lat(), longitude: latLng.lng() };
+
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:9002/api/danger-zones",
+                    contentType: "application/json",
+                    data: JSON.stringify(newZone),
+                    success: function(response) {
+                        console.log("새 위험 장소가 성공적으로 추가되었습니다.", response);
+                        loadDangerZones();
+                    },
+                    error: function(error) {
+                        console.error("위험 장소 추가 중 오류 발생:", error);
+                    }
+                });
+            }
+        }
+
+        function addDangerZone(name, type, data) {
+            var newZone = { name: name, type: type };
+            if (type === "polygon") {
+                newZone.coords = data;
+                newZone.coordinates = JSON.stringify(data);
+            } else if (type === "circle") {
+                newZone.center = data.center;
+                newZone.latitude = data.center.lat;
+                newZone.longitude = data.center.lng;
+                newZone.radius = data.radius;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:9002/api/danger-zones",
+                contentType: "application/json",
+                data: JSON.stringify(newZone),
+                success: function(response) {
+                    console.log("새 위험 지역이 성공적으로 추가되었습니다.", response);
+                    loadDangerZones();
+                },
+                error: function(error) {
+                    console.error("위험 지역 추가 중 오류 발생:", error);
+                }
+            });
+        }
+
+        function updateDangerZone(index, name, data) {
+            var zone = dangerZones[index];
+            zone.name = name;
+            if (zone.type === "polygon") {
+                zone.coords = data;
+                zone.coordinates = JSON.stringify(data);
+            } else if (zone.type === "circle") {
+                zone.center = data.center;
+                zone.latitude = data.center.lat;
+                zone.longitude = data.center.lng;
+                zone.radius = data.radius;
+            } else if (zone.type === "marker") {
+                zone.latitude = data.latitude;
+                zone.longitude = data.longitude;
+            }
+
+            $.ajax({
+                type: "PUT",
+                url: `http://localhost:9002/api/danger-zones/${zone.id}`,
+                contentType: "application/json",
+                data: JSON.stringify(zone),
+                success: function(response) {
+                    
+                	console.log("위험 지역이 성공적으로 업데이트되었습니다.", response);
+                    loadDangerZones();
+                },
+                error: function(error) {
+                    console.error("위험 지역 업데이트 중 오류 발생:", error);
+                }
+            });
+        }
+
+        function removeDangerZone(index) {
+            var zone = dangerZones[index];
+
+            $.ajax({
+                type: "DELETE",
+                url: `http://localhost:9002/api/danger-zones/${zone.id}`,
+                success: function(response) {
+                    console.log("위험 지역이 성공적으로 삭제되었습니다.", response);
+                    loadDangerZones();
+                },
+                error: function(error) {
+                    console.error("위험 지역 삭제 중 오류 발생:", error);
+                }
+            });
+        }
+
         function displayDangerZones() {
+            // 기존 오버레이 제거
             dangerZones.forEach(function(zone) {
+                if (zone.overlay) {
+                    zone.overlay.setMap(null);
+                }
+            });
+
+            dangerZones.forEach(function(zone, index) {
+                var overlay;
                 if (zone.type === "circle") {
-                    new google.maps.Circle({
+                    overlay = new google.maps.Circle({
                         strokeColor: "#FF0000",
                         strokeOpacity: 0.8,
                         strokeWeight: 2,
                         fillColor: "#FF0000",
                         fillOpacity: 0.35,
                         map: map,
-                        center: zone.center,
-                        radius: zone.radius
+                        center: { lat: zone.latitude, lng: zone.longitude },
+                        radius: zone.radius,
+                        editable: false
                     });
                 } else if (zone.type === "polygon") {
-                    new google.maps.Polygon({
+                    overlay = new google.maps.Polygon({
                         paths: zone.coords,
                         strokeColor: "#FF0000",
                         strokeOpacity: 0.8,
                         strokeWeight: 2,
                         fillColor: "#FF0000",
                         fillOpacity: 0.35,
-                        map: map
+                        map: map,
+                        editable: false
+                    });
+                } else if (zone.type === "marker") {
+                    overlay = new google.maps.Marker({
+                        position: { lat: zone.latitude, lng: zone.longitude },
+                        map: map,
+                        title: zone.name,
+                        icon: {
+                            url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                        }
                     });
                 }
+
+                google.maps.event.addListener(overlay, 'click', function(event) {
+                    if (isEditMode) {
+                        editDangerZone(index, zone, overlay);
+                    } else if (isDeleteMode) {
+                        if (confirm(`"${zone.name}"을(를) 삭제하시겠습니까?`)) {
+                            removeDangerZone(index);
+                        }
+                    }
+                });
+
+                zone.overlay = overlay;
             });
 
             updateDangerList();
         }
 
+        function editDangerZone(index, zone, overlay) {
+            var newName = prompt("새로운 이름을 입력하세요:", zone.name);
+            if (newName) {
+                if (zone.type === "polygon" || zone.type === "circle") {
+                    overlay.setEditable(true);
+                    google.maps.event.addListenerOnce(overlay, 'mouseup', function() {
+                        var newData;
+                        if (zone.type === "polygon") {
+                            newData = overlay.getPath().getArray().map(coord => ({lat: coord.lat(), lng: coord.lng()}));
+                        } else if (zone.type === "circle") {
+                            newData = {
+                                center: {lat: overlay.getCenter().lat(), lng: overlay.getCenter().lng()},
+                                radius: overlay.getRadius()
+                            };
+                        }
+                        updateDangerZone(index, newName, newData);
+                        overlay.setEditable(false);
+                    });
+                } else if (zone.type === "marker") {
+                    var newLatLng = overlay.getPosition();
+                    var newData = {
+                        latitude: newLatLng.lat(),
+                        longitude: newLatLng.lng()
+                    };
+                    updateDangerZone(index, newName, newData);
+                }
+            }
+        }
+
         function updateDangerList() {
             var list = document.getElementById('danger-list');
             list.innerHTML = '<h3>위험 지역 목록</h3>';
-            dangerZones.forEach(function(zone) {
+            dangerZones.forEach(function(zone, index) {
                 var item = document.createElement('div');
                 item.className = 'danger-item';
                 item.textContent = zone.name;
                 item.onclick = function() {
                     if (zone.type === "circle") {
-                        map.setCenter(zone.center);
+                        map.setCenter({ lat: zone.latitude, lng: zone.longitude });
                     } else if (zone.type === "polygon") {
                         map.setCenter(zone.coords[0]);
+                    } else if (zone.type === "marker") {
+                        map.setCenter({ lat: zone.latitude, lng: zone.longitude });
                     }
                     map.setZoom(15);
                 };
@@ -148,17 +508,87 @@
             });
         }
 
-        function checkDangerZones(position) {
+        function checkDangerZones() {
+            var userPosition = userCircle.getCenter();
+            var userRadius = userCircle.getRadius();
+            var dangerDetected = false;
+            var dangerMessages = [];
+
             dangerZones.forEach(function(zone) {
                 if (zone.type === "circle") {
-                    if (google.maps.geometry.spherical.computeDistanceBetween(position, new google.maps.LatLng(zone.center)) <= zone.radius) {
-                        alert(`주의! ${zone.name}에 접근했습니다.`);
+                    var zoneCenter = new google.maps.LatLng({ lat: zone.latitude, lng: zone.longitude });
+                    if (google.maps.geometry.spherical.computeDistanceBetween(userPosition, zoneCenter) <= (userRadius + zone.radius)) {
+                        dangerDetected = true;
+                        dangerMessages.push(`주의! ${zone.name}에 접근했습니다.`);
                     }
                 } else if (zone.type === "polygon") {
-                    var poly = new google.maps.Polygon({paths: zone.coords});
-                    if (google.maps.geometry.poly.containsLocation(position, poly)) {
-                        alert(`주의! ${zone.name}에 들어왔습니다.`);
+                    var poly = new google.maps.Polygon({ paths: zone.coords });
+                    if (google.maps.geometry.poly.containsLocation(userPosition, poly)) {
+                        dangerDetected = true;
+                        dangerMessages.push(`주의! ${zone.name}에 들어왔습니다.`);
+                    } else {
+                        // 폴리곤의 모든 변과 원의 중심 간의 거리를 검사하여 겹침 여부 확인
+                        var paths = poly.getPaths().getArray();
+                        for (var i = 0; i < paths.length; i++) {
+                            var path = paths[i];
+                            for (var j = 0; j < path.getLength(); j++) {
+                                var vertex1 = path.getAt(j);
+                                var vertex2 = path.getAt((j + 1) % path.getLength());
+                                var distance = google.maps.geometry.spherical.computeDistanceBetween(vertex1, userPosition);
+                                if (distance <= userRadius) {
+                                    dangerDetected = true;
+                                    dangerMessages.push(`주의! ${zone.name}에 접근했습니다.`);
+                                    break;
+                                }
+                            }
+                            if (dangerDetected) break;
+                        }
                     }
+                } else if (zone.type === "marker") {
+                    var markerPosition = new google.maps.LatLng({ lat: zone.latitude, lng: zone.longitude });
+                    if (google.maps.geometry.spherical.computeDistanceBetween(userPosition, markerPosition) <= userRadius) {
+                        dangerDetected = true;
+                        dangerMessages.push(`주의! ${zone.name}에 접근했습니다.`);
+                    }
+                }
+            });
+
+            if (dangerDetected) {
+                showAlertModal(dangerMessages.join('\n'));
+            }
+        }
+
+        function showAlertModal(message) {
+            document.getElementById('alertMessage').innerText = message;
+            document.getElementById('alertModal').style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById('alertModal').style.display = "none";
+        }
+
+        function checkLoginStatus() {
+            const token = localStorage.getItem("Authorization");
+            if (token) {
+                document.getElementById('admin-controls').style.display = 'block';
+            }
+        }
+
+        function loadDangerZones() {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:9002/api/danger-zones",
+                success: function(response) {
+                    dangerZones = response.map(zone => {
+                        if (zone.type === "polygon") {
+                            zone.coords = JSON.parse(zone.coordinates);
+                        }
+                        return zone;
+                    });
+                    displayDangerZones();
+                },
+                error: function(error) {
+                    console.error("위험 지역 불러오기 중 오류 발생:", error);
                 }
             });
         }
