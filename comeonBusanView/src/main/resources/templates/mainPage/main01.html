@@ -6,16 +6,106 @@
 <link rel="stylesheet" th:href="@{/css/header.css}">
 <script src="/js/common.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<style>
+    #pagination-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 440px; /* Container width */
+        margin: 0 auto; /* Center the container */
+    }
+    #video-container {
+        width: 400px;
+        height: 300px;
+        margin-bottom: 20px; /* Space between video and buttons */
+    }
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+    button {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
 </head>
 <body>
 <header>
-<th:block th:insert="~{/fragments/aaa.html"></th:block>
+<!--  <th:block th:insert="~{/fragments/aaa.html"></th:block> -->
 </header>
-<section>
 
+	<h2>유튜브 페이지네이션</h2>
+<div id="pagination-wrapper">
+    <div id="video-container"></div>
+    <div class="button-container">
+        <button id="prevBtn">〈 이전</button>
+        <button id="nextBtn">다음 〉</button>
+    </div>
+</div>
 
+<script>
+    var videoIds = ['o_FlQvFotwQ', 'NfdCTa3r1DA', 'QGrnMdi6wrQ', '3gugFrmfhlQ'];
+    var currentIndex = 0;
+    var player;
 
-</section>
-<div th:replace="fragments/footer :: footer"></div>
+    // 유튜브 iframe API 준비
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('video-container', {
+            height: '300',
+            width: '400',
+            videoId: videoIds[currentIndex],
+            playerVars: {
+                'autoplay': 0,
+                'controls': 1,
+                'rel': 0,
+                'showinfo': 0
+            }
+        });
+    }
+
+    function loadVideo(index) {
+        if (player) {
+        	player.stopVideo();
+            player.cueVideoById({
+            		videoId: videoIds[index],
+            		startSeconds: 0		
+            });
+        }
+    }
+
+    $(document).ready(function() {
+        if (window.YT && YT.Player) {
+            onYouTubeIframeAPIReady();
+        } else {
+            var tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+
+        $('#nextBtn').click(function() {
+            if (currentIndex < videoIds.length - 1) {
+                currentIndex++;
+                loadVideo(currentIndex);
+            }
+        });
+
+        $('#prevBtn').click(function() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadVideo(currentIndex);
+            }
+        });
+    });
+</script>
 </body>
 </html>
