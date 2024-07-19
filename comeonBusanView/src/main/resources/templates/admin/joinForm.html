@@ -8,31 +8,43 @@
 	crossorigin="anonymous"></script>
 </head>
 <body>
-<header>
-        <th:block th:insert="~{/fragments/header2.html}"></th:block>
-</header>
+	<header>
+		<th:block th:insert="~{/fragments/header2.html}"></th:block>
+	</header>
+
 	<h1>회원가입 페이지</h1>
 	<hr>
-    <form id="form">
+    <form id="frm">
         <input type="text" name="username" placeholder="Username" />
         <input type="password" name="password" placeholder="Password" autocomplete="current-password"/>
-        <button type="button" onclick="submitForm2(event)">회원가입</button>
+        <button type="button" onclick="submitUserInfo(event)">회원가입</button>
     </form>
 	
-	<button type="submit" value="메인" onclick="getInfo(event)">메인 통신</button>
+<!-- 	<button type="submit" value="메인" onclick="getInfo(event)">메인 통신</button> -->
 	  <footer>
     <th:block th:insert="~{/fragments/footer.html}"></th:block>
   </footer>
     <script>
-        function submitForm2(event) {
+        function submitUserInfo(event) {
             event.preventDefault();
+            
+            console.log("????");
 		
-            var form = document.forms['form'];
+            var form = document.forms['frm'];
+            
+            console.log(form);
+            
             var formDataArray = $(form).serializeArray();
+            
+            console.log(formDataArray);
+            // 여기부터 안됨
+            console.log("되나?" + formDataArray.username);
+            console.log("되나?" + form.password.value);
             var formData = {
             		"username" : form.username.value,
             		"password" : form.password.value
             };
+
             
 
          /*   $.each(formDataArray, function(index, field) {
