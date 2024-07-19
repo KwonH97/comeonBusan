@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/festival")
+//@RequestMapping("/festival")
 public class FestivalController {
 	
 	// 축제 festival
@@ -14,7 +14,7 @@ public class FestivalController {
 	@RequestMapping("/festivalList")
 	public String festivalList() {
 		
-		return "festivalList";
+		return "/festival/festivalList";
 		
 	}
 	
@@ -25,7 +25,7 @@ public class FestivalController {
 		
 		model.addAttribute("uc_seq", uc_seq);		
 		
-		return "festivalDetail";
+		return "/festival/festivalDetail";
 	}
 	
 	// 축제 admin 등록, 수정
@@ -33,7 +33,7 @@ public class FestivalController {
 	@RequestMapping("/festivalAdd")
 	public String festivalAdd() {
 		
-		return "/admin/festivalAdd";		
+		return "/festival/festivalAdd";		
 	}
 	
 	@RequestMapping("/festivalModify")
@@ -46,6 +46,6 @@ public class FestivalController {
 		
 		model.addAttribute("uc_seq", uc_seq);
 
-		return "/admin/festivalModify";
+		return "/festival/festivalModify";
 	}
 }
