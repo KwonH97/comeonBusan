@@ -1,91 +1,234 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap');
+
 <head>
-<meta charset="UTF-8">
-<title>로그인 페이지</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js"
-	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-	crossorigin="anonymous"></script>
-<script>
-    // 페이지 로드 시 로그인 상태 확인
-    $(document).ready(function() {
-        const token = localStorage.getItem("Authorization");
-        if (token) {
-            // 토큰이 있으면 관리자 페이지로 리디렉션
-            window.location.href = "/adminPage";
-        }
-    });
+	<meta charset="UTF-8">
+	<title>로그인</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
 
-    function submitForm(event) {
-        event.preventDefault();  // 기본 폼 전송을 막기 위해 필요합니다.
+		body {
+			font-family: 'Noto Sans KR', sans-serif;
+		}
 
-        var form = document.forms['frm'];
-        var formData = $(form).serialize();
+		.container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			background-color: #f5f5f5;
 
-        $.ajax({
-            type: "POST",
-            url: "http://localhost:9002/login",
-            contentType: 'application/x-www-form-urlencoded',
-            data: formData,
-            success: function(data, status, xhr) {
-                console.log("success : ", data);
-                var headers = xhr.getAllResponseHeaders();
-                console.log(headers);
-                alert("로그인 되었습니다.");
-                var token = xhr.getResponseHeader("Authorization");
-                if (token != null) {
-                    console.log("JWT Token: " + token.split(" ")[1]);
-                    localStorage.setItem("Authorization", token.split(" ")[1]);
-                    window.location.href = "/adminPage"; // 로그인 성공 시 이동할 페이지
-                } else {
-                    console.log("Authorization 헤더가 없습니다.");
-                }
-            },
-            error: function(error) {
-                console.log("error 발생");
-            }
-        });
-    }
+		}
 
-    function requestAdmin() {
-        const token = localStorage.getItem("Authorization");
-        console.log(token);
-        $.ajax({
-            type: "GET",
-            url: "http://localhost:9002/admin",
-            headers: {
-                "Authorization": "Bearer " + token // Bearer 토큰 형식을 사용하여 토큰을 포함
-            },
-            success: function(data) {
-                console.log("Success:", data);
-                // 사용자 프로필 등을 처리
-                document.getElementById("demo2").innerHTML = data;
-            },
-            error: function() {
-                console.log("Error가 났어요");
-                // 인증 실패 등의 오류 처리
-            }
-        });
-    }
-</script>
+		.login-form {
+			width: 100%;
+			max-width: 400px;
+			background: white;
+			padding: 40px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			border-radius: 10px;
+			text-align: center;
+
+		}
+
+		.login-form h1 {
+
+			margin-bottom: 50px;
+			font-size: 32px;
+
+		}
+
+		.int-area {
+			position: relative;
+			margin-top: 20px;
+		}
+
+		.int-area:first-child {
+			margin-top: 0;
+		}
+
+		.int-area input {
+			width: 100%;
+			padding: 20px 10px 10px;
+			background-color: transparent;
+			border: none;
+			border-bottom: 1px solid black;
+			font-size: 18px;
+			outline: none;
+		}
+
+		.int-area label {
+			position: absolute;
+			left: 10px;
+			top: 15px;
+			font-size: 18px;
+			transition: top 0.5s ease;
+		}
+
+		.int-area label.warning {
+			color: red !important;
+			animation: warning 0.3s ease;
+			animation-iteration-count: 3;
+		}
+
+		@keyframes warning {
+			0% {
+				transform: translateX(-8px);
+			}
+
+			25% {
+				transform: translateX(8px);
+			}
+
+			50% {
+				transform: translateX(-8px);
+			}
+
+			75% {
+				transform: translateX(8px);
+			}
+		}
+
+		.int-area input:focus+label,
+		.int-area input:valid+label {
+			top: -2px;
+			font-size: 13px;
+			color: #166caa;
+		}
+
+		.btn-area {
+			margin-top: 30px;
+		}
+
+		.btn-area button,
+		.btn-area input[type="submit"] {
+			width: 100%;
+			height: 50px;
+			margin: 0px 10px;
+			color: #fff;
+			background: #166caa;
+			border: none;
+			border-radius: 20px;
+			font-size: 20px;
+			cursor: pointer;
+		}
+
+		.caption {
+			margin-top: 20px;
+			text-align: center;
+		}
+
+		.caption a {
+			margin: 0 20px;
+			font-size: 15px;
+			color: blue;
+			text-decoration: none;
+		}
+	</style>
+	<script src="https://code.jquery.com/jquery-3.7.1.js"
+		integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+	<script>
+		// 페이지 로드 시 로그인 상태 확인
+		$(document).ready(function () {
+			const token = localStorage.getItem("Authorization");
+			if (token) {
+				// 토큰이 있으면 관리자 페이지로 리디렉션
+				window.location.href = "/adminPage";
+			}
+		});
+
+		function submitForm(event) {
+			event.preventDefault();  // 기본 폼 전송을 막기 위해 필요합니다.
+
+			var form = document.forms['frm'];
+			var formData = $(form).serialize();
+
+			$.ajax({
+				type: "POST",
+				url: "http://localhost:9002/login",
+				contentType: 'application/x-www-form-urlencoded',
+				data: formData,
+				success: function (data, status, xhr) {
+					console.log("success : ", data);
+					var headers = xhr.getAllResponseHeaders();
+					console.log(headers);
+					alert("로그인 되었습니다.");
+					var token = xhr.getResponseHeader("Authorization");
+					if (token != null) {
+						console.log("JWT Token: " + token.split(" ")[1]);
+						localStorage.setItem("Authorization", token.split(" ")[1]);
+						window.location.href = "/adminPage"; // 로그인 성공 시 이동할 페이지
+					} else {
+						console.log("Authorization 헤더가 없습니다.");
+					}
+				},
+				error: function (error) {
+					console.log("error 발생");
+				}
+			});
+		}
+
+		function requestAdmin() {
+			const token = localStorage.getItem("Authorization");
+			console.log(token);
+			$.ajax({
+				type: "GET",
+				url: "http://localhost:9002/admin",
+				headers: {
+					"Authorization": "Bearer " + token // Bearer 토큰 형식을 사용하여 토큰을 포함
+				},
+				success: function (data) {
+					console.log("Success:", data);
+					// 사용자 프로필 등을 처리
+					document.getElementById("demo2").innerHTML = data;
+				},
+				error: function () {
+					console.log("Error가 났어요");
+					// 인증 실패 등의 오류 처리
+				}
+			});
+		}
+	</script>
 </head>
+
+
+
 <body>
-<header>
-    <th:block th:insert="~{/fragments/header2.html}"></th:block>
-</header>
-<h1>로그인페이지다</h1>
-
-<form name="frm" onsubmit="submitForm(event)">
-    <input type="text" name="username" placeholder="username"/>
-    <input type="password" name="password" placeholder="password"/>
-    <input type="submit" value="login" />
-</form>
-
-<button onclick="requestAdmin()">Admin Page 요청하기</button>
+	<header>
+		<th:block th:insert="~{/fragments/header2.html}"></th:block>
+	</header>
+	<div class="container">
+		<section class="login-form">
+			<h1>Login</h1>
+			<form name="frm" onsubmit="submitForm(event)">
+				<div class="int-area">
+					<input type="text" name="username" placeholder="username" />
+					<label for="username">ID</label>
+				</div>
+				<div class="int-area">
+					<input type="password" name="password" placeholder="password" />
+					<label for="password">PASSWORD</label>
+				</div>
+				<div class="btn-area">
+					<input type="submit" id="btn" value="LOGIN" />
+				</div>
+			</form>
+			<div class="caption">
+				<a href="">Forgot Password?</a>
+				<a href="/joinForm">회원가입</a>
+			</div>
+		</section>
+		<!--<button onclick="requestAdmin()">Admin Page 요청하기</button>
 <div id="demo2"></div>
-
-<footer>
-    <th:block th:insert="~{/fragments/footer.html}"></th:block>
-</footer>
+-->
+	</div>
+	<footer>
+		<th:block th:insert="~{/fragments/footer.html}"></th:block>
+	</footer>
 </body>
+
 </html>
