@@ -5,46 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>부산 여행 AI 맞춤 일정</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body.busan-travel-body {
             font-family: 'Noto Sans KR', sans-serif;
-            margin-top: 80px; /* 헤더와 겹치지 않도록 여백 추가 */
-            background-color: #f5f5f5;
+            margin-top: 80px;
+            background-color: #f0f8ff;
         }
         .busan-travel-container {
             background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         #busan-travel-map {
-            height: 470px;
-            width: 90%;
-            margin: 0 auto; /* 가운데 정렬 */
+            height: 500px;
+            width: 100%;
             margin-bottom: 30px;
-            border: 2px solid #005baa;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .form-control, .form-select {
             border-radius: 10px;
         }
-        .busan-travel-loading {
-            display: none;
+        .btn-primary {
+            background-color: #005baa;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: background-color 0.3s;
         }
-        .busan-travel-table-responsive {
-            overflow-x: auto;
+        .btn-primary:hover {
+            background-color: #004088;
+        }
+        .busan-travel-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255,255,255,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+        .busan-travel-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
         }
         .busan-travel-table th, .busan-travel-table td {
-            text-align: center;
-            vertical-align: middle;
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .busan-travel-table th {
+            background-color: #005baa;
+            color: white;
         }
         .gm-style-iw {
-            padding: 10px;
+            padding: 15px;
+            border-radius: 10px;
         }
         .gm-style-iw h3 {
             margin-top: 0;
-            color: #333;
+            color: #005baa;
         }
         .gm-style-iw p {
             margin: 5px 0;
-            color: #666;
+            color: #333;
+        }
+        @media (max-width: 768px) {
+            .busan-travel-container {
+                padding: 20px;
+            }
+            #busan-travel-map {
+                height: 300px;
+            }
         }
     </style>
 </head>
@@ -87,14 +130,36 @@
                     </select>
                 </div>
             </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="busan-region" class="form-label">부산 지역:</label>
+                    <select id="busan-region" class="form-select">
+                        <option value="all">부산 전체</option>
+                        <option value="중구">중구</option>
+                        <option value="서구">서구</option>
+                        <option value="동구">동구</option>
+                        <option value="영도구">영도구</option>
+                        <option value="부산진구">부산진구</option>
+                        <option value="동래구">동래구</option>
+                        <option value="남구">남구</option>
+                        <option value="북구">북구</option>
+                        <option value="해운대구">해운대구</option>
+                        <option value="사하구">사하구</option>
+                        <option value="금정구">금정구</option>
+                        <option value="강서구">강서구</option>
+                        <option value="연제구">연제구</option>
+                        <option value="수영구">수영구</option>
+                        <option value="사상구">사상구</option>
+                        <option value="기장군">기장군</option>
+                    </select>
+                </div>
+            </div>
             <button type="submit" class="btn btn-primary">추천 여행 일정 생성</button>
         </form>
 
-        <div class="mt-4 busan-travel-loading">
-            <div class="d-flex justify-content-center">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">로딩중...</span>
-                </div>
+        <div class="busan-travel-loading" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">로딩중...</span>
             </div>
         </div>
 
@@ -114,11 +179,44 @@
         let map;
         let markers = [];
         let polylines = [];
+        let foodList = [];
+        let tourList = [];
 
         function initMap() {
+            const busan = { lat: 35.1796, lng: 129.0756 };
             map = new google.maps.Map(document.getElementById('busan-travel-map'), {
-                center: {lat: 35.1796, lng: 129.0756},
+                center: busan,
                 zoom: 12
+            });
+            loadFoodData();
+            loadTourData();
+        }
+
+        function loadFoodData() {
+            $.ajax({
+                url: "http://localhost:9002/kibTest/food",
+                method: "GET",
+                success: function(response) {
+                    console.log("Food data loaded:", response);
+                    foodList = response;
+                },
+                error: function(error) {
+                    console.error('Error fetching food data:', error);
+                }
+            });
+        }
+
+        function loadTourData() {
+            $.ajax({
+                url: "http://localhost:9002/kibTest/tourList",
+                type: 'GET',
+                success: function(response) {
+                    console.log("Tour data loaded:", response);
+                    tourList = response;
+                },
+                error: function(error) {
+                    console.error('Error fetching tour data:', error);
+                }
             });
         }
 
@@ -134,6 +232,11 @@
             const formattedDate = getFormattedDate(today);
             document.getElementById('start-date').setAttribute('min', formattedDate);
             document.getElementById('end-date').setAttribute('min', formattedDate);
+        }
+
+        function setEndDateMin() {
+            const startDate = document.getElementById('start-date').value;
+            document.getElementById('end-date').setAttribute('min', startDate);
         }
 
         async function fetchWeatherData(startDate, endDate) {
@@ -173,7 +276,24 @@
 
         function displayAIResponse(response) {
             const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = `<pre>${response}</pre>`;
+            const days = parseItinerary(response);
+            let tableHtml = '<table class="busan-travel-table">';
+            tableHtml += '<tr><th>날짜</th><th>시간</th><th>장소</th><th>활동</th><th>비용</th><th>날씨</th></tr>';
+            
+            for (const date in days) {
+                days[date].forEach((item, index) => {
+                    tableHtml += `<tr>
+                        ${index === 0 ? `<td rowspan="${days[date].length}">${date}</td>` : ''}
+                        <td>${item.time}</td>
+                        <td>${item.name}</td>
+                        <td>${item.activity}</td>
+                        <td>${item.cost}</td>
+                        <td>${item.weather}</td>
+                    </tr>`;
+                });
+            }
+            tableHtml += '</table>';
+            resultDiv.innerHTML = tableHtml;
         }
 
         function parseItinerary(itinerary) {
@@ -205,7 +325,6 @@
                 }
             });
 
-            console.log("Parsed itinerary:", days);
             return days;
         }
 
@@ -215,20 +334,18 @@
         }
 
         function drawMarkersAndPolylines(days) {
-            console.log("Drawing markers and polylines:", days);
-            // 기존 마커와 선 제거
             markers.forEach(marker => marker.setMap(null));
             markers = [];
             polylines.forEach(polyline => polyline.setMap(null));
             polylines = [];
 
             let dayIndex = 0;
+            const bounds = new google.maps.LatLngBounds();
 
             for (const date in days) {
                 const color = getColor(dayIndex);
                 const places = days[date];
 
-                const bounds = new google.maps.LatLngBounds();
                 const path = places.map((place, index) => {
                     const latLng = new google.maps.LatLng(place.lat, place.lng);
                     bounds.extend(latLng);
@@ -271,7 +388,6 @@
                     return latLng;
                 });
 
-                // 선 그리기
                 const polyline = new google.maps.Polyline({
                     path: path,
                     geodesic: true,
@@ -282,22 +398,29 @@
                 polyline.setMap(map);
                 polylines.push(polyline);
 
-                // 지도 범위 조정
-                map.fitBounds(bounds);
                 dayIndex++;
             }
+
+            map.fitBounds(bounds);
+            
+            google.maps.event.addListenerOnce(map, 'bounds_changed', function() {
+                if (this.getZoom() > 12) {
+                    this.setZoom(12);
+                }
+            });
         }
 
         document.getElementById('planner-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const loadingDiv = document.querySelector('.busan-travel-loading');
-            loadingDiv.style.display = 'block';
+            loadingDiv.style.display = 'flex';
 
             const startDate = new Date(document.getElementById('start-date').value);
             const endDate = new Date(document.getElementById('end-date').value);
             const travelType = document.getElementById('travel-type').value;
             const budget = document.getElementById('budget').value;
             const transportation = document.getElementById('transportation').value;
+            const selectedRegion = document.getElementById('busan-region').value;
 
             try {
                 const weatherData = await fetchWeatherData(startDate, endDate);
@@ -305,15 +428,27 @@
                     `Date: ${item.date}, Weather: ${item.weather}, Temperature: ${item.temp}°C`
                 ).join('\n');
 
+                const filteredFoodList = selectedRegion === 'all' ? foodList : foodList.filter(item => item.gugun_nm === selectedRegion);
+                const filteredTourList = selectedRegion === 'all' ? tourList : tourList.filter(item => item.gugun_nm === selectedRegion);
+
                 const prompt = `다음은 부산 여행 일정 계획에 필요한 정보입니다.
                 - 여행 시작 날짜: ${getFormattedDate(startDate)}
                 - 여행 종료 날짜: ${getFormattedDate(endDate)}
                 - 여행 형태: ${travelType}
                 - 예산: ${budget}원
                 - 교통 수단: ${transportation}
+                - 선택한 지역: ${selectedRegion}
                 - 날씨 요약: ${weatherSummary}
 
+                추천 가능한 음식점 목록:
+                ${filteredFoodList.map(item => `${item.main_title} (${item.lat}, ${item.lng})`).join('\n')}
+
+                추천 가능한 관광지 목록:
+                ${filteredTourList.map(item => `${item.place} (${item.lat}, ${item.lng})`).join('\n')}
+
                 위 정보를 바탕으로 매일 추천 시간과 일정을 만들어 주세요. 
+                하루에 최소 3곳의 장소를 방문하고  반드시 식사시간에 근처 맛집도 추천합니다.
+                추천 관광코스를 생성할 때는 근처에 있는 곳을 먼저 추천해서 효율적인 여행이 될 수 있도록 한다
                 각 장소에 대해 사용자가 입력한 각 날짜 별로 다음 형식으로 응답해주세요:
                 YYYY-MM-DD:
                 시간: <장소명> (위도, 경도) | 활동 설명 | 예상 비용 | 날씨
@@ -322,22 +457,25 @@
                 10:00: 부산타워 (35.1796, 129.0756) | 전망대 관람 | 10,000원 | 맑음`;
 
                 const itinerary = await fetchOpenAI(prompt);
-                displayAIResponse(itinerary);  // AI의 답변을 먼저 출력
+                displayAIResponse(itinerary);
                 const days = parseItinerary(itinerary);
                 if (Object.keys(days).length > 0) {
-                    drawMarkersAndPolylines(days);  // 추출된 장소로 지도에 마커를 표시하고 경로를 그림
+                    drawMarkersAndPolylines(days);
                 } else {
                     console.error("No valid places found in the itinerary.");
                 }
 
             } catch (error) {
-                document.getElementById('result').innerHTML = `<div class="alert alert-danger">오류: ${error.message}</div>`;
+                document.getElementById('result').innerHTML = `<div class="alert alert-danger">오류가 발생했습니다: ${error.message}</div>`;
             } finally {
                 loadingDiv.style.display = 'none';
             }
         });
 
-        document.addEventListener('DOMContentLoaded', setMinDate);
+        document.addEventListener('DOMContentLoaded', () => {
+            setMinDate();
+            document.getElementById('start-date').addEventListener('change', setEndDateMin);
+        });
     </script>
 </body>
 </html>
