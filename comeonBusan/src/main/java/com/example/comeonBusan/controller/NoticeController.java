@@ -148,10 +148,13 @@ public class NoticeController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	
 		return "공지가 성공적으로 등록되었습니다.";
 	}
-	
-/*	@PutMapping("/noticeModify/{hnum}")
+}
+/*
+	// 공지사항 수정
+	@PutMapping("/noticeModify/{hnum}")
 	public String noticeModify(@PathVariable("hnum") String hnum, @RequestParam(value = "file", required = false) MultipartFile file,
 			@RequestParam("title") String title, @RequestParam("content") String content, HttpServletRequest request) {
 		
@@ -170,15 +173,30 @@ public class NoticeController {
 			
 			Optional<Help> optionalEntity = helpRepository.findById(hnum_long);
 			
-			if(!optinalEntity.isPresent()) {
+			if(!optionalEntity.isPresent()) {
 				
-				
-				throw new IllegalArgumentException("공지사항 정보를 찾을 수 없습니다.")
+				throw new IllegalArgumentException("공지사항 정보를 찾을 수 없습니다......");
 				
 			}
+			
+			Help entity = optionalEntity.get();
+			
+			if(file != null && !file.isEmpty()) { // 첨부파일이 있을 경우에만 이미지 URL 업데이트
+				
+				
+				// 파일 처리 로직 추가
+				String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+				
+						
+				
+				
+				
+			}
+					
+					
 		}
 		
-*/		
+
 		
 		
 		
@@ -202,3 +220,4 @@ public class NoticeController {
 		return "";
 	}
 	}
+*/
