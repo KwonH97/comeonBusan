@@ -22,14 +22,14 @@ public class NoticeController {
 		
 		model.addAttribute("id", hnum);
 	
-		return "noticeDetail";
+		return "/notice/noticeDetail";
 		
 	}
 	
 	@RequestMapping("/noticeAdd")
 	public String noticeAdd(){
 		
-		return "/admin/noticeAdd";
+		return "/notice/noticeAdd";
 		
 	}
 		
@@ -42,6 +42,6 @@ public class NoticeController {
 		
 		model.addAttribute("id", hnum);
 		
-		return "/admin/noticeModify";
+		return "/notice/noticeModify";
 	}
 }

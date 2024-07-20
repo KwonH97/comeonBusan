@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -148,5 +150,55 @@ public class NoticeController {
 		}
 		return "공지가 성공적으로 등록되었습니다.";
 	}
+	
+/*	@PutMapping("/noticeModify/{hnum}")
+	public String noticeModify(@PathVariable("hnum") String hnum, @RequestParam(value = "file", required = false) MultipartFile file,
+			@RequestParam("title") String title, @RequestParam("content") String content, HttpServletRequest request) {
+		
+		System.out.println("noticeModify...........");
+		System.out.println(title);
+		System.out.println(content);
+		System.out.println(file);
+		String jwt = request.getHeader("Authorization");
+		System.out.println(jwt);
+		Long hnum_long = Long.parseLong(hnum);
 
-}
+		try {
+			
+			String fileUrl = null;
+			String thumbnailUrl  = null;
+			
+			Optional<Help> optionalEntity = helpRepository.findById(hnum_long);
+			
+			if(!optinalEntity.isPresent()) {
+				
+				
+				throw new IllegalArgumentException("공지사항 정보를 찾을 수 없습니다.")
+				
+			}
+		}
+		
+*/		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		Help entity = new Help();
+		
+		Long hnum_long = Long.parseLong(hnum);
+		
+		entity.setHnum(hnum_long);
+		
+		
+		helpRepository.save(entity);
+		
+
+		return "";
+	}
+	}
