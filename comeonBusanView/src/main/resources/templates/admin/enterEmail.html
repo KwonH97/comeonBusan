@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>새 비밀번호 설정 - 이메일 입력</title>
+	<style>
+	</style>
+	<script src="https://code.jquery.com/jquery-3.7.1.js"
+		integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+
+	<h3>비밀번호 설정 링크를 받으실 이메일을 입력해주세요</h3>
+
+	<form id="set-form" name="set-form">
+		<input type="text" id="email" name="email" placeholder="email" />
+		<input type="submit" value="전송" />
+	</form>
+	<script>
+
+		var username = "[[${username}]]";
+		
+		document.getElementById('set-form').addEventListener('submit', function(event){
+			
+			event.preventDefault();
+			
+			const formData = new FormData();
+			
+			console.log(formData);
+			
+			
+			
+			
+		})
+
+		function thisEmailIsOk() {
+			console.log(username);
+			$.ajax({
+				url: "http://localhost:9002/emailCheck/" + username,
+				method: 'POST',
+				data: formData,
+				success: function (response) {
+					console.log(response);
+
+				},
+				error: function (xhr, status, error) {
+					console.error("Error: " + error);
+				}
+
+			});
+
+
+
+		}
+
+
+	</script>
+</body>
+
+</html>

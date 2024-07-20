@@ -1,7 +1,10 @@
 package com.example.comeonBusanView.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class AdminController {
@@ -31,7 +34,20 @@ public class AdminController {
 		
 		return "/admin/newsLetter";
 	}
-
-
+	
+	@RequestMapping("/setNewPw")
+	public String setNewPw() {
+		
+		return "/admin/setNewPw";
+		
+	}
+	@PostMapping("/enterEmail")
+	public String enterEmail(Model model, @RequestParam("username") String username) {
+		
+		model.addAttribute("username", username);
+		
+		return "/admin/enterEmail";
+		
+	}
 	
 }
