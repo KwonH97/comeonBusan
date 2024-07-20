@@ -36,21 +36,17 @@ body {
     background-color: #fff;
     font-family: 'Nanum Gothic', sans-serif;
     font-size: 16px;
-    padding: 10px 15px;
+    padding: 0 15px; /* 상하 패딩 제거 */
     border: 2px solid #0077be;
     border-radius: 25px 0 0 25px;
     width: 300px;
-    height: 40px;
+    height: 44px; /* 높이 조정 */
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.custom-pac-input:focus {
-    border-color: #00a8e8;
-    outline: none;
+    vertical-align: middle; /* 수직 정렬 추가 */
 }
 
 .custom-search-button {
-    height: 40px;
+    height: 48px; /* 높이 조정 (테두리 포함) */
     padding: 0 20px;
     font-size: 16px;
     cursor: pointer;
@@ -59,7 +55,21 @@ body {
     border: none;
     border-radius: 0 25px 25px 0;
     transition: background-color 0.3s;
+    vertical-align: middle; /* 수직 정렬 추가 */
 }
+
+.search-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+    align-items: center; /* 수직 중앙 정렬 */
+}
+
+.custom-pac-input:focus {
+    border-color: #00a8e8;
+    outline: none;
+}
+
 
 .custom-search-button:hover {
     background-color: #00a8e8;
