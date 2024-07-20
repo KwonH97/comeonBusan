@@ -83,7 +83,7 @@
 	
 	function gomodifyPage(hnum){
 		
-		window.location.href="/noticeModify?hnum=" + hnum;
+		window.location.href="/notice/noticeModify?hnum=" + hnum;
 		
 	}
 	
@@ -100,7 +100,7 @@
 			
 				alert(response);
 				//삭제 후 목록 페이지로 이동
-				window.location.href="/noticeList";
+				window.location.href="/notice/noticeList";
 				
 			},
 			error: function(error){

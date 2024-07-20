@@ -1,67 +1,117 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-<style>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<script src="https://code.jquery.com/jquery-3.7.1.js"
+		integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+	<style>
 
 
-</style>
+	</style>
 </head>
+
 <body>
-<header>
-        <th:block th:insert="~{/fragments/header2.html}"></th:block>
-</header>
-<h1>공지사항 수정 페이지</h1>
-<hr>
+	<header>
+		<th:block th:insert="~{/fragments/header2.html}"></th:block>
+	</header>
+	<h1>공지사항 수정 페이지</h1>
+	<hr>
 
-<div id="container">
-	<form name="frm" id="frm">
-		<ul>
-			<li>공지제목</li>
-			<input type="text" id="title" name="title" /><br>
-			<li>공지내용</li>
-			<textarea type="text" id="content" name="content"></textarea><br>
-			<li>첨부파일(이미지)</li>
-			<input type="file" id="file" name="file" />
-			<input type="button" value="수정하기" onclick="submitForm()" />		
-		</ul>
-	</form>
-</div>
-<footer>
-	<th:block th:insert="~{/fragments/footer.html}"></th:block>
-</footer>
-<script>
+	<div id="container">
+		<form name="frm" id="frm">
+			<ul>
+				<li>공지제목</li>
+				<input type="text" id="title" name="title" /><br>
+				<li>공지내용</li>
+				<textarea type="text" id="content" name="content"></textarea><br>
+				<li>첨부파일(이미지)</li>
+				<input type="file" id="file" name="file" />
+				<input type="button" value="수정하기" onclick="submitForm()" />
+			</ul>
+		</form>
+	</div>
+	<footer>
+		<th:block th:insert="~{/fragments/footer.html}"></th:block>
+	</footer>
+	<script>
 
-	var hnum = "[[${id}]]";
-	
-	$(document).ready(function(){
-		console.log("noticeModifyPage....................");
-		console.log(hnum);
-		
-		
-		$.ajax({
-			
-			url: "http://localhost:9002/khj/noticeDetail/" + hnum,
-			method: "GET",
-			success: function(response){
-				
-				console.log("데이터", response);
-				$("input[name='title']").val(response.title);
-				$("textarea[name='content']").val(response.content);
-				//$("input[name='file']").val(response.himg);
-			},
-			error: function(error){
-				
-				console.log("Error : " , error);
-			}
-			
+		var hnum = "[[${id}]]";
+
+		$(document).ready(function () {
+			console.log("noticeModifyPage....................");
+			console.log(hnum);
+
+
+			$.ajax({
+
+				url: "http://localhost:9002/khj/noticeDetail/" + hnum,
+				method: "GET",
+				success: function (response) {
+
+					console.log("데이터", response);
+					$("input[name='title']").val(response.title);
+					$("textarea[name='content']").val(response.content);
+					//$("input[name='file']").val(response.himg);
+				},
+				error: function (error) {
+
+					console.log("Error : ", error);
+				}
+
+			});
+
 		});
-	
-	});
-	
-</script>
+
+		function submitForm() {
+
+			var form = document.getElementById('frm');
+
+			if (!form) {
+
+				console.error("Form not found....");
+				return;
+			}
+
+			var formData = new FormData(form);
+
+			console.log(formData);
+
+			let token = localStorage.getItem("Authorization");
+
+			$.ajax({
+
+				url: "http://localhost:9002/khj/noticeModify/" + hnum,
+				method: "PUT",
+				enctype: "multipart/form-data",
+				headers: {
+
+					"Authorization": token
+
+				},
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function (response) {
+
+					console.log("success : ", response);
+
+
+				},
+				error: function (e) {
+					console.log("error : ", e);
+
+				}
+
+			});
+
+
+
+		}
+
+	</script>
 
 </body>
+
 </html>
