@@ -1,21 +1,78 @@
-<!DOCTYPE html>
+네, 이해했습니다. 로드뷰 가능 지역 표시를 포함한 전체 코드를 생략 없이 제공해 드리겠습니다.
+htmlCopy<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>Street View와 지도 통합</title>
+<title>부산 관광 - 지도 및 로드뷰</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
-.custom-html, .custom-body {
-    height: 100%;
+body {
     margin: 0;
     padding: 0;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Nanum Gothic', sans-serif;
+    background-color: #f0f8ff;
+    color: #333;
+}
+
+.content-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.map-container {
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    padding-left: 200px; /* 범례를 위한 공간 확보 */
+}
+
+.search-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.custom-pac-input {
+    background-color: #fff;
+    font-family: 'Nanum Gothic', sans-serif;
+    font-size: 16px;
+    padding: 10px 15px;
+    border: 2px solid #0077be;
+    border-radius: 25px 0 0 25px;
+    width: 300px;
+    height: 40px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-pac-input:focus {
+    border-color: #00a8e8;
+    outline: none;
+}
+
+.custom-search-button {
+    height: 40px;
+    padding: 0 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #0077be;
+    color: white;
+    border: none;
+    border-radius: 0 25px 25px 0;
+    transition: background-color 0.3s;
+}
+
+.custom-search-button:hover {
+    background-color: #00a8e8;
 }
 
 .custom-map-container {
-    height: 60%;
-    width: 60%;
-    margin: 40px auto;
+    height: 600px;
+    width: 100%;
     position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .custom-map {
@@ -25,108 +82,314 @@
 
 .custom-pano {
     position: absolute;
-    bottom: 10px;
-    right: 10px;
-    height: 40%;
+    top: 0;
+    right: 0;
+    height: 100%;
     width: 40%;
-    z-index: 1;
-    border: 2px solid black;
-    border-radius: 8px;
-    background: white;
+    border: 3px solid #0077be;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 119, 190, 0.3);
+    overflow: hidden;
     display: none;
 }
 
-.custom-pac-input {
-    background-color: #fff;
-    font-family: Roboto;
-    font-size: 15px;
-    font-weight: 300;
-    margin-top: 10px;
-    margin-left: 12px;
-    padding: 0 11px 0 13px;
-    text-overflow: ellipsis;
-    width: 300px;
-    height: 40px;
+#map-legend {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    background: white;
+    padding: 10px;
+    border: 1px solid #999;
+    border-radius: 5px;
+    font-size: 14px;
+    width: auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    max-width: 200px;
 }
 
-.custom-pac-input:focus {
-    border-color: #4d90fe;
+#map-legend div {
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
 }
 
-.custom-search-button {
-    height: 40px;
-    margin-left: 12px;
-    margin-top: 10px;
-    padding: 0 11px;
-    font-size: 15px;
+#map-legend img {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    flex-shrink: 0;
+}
+
+.info-window {
+    max-width: 300px;
+}
+
+.info-window img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.info-window h5 {
+    margin: 0 0 10px 0;
+    color: #0077be;
+}
+
+.info-window p {
+    margin: 0 0 10px 0;
+}
+
+.info-window button {
+    background-color: #0077be;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.info-window button:hover {
+    background-color: #00a8e8;
 }
 </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
-let map, panorama, streetViewService, searchBox, streetViewMarker;
+let map, panorama, streetViewService, searchBox;
+let markers = [];
+let allData = {
+    lodgment: [],
+    food: [],
+    tour: []
+};
+let infoWindow;
 
 function initialize() {
-    const busan = { lat: 35.1796, lng: 129.0756 }; // 부산 중심 좌표
+    const busan = { lat: 35.1796, lng: 129.0756 };
     map = new google.maps.Map(document.getElementById("map"), {
         center: busan,
-        zoom: 12,
+        zoom: 13,
         mapTypeId: "roadmap",
+        styles: [
+            {
+                featureType: "poi",
+                elementType: "labels",
+                stylers: [{ visibility: "off" }]
+            }
+        ]
     });
 
     panorama = new google.maps.StreetViewPanorama(
         document.getElementById("pano"),
         {
-            pov: {
-                heading: 34,
-                pitch: 10,
-            },
+            position: busan,
+            pov: { heading: 165, pitch: 0 },
+            visible: false
         }
     );
 
+    map.setStreetView(panorama);
+
     streetViewService = new google.maps.StreetViewService();
-
-    map.addListener("click", (event) => {
-        getStreetView(event.latLng);
-    });
-
-    const streetViewLayer = new google.maps.StreetViewCoverageLayer();
-    streetViewLayer.setMap(map);
+    infoWindow = new google.maps.InfoWindow();
 
     const input = document.getElementById("pac-input");
     searchBox = new google.maps.places.SearchBox(input);
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById("search-button"));
 
     map.addListener("bounds_changed", () => {
         searchBox.setBounds(map.getBounds());
     });
 
-    let markers = [];
-    searchBox.addListener("places_changed", () => {
-        searchPlaces(markers);
-    });
+    searchBox.addListener("places_changed", searchPlaces);
 
     document.getElementById("search-button").addEventListener("click", () => {
         const event = new Event('places_changed');
-        searchBox.input.dispatchEvent(event);
+        searchBox.getInput().dispatchEvent(event);
     });
 
-    streetViewMarker = new google.maps.Marker({
-        map: map,
-        icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-        visible: false
+    // 로드뷰 커버리지 레이어 추가
+    const streetViewLayer = new google.maps.StreetViewCoverageLayer();
+    streetViewLayer.setMap(map);
+
+    loadLodgments();
+    loadFoodData();
+    loadTourData();
+    createLegend();
+}
+
+function loadLodgments() {
+    $.ajax({
+        url: "http://localhost:9002/lodgment/page",
+        type: 'GET',
+        data: {
+            page: 1,
+            size: 100
+        },
+        success: function(response) {
+            console.log("Lodgment data loaded:", response);
+            allData.lodgment = response.content;
+            response.content.forEach(item => {
+                if (item.위도 && item.경도) {
+                    addMarker(item, 'lodgment');
+                }
+            });
+        },
+        error: function(error) {
+            console.error('Error fetching lodgments:', error);
+        }
     });
 }
 
-function searchPlaces(markers) {
+function loadFoodData() {
+    $.ajax({
+        url: "http://localhost:9002/kibTest/food",
+        method: "GET",
+        success: function(response) {
+            console.log("Food data loaded:", response);
+            allData.food = response.slice(0, 100);
+            allData.food.forEach(item => {
+                if (item.lat && item.lng) {
+                    addMarker(item, 'food');
+                }
+            });
+        },
+        error: function(error) {
+            console.error('Error fetching food data:', error);
+        }
+    });
+}
+
+function loadTourData() {
+    $.ajax({
+        url: "http://localhost:9002/kibTest/tourList",
+        type: 'GET',
+        success: function(response) {
+            console.log("Tour data loaded:", response);
+            allData.tour = response;
+            response.forEach(item => {
+                if (item.lat && item.lng) {
+                    addMarker(item, 'tour');
+                }
+            });
+        },
+        error: function(error) {
+            console.error('Error fetching tour data:', error);
+        }
+    });
+}
+
+function addMarker(item, type) {
+    let position;
+    if (type === 'lodgment') {
+        position = new google.maps.LatLng(item.위도, item.경도);
+    } else {
+        position = new google.maps.LatLng(parseFloat(item.lat), parseFloat(item.lng));
+    }
+    
+    console.log(`Adding marker for ${type}:`, position);
+
+    const marker = new google.maps.Marker({
+        position: position,
+        map: map,
+        icon: getMarkerIcon(type)
+    });
+
+    marker.addListener('click', () => {
+        showInfo(item, type, marker);
+    });
+
+    markers.push(marker);
+}
+
+function getMarkerIcon(type) {
+    switch(type) {
+        case 'lodgment':
+            return 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+        case 'food':
+            return 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+        case 'tour':
+            return 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
+        default:
+            return 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+    }
+}
+
+function showInfo(item, type, marker) {
+    let content = '';
+    let name, lat, lng, img;
+    
+    if (type === 'lodgment') {
+        name = item.업체명;
+        lat = item.위도;
+        lng = item.경도;
+        content = `
+            <div class="info-window">
+                <h5>${name}</h5>
+                <p>숙박</p>
+                <button onclick="showStreetView(${lat}, ${lng})">로드뷰 보기</button>
+            </div>
+        `;
+    } else if (type === 'food') {
+        name = item.main_title || item.maintitle || '이름 없음';
+        lat = item.lat;
+        lng = item.lng;
+        img = item.main_img_thumb || 'https://via.placeholder.com/150';
+        content = `
+            <div class="info-window">
+                <img src="${img}" alt="${name}">
+                <h5>${name}</h5>
+                <p>음식점</p>
+                <button onclick="showStreetView(${lat}, ${lng})">로드뷰 보기</button>
+            </div>
+        `;
+    } else if (type === 'tour') {
+        name = item.place || '이름 없음';
+        lat = item.lat;
+        lng = item.lng;
+        img = item.main_img_thumb || 'https://via.placeholder.com/150';
+        content = `
+            <div class="info-window">
+                <img src="${img}" alt="${name}">
+                <h5>${name}</h5>
+                <p>관광지</p>
+                <button onclick="showStreetView(${lat}, ${lng})">로드뷰 보기</button>
+            </div>
+        `;
+    }
+
+    console.log(`Showing info for ${type}:`, item);
+
+    infoWindow.setContent(content);
+    infoWindow.open(map, marker);
+}
+
+function showStreetView(lat, lng) {
+    const position = new google.maps.LatLng(lat, lng);
+    streetViewService.getPanorama({ location: position, radius: 50 }, (data, status) => {
+        if (status === "OK") {
+            panorama.setPosition(data.location.latLng);
+            panorama.setPov({
+                heading: 34,
+                pitch: 10,
+            });
+            document.getElementById("pano").style.display = "block";
+            panorama.setVisible(true);
+        } else {
+            alert("이 위치에 로드뷰가 없습니다.");
+            document.getElementById("pano").style.display = "none";
+            panorama.setVisible(false);
+        }
+    });
+}
+
+function searchPlaces() {
     const places = searchBox.getPlaces();
     if (places.length == 0) {
         return;
     }
-    markers.forEach((marker) => {
-        marker.setMap(null);
-    });
-    markers = [];
+    
     const bounds = new google.maps.LatLngBounds();
     places.forEach((place) => {
         if (!place.geometry || !place.geometry.location) {
@@ -147,9 +410,8 @@ function searchPlaces(markers) {
             position: place.geometry.location,
         });
         marker.addListener('click', () => {
-            getStreetView(place.geometry.location);
+            showStreetView(place.geometry.location.lat(), place.geometry.location.lng());
         });
-        markers.push(marker);
         if (place.geometry.viewport) {
             bounds.union(place.geometry.viewport);
         } else {
@@ -159,51 +421,58 @@ function searchPlaces(markers) {
     map.fitBounds(bounds);
 }
 
-function getStreetView(latLng) {
-    streetViewService.getPanorama({
-        location: latLng,
-        radius: 50,
-    }, (data, status) => processStreetViewData(data, status, latLng));
+function createLegend() {
+    const legend = document.getElementById('map-legend');
+    const items = [
+        { type: 'lodgment', label: '숙박', color: 'blue' },
+        { type: 'food', label: '음식점', color: 'red' },
+        { type: 'tour', label: '관광지', color: 'green' },
+        { type: 'street-view', label: '로드뷰 가능 지역', color: 'blue', isLine: true }
+    ];
+
+    items.forEach(item => {
+        const div = document.createElement('div');
+        if (item.isLine) {
+            div.innerHTML = `
+                <div style="width: 20px; height: 3px; background-color: ${item.color}; margin-right: 5px;"></div>
+                <span>${item.label}</span>
+            `;
+        } else {
+            div.innerHTML = `
+                <img src="http://maps.google.com/mapfiles/ms/icons/${item.color}-dot.png" alt="${item.label}">
+                <span>${item.label}</span>
+            `;
+        }
+        legend.appendChild(div);
+    });
 }
 
-function processStreetViewData(data, status, latLng) {
-    if (status === "OK") {
-        document.getElementById("pano").style.display = "block";
-        panorama.setPosition(data.location.latLng);
-        panorama.setPov({
-            heading: 34,
-            pitch: 10,
-        });
-        panorama.setVisible(true);
-
-        streetViewMarker.setPosition(latLng);
-        streetViewMarker.setVisible(true);
-    } else {
-        alert("스트리트 뷰가 없는 장소 입니다.");
-        document.getElementById("pano").style.display = "none";
-        streetViewMarker.setVisible(false);
-    }
+function loadGoogleMapsAPI(){
+    const script = document.createElement('script');
+    script.src = '/proxy/maps-api?callback=initialize&libraries=places&v=weekly&language=ko';
+    script.defer = true;
+    document.head.appendChild(script);
 }
 
 window.initialize = initialize;
-
-function loadGoogleMapsAPI(){
-	const script = document.createElement('script');
-	script.src = '/proxy/maps-api?callback=initialize&libraries=places&v=weekly';
-	script.defer = true;
-	document.head.appendChild(script);
-}
 </script>
 </head>
-<body class="custom-body">
+<body>
     <header>
         <th:block th:insert="~{/fragments/header2.html}"></th:block>
     </header>
-    <input id="pac-input" class="custom-pac-input" type="text" placeholder="원하는 장소를 입력하세요." />
-    <button id="search-button" class="custom-search-button">검색</button>
-    <div class="custom-map-container">
-        <div id="map" class="custom-map"></div>
-        <div id="pano" class="custom-pano"></div>
+    <div class="content-wrapper">
+        <div class="search-container">
+            <input id="pac-input" class="custom-pac-input" type="text" placeholder="원하는 장소를 입력하세요." />
+            <button id="search-button" class="custom-search-button">검색</button>
+        </div>
+        <div class="map-container">
+            <div id="map-legend"></div>
+            <div class="custom-map-container">
+                <div id="map" class="custom-map"></div>
+                <div id="pano" class="custom-pano"></div>
+            </div>
+        </div>
     </div>
     <footer>
         <th:block th:insert="~{/fragments/footer.html}"></th:block>
@@ -211,5 +480,5 @@ function loadGoogleMapsAPI(){
     <script>
     document.addEventListener('DOMContentLoaded', loadGoogleMapsAPI);
     </script>
-    </body>
+</body>
 </html>
