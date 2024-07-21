@@ -21,26 +21,22 @@
 	<script>
 
 		var username = "[[${username}]]";
-		
-		document.getElementById('set-form').addEventListener('submit', function(event){
-			
-			event.preventDefault();
-			
-			const formData = new FormData();
-			
-			console.log(formData);
-			
-			
-			
-			
-		})
 
-		function thisEmailIsOk() {
-			console.log(username);
+		document.getElementById('set-form').addEventListener('submit', function (event) {
+			event.preventDefault();
+			// FormData 객체 생성
+			const formData = new FormData();
+
+			// form 데이터 추가
+			formData.append('email', document.getElementById('email').value);
+			formData.append('username', username);
+
 			$.ajax({
-				url: "http://localhost:9002/emailCheck/" + username,
+				url: "http://localhost:9002/emailCheck",
 				method: 'POST',
-				data: formData,
+				data: formData, // email, username
+				processData: false,  // 필수: FormData 사용시 false로 설정
+				contentType: false,  // 필수: FormData 사용시 false로 설정
 				success: function (response) {
 					console.log(response);
 
@@ -48,14 +44,8 @@
 				error: function (xhr, status, error) {
 					console.error("Error: " + error);
 				}
-
 			});
-
-
-
-		}
-
-
+		});
 	</script>
 </body>
 
