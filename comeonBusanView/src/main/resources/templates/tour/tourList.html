@@ -58,8 +58,8 @@
         margin: 0 5px;
         padding: 10px 20px;
         border: none;
-        background-color: #007bff;
-        color: white;
+        background-color: white;
+        color: #007bff;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.3s, color 0.3s;
@@ -67,11 +67,19 @@
 
     .pagination button:disabled {
         background-color: #ccc;
+        color: #666;
         cursor: not-allowed;
     }
 
     .pagination button:hover:not(:disabled) {
-        background-color: #0056b3;
+        background-color: #e6f0ff;
+    }
+
+    .pagination button.current {
+        border: 2px solid #007bff;
+        color: #007bff;
+        font-weight: bold;
+        cursor: default;
     }
 </style>
 </head>
@@ -97,7 +105,6 @@
             url: "http://localhost:9002/kibTest/tourList",
             type: 'GET',
             success: function(response) {
-                console.log(response);
                 tourData = response;
                 renderPage(currentPage);
                 renderPagination(tourData.length, itemsPerPage);
@@ -117,10 +124,10 @@
             items.forEach(item => {
                 const tourItem = `
                     <div class="tour-item">
-                        <div class="tour-title">${item.title}</div>
                         <a href="/tourDetail?uc_seq=${item.uc_seq}">
                             <img class="tour-thumbnail" src="${item.main_img_thumb}" alt="${item.maintitle}">
                         </a>
+                        <div class="tour-title">${item.title}</div>
                     </div>
                 `;
                 $('#container').append(tourItem);
@@ -131,25 +138,35 @@
             $('.pagination').empty();
             const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-            const prevButton = `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>&laquo;</button>`;
-            $('.pagination').append(prevButton);
+            const currentGroup = Math.ceil(currentPage / 10);
 
-            let startPage = Math.max(1, currentPage - 4);
-            let endPage = Math.min(totalPages, currentPage + 5);
-
-            if (currentPage <= 5) {
-                endPage = Math.min(10, totalPages);
-            } else if (currentPage + 4 >= totalPages) {
-                startPage = Math.max(1, totalPages - 9);
+            if (currentPage > 1) {
+                const firstButton = `<button onclick="changePage(1)"><<</button>`;
+                $('.pagination').append(firstButton);
             }
 
+            if (currentGroup > 1) {
+                const prevButton = `<button onclick="changePage(${(currentGroup - 1) * 10})"><</button>`;
+                $('.pagination').append(prevButton);
+            }
+
+            const startPage = (currentGroup - 1) * 10 + 1;
+            const endPage = Math.min(startPage + 9, totalPages);
+
             for(let i = startPage; i <= endPage; i++){
-                const pageButton = `<button onclick="changePage(${i})" ${i === currentPage ? 'disabled' : ''}>${i}</button>`;
+                const pageButton = `<button onclick="changePage(${i})" class="${i === currentPage ? 'current' : ''}">${i}</button>`;
                 $('.pagination').append(pageButton);
             }
 
-            const nextButton = `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>&raquo;</button>`;
-            $('.pagination').append(nextButton);
+            if (currentGroup * 10 < totalPages) {
+                const nextButton = `<button onclick="changePage(${currentGroup * 10 + 1})">></button>`;
+                $('.pagination').append(nextButton);
+            }
+
+            if (currentPage < totalPages) {
+                const lastButton = `<button onclick="changePage(${totalPages})">>></button>`;
+                $('.pagination').append(lastButton);
+            }
         }
 
         window.changePage = function(page){
@@ -160,8 +177,5 @@
         }
     });
 </script>
-
-
-
 </body>
 </html>
