@@ -97,7 +97,7 @@
 			</svg>
 	</button>
 	<span>( </span><span id="likecount"></span><span> )</span><br>
-	
+	<p><button onclick="loadBlogPage(uc_seq)">리뷰보기</button></p>
 	<span class="info">관광지 배경</span><br>
 	<div id="itemcntnts"><!-- 관광지 설명 --></div>
 	
@@ -138,6 +138,10 @@
 <script>
 	var uc_seq = "[[${uc_seq}]]";
 	
+	function loadBlogPage(lid) {
+        window.location.href = `/blog?uc_seq=${uc_seq}`;
+    }
+	
 	$(document).ready(function(){
 		console.log("id값: " + uc_seq);
 		
@@ -170,8 +174,6 @@
 			url: "http://localhost:9002/kibTest/tour/" + uc_seq,
 			method: "GET",
 			success: function(response){
-				console.log("데이터 확인: " + response.trfc_info);
-				
 				// response 데이터 저장
 				const title = response.title;
 				const subtitle = response.subtitle;

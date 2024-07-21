@@ -19,8 +19,8 @@ public class BlogSearchController {
     @Autowired
     private SearchBlogService blogService;
 
-    @GetMapping("/blog")
-    public Map<String, String> search(@RequestParam(name="lid") Long lid, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
+    @GetMapping("/blog/lodgment")
+    public Map<String, String> searchLodgment(@RequestParam(name="lid") Long lid, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
         Map<String, String> result = new HashMap<>();
         RestTemplate restTemplate = new RestTemplate();
         String lodgmentUrl = "http://localhost:9002/lodgment/" + lid;
@@ -29,6 +29,26 @@ public class BlogSearchController {
         if (lodgment != null && lodgment.containsKey("업체명")) {
             String 업체명 = lodgment.get("업체명").toString();
             String response = blogService.searchBlog(업체명, (page - 1) * size + 1, size);
+            result.put("result", response);
+            session.setAttribute("blogData", result);
+        } else {
+            result.put("result", "No lodgment data found");
+            session.setAttribute("blogData", result);
+        }
+
+        return result;
+    }
+    
+    @GetMapping("/blog/tour")
+    public Map<String, String> searchTour(@RequestParam(name="uc_seq") Long uc_seq, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
+        Map<String, String> result = new HashMap<>();
+        RestTemplate restTemplate = new RestTemplate();
+        String tourUrl = "http://localhost:9002/kibTest/tour/" + uc_seq;
+        Map<String, Object> tour = restTemplate.getForObject(tourUrl, Map.class);
+
+        if (tour != null && tour.containsKey("title")) {
+            String title = tour.get("title").toString();
+            String response = blogService.searchBlog(title, (page - 1) * size + 1, size);
             result.put("result", response);
             session.setAttribute("blogData", result);
         } else {
