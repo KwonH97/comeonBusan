@@ -47,8 +47,8 @@
         margin: 0 5px;
         padding: 10px 20px;
         border: none;
-        background-color: #007bff;
-        color: white;
+        background-color: white;
+        color: #007bff;
         border-radius: 5px;
         cursor: pointer;
         transition: background-color 0.3s, color 0.3s;
@@ -56,15 +56,19 @@
 
     .pagination button:disabled {
         background-color: #ccc;
+        color: #666;
         cursor: not-allowed;
     }
 
     .pagination button:hover:not(:disabled) {
-        background-color: #0056b3;
+        background-color: #e6f0ff;
     }
 
-    .pagination button.active {
+    .pagination button.current {
+        border: 2px solid #007bff;
+        color: #007bff;
         font-weight: bold;
+        cursor: default;
     }
 </style>
 </head>
@@ -83,6 +87,7 @@
 
 <script>
     const pageSize = 12; // 한 페이지에 표시할 아이템 수
+    let currentPage = 1;
     let currentGroup = 0;
     const pagesPerGroup = 10;
 
@@ -163,25 +168,39 @@
     function renderPagination(totalPages, currentPage) {
         $('#pagination').empty();
         const totalGroups = Math.ceil(totalPages / pagesPerGroup);
+        const currentGroup = Math.floor(currentPage / pagesPerGroup);
         const startPage = currentGroup * pagesPerGroup;
         const endPage = Math.min(startPage + pagesPerGroup, totalPages);
 
+        if (currentPage > 1) {
+            $('#pagination').append(`<button onclick="changePage(0)"><<</button>`);
+        }
+
         if (currentGroup > 0) {
-            $('#pagination').append(`<button onclick="changeGroup(${currentGroup - 1})"> < </button>`);
+            $('#pagination').append(`<button onclick="changeGroup(${currentGroup - 1})"><</button>`);
         }
 
         for (let i = startPage; i < endPage; i++) {
-            $('#pagination').append(`<button onclick="loadPage(${i})" class="${i === currentPage ? 'active' : ''}">${i + 1}</button>`);
+            $('#pagination').append(`<button onclick="loadPage(${i})" class="${i === currentPage ? 'current' : ''}">${i + 1}</button>`);
         }
 
         if (currentGroup < totalGroups - 1) {
-            $('#pagination').append(`<button onclick="changeGroup(${currentGroup + 1})"> > </button>`);
+            $('#pagination').append(`<button onclick="changeGroup(${currentGroup + 1})">></button>`);
+        }
+
+        if (currentPage < totalPages - 1) {
+            $('#pagination').append(`<button onclick="changePage(${totalPages - 1})">>></button>`);
         }
     }
 
     function changeGroup(group) {
         currentGroup = group;
         loadPage(currentGroup * pagesPerGroup);
+    }
+
+    function changePage(page) {
+        currentPage = page;
+        loadPage(currentPage);
     }
 
     function updateHiddenButtonsDisplay() {
@@ -197,4 +216,3 @@
 </script>
 </body>
 </html>
-
