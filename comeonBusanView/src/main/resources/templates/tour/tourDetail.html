@@ -89,7 +89,7 @@
 	<h4 id="subtitle"></h4>
 	<h4 id="place"></h4>
 	<img id="main_img" alt="관광지 홍보사진"><br>
-	<span>조회수</span> 
+	조회수 : <span id="viewcount"></span><br>
 	<button class="heart-button" onclick="doLike()">
 		<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
 				<path
@@ -140,6 +140,31 @@
 	
 	$(document).ready(function(){
 		console.log("id값: " + uc_seq);
+		
+		// 조회수 증가 요청 보내기
+		$.ajax({
+			url: 'http://localhost:9002/views/tour/' + uc_seq,
+			method: 'POST',
+			success: function() {
+				console.log("View count incremented");
+			},
+			error: function(error) {
+				console.error("Error incrementing view count: " + error);
+			}
+		});
+
+		// 조회수 가져오기
+		$.ajax({
+			url: 'http://localhost:9002/views/tour/' + uc_seq,
+			method: 'GET',
+			success: function(viewCount) {
+				console.log("Current view count: " + viewCount);
+				document.querySelector("#viewcount").textContent = viewCount;
+			},
+			error: function(error) {
+				console.error("Error fetching view count: " + error);
+			}
+		});
 		
 		$.ajax({
 			url: "http://localhost:9002/kibTest/tour/" + uc_seq,
