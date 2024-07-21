@@ -31,10 +31,11 @@
     function loadReviews(page) {
         const urlParams = new URLSearchParams(window.location.search);
         const lid = urlParams.get('lid');
-
+        const uc_seq = urlParams.get('uc_seq');
+        
         if (lid) {
             $.ajax({
-                url: `http://localhost:9002/blog`,
+                url: 'http://localhost:9002/blog/lodgment',
                 type: 'GET',
                 data: { lid: lid, page: page, size: pageSize },
                 success: function(response) {
@@ -67,8 +68,42 @@
                     alert('블로그 데이터를 가져오는 중 오류가 발생했습니다.');
                 }
             });
-        } else {
-            $('#reviewContainer').append('<p>유효한 숙박업소 ID가 제공되지 않았습니다.</p>');
+        } else if(uc_seq) {
+          // $('#reviewContainer').append('<p>유효한 숙박업소 ID가 제공되지 않았습니다.</p>');
+        	$.ajax({
+                url: 'http://localhost:9002/blog/tour',
+                type: 'GET',
+                data: { uc_seq: uc_seq, page: page, size: pageSize },
+                success: function(response) {
+                    const blogData = JSON.parse(response.result);
+                    if (blogData.items && blogData.items.length > 0) {
+                        blogData.items.forEach(function(item) {
+                            const blogLink = item.link;
+                            const blogTitle = item.title;
+                            const blogDescription = item.description;
+                            $('#reviewContainer').append(`
+                                <div class="blog-review" onclick="window.open('${blogLink}', '_blank')">
+                                    <h4>${blogTitle}</h4>
+                                    <p>${blogDescription}</p>
+                                </div>
+                            `);
+                        });
+                        if (blogData.items.length < pageSize) {
+                            // If less than pageSize items are returned, hide the button
+                            $('#loadMoreButton').hide();
+                        }
+                    } else {
+                        $('#loadMoreButton').hide();
+                        if (page === 1) {
+                            $('#reviewContainer').append('<p>No reviews found.</p>');
+                        }
+                    }
+                },
+                error: function(error) {
+                    console.error('Error fetching blog data:', error);
+                    alert('블로그 데이터를 가져오는 중 오류가 발생했습니다.');
+                }
+            });
         }
     }
 
