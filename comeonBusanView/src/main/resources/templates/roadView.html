@@ -58,6 +58,10 @@ body {
     vertical-align: middle; /* 수직 정렬 추가 */
 }
 
+.custom-search-button:hover {
+    background-color: #00a8e8;
+}
+
 .search-container {
     display: flex;
     justify-content: flex-start;
@@ -68,11 +72,6 @@ body {
 .custom-pac-input:focus {
     border-color: #00a8e8;
     outline: none;
-}
-
-
-.custom-search-button:hover {
-    background-color: #00a8e8;
 }
 
 .custom-map-container {
@@ -158,10 +157,32 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin-right: 5px;
 }
 
 .info-window button:hover {
     background-color: #00a8e8;
+}
+
+.custom-button {
+    display: inline-block;
+    background-color: #0077be;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    border: none;
+    margin: 5px;
+}
+
+.custom-button:hover {
+    background-color: #00a8e8;
+}
+
+.custom-button:focus {
+    outline: none;
 }
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -174,6 +195,10 @@ let allData = {
     tour: []
 };
 let infoWindow;
+let startMarker, endMarker;
+let directionsService, directionsRenderer;
+let currentStreetViewIndex = 0;
+let streetViewLocations = [];
 
 function initialize() {
     const busan = { lat: 35.1796, lng: 129.0756 };
@@ -203,6 +228,9 @@ function initialize() {
 
     streetViewService = new google.maps.StreetViewService();
     infoWindow = new google.maps.InfoWindow();
+
+    directionsService = new google.maps.DirectionsService();
+    directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
 
     const input = document.getElementById("pac-input");
     searchBox = new google.maps.places.SearchBox(input);
@@ -296,7 +324,7 @@ function addMarker(item, type) {
     } else {
         position = new google.maps.LatLng(parseFloat(item.lat), parseFloat(item.lng));
     }
-    
+
     console.log(`Adding marker for ${type}:`, position);
 
     const marker = new google.maps.Marker({
@@ -337,6 +365,8 @@ function showInfo(item, type, marker) {
             <div class="info-window">
                 <h5>${name}</h5>
                 <p>숙박</p>
+                <button onclick="setStart(${lat}, ${lng})">출발지 설정</button>
+                <button onclick="setEnd(${lat}, ${lng})">도착지 설정</button>
                 <button onclick="showStreetView(${lat}, ${lng})">로드뷰 보기</button>
             </div>
         `;
@@ -350,6 +380,8 @@ function showInfo(item, type, marker) {
                 <img src="${img}" alt="${name}">
                 <h5>${name}</h5>
                 <p>음식점</p>
+                <button onclick="setStart(${lat}, ${lng})">출발지 설정</button>
+                <button onclick="setEnd(${lat}, ${lng})">도착지 설정</button>
                 <button onclick="showStreetView(${lat}, ${lng})">로드뷰 보기</button>
             </div>
         `;
@@ -363,6 +395,8 @@ function showInfo(item, type, marker) {
                 <img src="${img}" alt="${name}">
                 <h5>${name}</h5>
                 <p>관광지</p>
+                <button onclick="setStart(${lat}, ${lng})">출발지 설정</button>
+                <button onclick="setEnd(${lat}, ${lng})">도착지 설정</button>
                 <button onclick="showStreetView(${lat}, ${lng})">로드뷰 보기</button>
             </div>
         `;
@@ -372,6 +406,32 @@ function showInfo(item, type, marker) {
 
     infoWindow.setContent(content);
     infoWindow.open(map, marker);
+}
+
+function setStart(lat, lng) {
+    if (startMarker) {
+        startMarker.setMap(null);
+    }
+    startMarker = new google.maps.Marker({
+        position: { lat, lng },
+        map: map,
+        icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+        title: '출발지'
+    });
+    infoWindow.close();
+}
+
+function setEnd(lat, lng) {
+    if (endMarker) {
+        endMarker.setMap(null);
+    }
+    endMarker = new google.maps.Marker({
+        position: { lat, lng },
+        map: map,
+        icon: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png',
+        title: '도착지'
+    });
+    infoWindow.close();
 }
 
 function showStreetView(lat, lng) {
@@ -456,9 +516,92 @@ function createLegend() {
     });
 }
 
+function startNavigation() {
+    if (startMarker && endMarker) {
+        const start = startMarker.getPosition();
+        const end = endMarker.getPosition();
+        
+        console.log("Start location:", start.lat(), start.lng());
+        console.log("End location:", end.lat(), end.lng());
+        
+        directionsService.route(
+            {
+                origin: start,
+                destination: end,
+                travelMode: google.maps.TravelMode.TRANSIT
+            },
+            (response, status) => {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(response);
+                    processRoute(response.routes[0]);
+                } else {
+                    console.error("Directions request failed due to ", status);
+                    alert("경로를 찾을 수 없습니다. 출발지와 도착지를 다시 확인해주세요.");
+                }
+            }
+        );
+    } else {
+        alert("출발지와 도착지를 선택해주세요.");
+    }
+}
+
+function processRoute(route) {
+    streetViewLocations = [];
+    route.legs[0].steps.forEach(step => {
+        const path = google.maps.geometry.encoding.decodePath(step.polyline.points);
+        path.forEach(point => {
+            streetViewLocations.push(point);
+        });
+    });
+    currentStreetViewIndex = 0;
+    playStreetView();
+}
+
+function playStreetView() {
+    if (currentStreetViewIndex < streetViewLocations.length) {
+        const location = streetViewLocations[currentStreetViewIndex];
+        streetViewService.getPanorama({ location: location, radius: 50 }, (data, status) => {
+            if (status === "OK") {
+                panorama.setPosition(data.location.latLng);
+                panorama.setPov({
+                    heading: 34,
+                    pitch: 10,
+                });
+                document.getElementById("pano").style.display = "block";
+                panorama.setVisible(true);
+                currentStreetViewIndex++;
+                setTimeout(playStreetView, 1000); // 1초 후 다음 로드뷰로 이동
+            } else {
+                currentStreetViewIndex++;
+                playStreetView(); // 로드뷰가 없는 경우 다음 위치로 이동
+            }
+        });
+    } else {
+        alert("경로상의 모든 로드뷰를 재생했습니다.");
+        document.getElementById("pano").style.display = "none";
+        panorama.setVisible(false);
+    }
+}
+
+function resetRoute() {
+    if (startMarker) {
+        startMarker.setMap(null);
+        startMarker = null;
+    }
+    if (endMarker) {
+        endMarker.setMap(null);
+        endMarker = null;
+    }
+    directionsRenderer.set('directions', null);
+    streetViewLocations = [];
+    currentStreetViewIndex = 0;
+    document.getElementById("pano").style.display = "none";
+    panorama.setVisible(false);
+}
+
 function loadGoogleMapsAPI(){
     const script = document.createElement('script');
-    script.src = '/proxy/maps-api?callback=initialize&libraries=places&v=weekly&language=ko';
+    script.src = '/proxy/maps-api?callback=initialize&libraries=places,geometry&v=weekly&language=ko';
     script.defer = true;
     document.head.appendChild(script);
 }
@@ -481,6 +624,10 @@ window.initialize = initialize;
                 <div id="map" class="custom-map"></div>
                 <div id="pano" class="custom-pano"></div>
             </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="custom-button" onclick="startNavigation()">경로 찾기 및 로드뷰 재생</button>
+                <button class="custom-button" onclick="resetRoute()">경로 초기화</button>
+            </div>
         </div>
     </div>
     <footer>
@@ -491,3 +638,4 @@ window.initialize = initialize;
     </script>
 </body>
 </html>
+
