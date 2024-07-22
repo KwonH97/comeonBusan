@@ -17,4 +17,6 @@ public class UserEntity {
 	private String username;
 	private String password;
 	private String role;
+	private String email;
+	private String token; // 비밀번호 재설정을 위한 토큰
 }
