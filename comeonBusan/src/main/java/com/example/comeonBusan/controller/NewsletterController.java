@@ -35,7 +35,7 @@ public class NewsletterController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSubscriber(@PathVariable Long id) {
+    public void deleteSubscriber(@PathVariable("id") Long id) {
         repository.deleteById(id);
     }
     
