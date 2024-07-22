@@ -134,6 +134,15 @@
             font-size: 1.2em;
             margin-top: 20px;
         }
+        #danger-info {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff0f0;
+            border: 2px solid #ff6b6b;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -144,6 +153,7 @@
     <div class="container">
         <h1>🌊 부산 관광 안전 정보 시스템 🏖️</h1>
         <div id="map"></div>
+        <div id="danger-info"></div>
         <div id="user-controls">
             <h4>🚶‍♂️ 사용자 위치</h4>
             <p id="current-location">위도: -, 경도: -</p>
@@ -155,8 +165,8 @@
             <h3>👨‍💼 관리자 기능</h3>
             <button onclick="startDrawingDangerZone()" class="admin-button">위험 구역 추가</button>
             <button onclick="enableAddMarkerMode()" class="admin-button">위험 장소 추가</button>
-            <button onclick="enableEditMode()" class="admin-button">위험 지역 수정</button>
-            <button onclick="enableDeleteMode()" class="admin-button">위험 지역 삭제</button>
+            <button onclick="enableEditMode()" class="admin-button">위험 구역(장소) 수정</button>
+            <button onclick="enableDeleteMode()" class="admin-button">위험 구역(장소) 삭제</button>
         </div>
     </div>
 
@@ -241,7 +251,7 @@
 
             google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
                 if (event.type === google.maps.drawing.OverlayType.POLYGON) {
-                    var name = prompt("위험 지역의 이름을 입력하세요:");
+                    var name = prompt("위험 구역의 이름을 입력하세요:");
                     if (name) {
                         var coords = event.overlay.getPath().getArray().map(coord => ({lat: coord.lat(), lng: coord.lng()}));
                         addDangerZone(name, "polygon", coords);
@@ -287,19 +297,19 @@
 
         function enableAddMarkerMode() {
             isAddMarkerMode = true;
-            alert("위험 장소를 추가할 위치를 클릭하세요.");
+            alert("위험 구역(장소)를 추가할 위치를 클릭하세요.");
         }
 
         function enableEditMode() {
             isEditMode = true;
             isDeleteMode = false;
-            alert("수정할 위험 지역을 클릭하세요.");
+            alert("수정할 위험 구역(장소)을 클릭하세요.");
         }
 
         function enableDeleteMode() {
             isDeleteMode = true;
             isEditMode = false;
-            alert("삭제할 위험 지역을 클릭하세요.");
+            alert("삭제할 위험 구역(장소)을 클릭하세요.");
         }
 
         function addMarkerDangerZone(latLng) {
@@ -314,7 +324,7 @@
                     data: JSON.stringify(newZone),
                     success: function(response) {
                         console.log("새 위험 장소가 성공적으로 추가되었습니다.", response);
-                        loadDangerZones();
+                        location.reload(); // 페이지 리로드 추가
                     },
                     error: function(error) {
                         console.error("위험 장소 추가 중 오류 발생:", error);
@@ -342,7 +352,7 @@
                 data: JSON.stringify(newZone),
                 success: function(response) {
                     console.log("새 위험 지역이 성공적으로 추가되었습니다.", response);
-                    loadDangerZones();
+                    location.reload(); // 페이지 리로드 추가
                 },
                 error: function(error) {
                     console.error("위험 지역 추가 중 오류 발생:", error);
@@ -354,27 +364,37 @@
             var zone = dangerZones[index];
             zone.name = name;
             if (zone.type === "polygon") {
-                zone.coords = data;
-                zone.coordinates = JSON.stringify(data);
+                zone.coords = data.map(coord => ({lat: coord.lat(), lng: coord.lng()}));
+                zone.coordinates = JSON.stringify(zone.coords);
             } else if (zone.type === "circle") {
-                zone.center = data.center;
-                zone.latitude = data.center.lat;
-                zone.longitude = data.center.lng;
+            	zone.center = {lat: data.center.lat(), lng:
+                data.center.lng()};
+                zone.latitude = zone.center.lat;
+                zone.longitude = zone.center.lng;
                 zone.radius = data.radius;
             } else if (zone.type === "marker") {
                 zone.latitude = data.latitude;
                 zone.longitude = data.longitude;
             }
 
+            var zoneToSend = {
+                id: zone.id,
+                name: zone.name,
+                type: zone.type,
+                coordinates: zone.coordinates,
+                latitude: zone.latitude,
+                longitude: zone.longitude,
+                radius: zone.radius
+            };
+
             $.ajax({
                 type: "PUT",
                 url: `http://localhost:9002/api/danger-zones/${zone.id}`,
                 contentType: "application/json",
-                data: JSON.stringify(zone),
+                data: JSON.stringify(zoneToSend),
                 success: function(response) {
-                    
-                	console.log("위험 지역이 성공적으로 업데이트되었습니다.", response);
-                    loadDangerZones();
+                    console.log("위험 지역이 성공적으로 업데이트되었습니다.", response);
+                    location.reload(); // 페이지 리로드 추가
                 },
                 error: function(error) {
                     console.error("위험 지역 업데이트 중 오류 발생:", error);
@@ -390,7 +410,7 @@
                 url: `http://localhost:9002/api/danger-zones/${zone.id}`,
                 success: function(response) {
                     console.log("위험 지역이 성공적으로 삭제되었습니다.", response);
-                    loadDangerZones();
+                    location.reload(); // 페이지 리로드 추가
                 },
                 error: function(error) {
                     console.error("위험 지역 삭제 중 오류 발생:", error);
@@ -449,6 +469,8 @@
                         if (confirm(`"${zone.name}"을(를) 삭제하시겠습니까?`)) {
                             removeDangerZone(index);
                         }
+                    } else {
+                        showDangerInfo(zone);
                     }
                 });
 
@@ -461,18 +483,20 @@
         function editDangerZone(index, zone, overlay) {
             var newName = prompt("새로운 이름을 입력하세요:", zone.name);
             if (newName) {
-                if (zone.type === "polygon" || zone.type === "circle") {
+                if (zone.type === "polygon") {
                     overlay.setEditable(true);
                     google.maps.event.addListenerOnce(overlay, 'mouseup', function() {
-                        var newData;
-                        if (zone.type === "polygon") {
-                            newData = overlay.getPath().getArray().map(coord => ({lat: coord.lat(), lng: coord.lng()}));
-                        } else if (zone.type === "circle") {
-                            newData = {
-                                center: {lat: overlay.getCenter().lat(), lng: overlay.getCenter().lng()},
-                                radius: overlay.getRadius()
-                            };
-                        }
+                        var newData = overlay.getPath().getArray();
+                        updateDangerZone(index, newName, newData);
+                        overlay.setEditable(false);
+                    });
+                } else if (zone.type === "circle") {
+                    overlay.setEditable(true);
+                    google.maps.event.addListenerOnce(overlay, 'mouseup', function() {
+                        var newData = {
+                            center: overlay.getCenter(),
+                            radius: overlay.getRadius()
+                        };
                         updateDangerZone(index, newName, newData);
                         overlay.setEditable(false);
                     });
@@ -487,6 +511,30 @@
             }
         }
 
+        function showDangerInfo(zone) {
+            var infoDiv = document.getElementById('danger-info');
+            var infoContent = `<h3>${zone.name}</h3>`;
+
+            switch(zone.type) {
+                case 'polygon':
+                    infoContent += `<p>유형: 위험구역</p>`;
+                    infoContent += `<p>좌표: ${zone.coordinates}</p>`;
+                    break;
+                case 'circle':
+                    infoContent += `<p>유형: 위험구역</p>`;
+                    infoContent += `<p>반경: ${zone.radius.toFixed(2)}m</p>`;
+                    break;
+                case 'marker':
+                    infoContent += `<p>유형: 위험장소</p>`;
+                    infoContent += `<p>위도: ${zone.latitude}</p>`;
+                    infoContent += `<p>경도: ${zone.longitude}</p>`;
+                    break;
+            }
+
+            infoDiv.innerHTML = infoContent;
+            infoDiv.style.display = 'block';
+        }
+
         function updateDangerList() {
             var list = document.getElementById('danger-list');
             list.innerHTML = '<h3>위험 지역 목록</h3>';
@@ -498,11 +546,14 @@
                     if (zone.type === "circle") {
                         map.setCenter({ lat: zone.latitude, lng: zone.longitude });
                     } else if (zone.type === "polygon") {
-                        map.setCenter(zone.coords[0]);
+                        var bounds = new google.maps.LatLngBounds();
+                        zone.coords.forEach(coord => bounds.extend(coord));
+                        map.fitBounds(bounds);
                     } else if (zone.type === "marker") {
                         map.setCenter({ lat: zone.latitude, lng: zone.longitude });
                     }
                     map.setZoom(15);
+                    showDangerInfo(zone);
                 };
                 list.appendChild(item);
             });
