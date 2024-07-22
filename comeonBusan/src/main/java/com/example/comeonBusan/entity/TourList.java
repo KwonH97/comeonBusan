@@ -42,6 +42,7 @@ public class TourList {
     private String ITEMCNTNTS; // 관광지 상세내용
 
     @OneToMany(mappedBy = "tourlist", cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Likes> likes;
     
     @OneToMany(mappedBy = "tourlist", cascade = CascadeType.ALL)

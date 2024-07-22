@@ -28,6 +28,7 @@ public class Likes {
     @ManyToOne
     @JoinColumn(name = "tourlist_uc_seq", referencedColumnName = "uc_seq")
     @JsonBackReference
+    @ToString.Exclude
     private TourList tourlist;
 
     @ManyToOne
