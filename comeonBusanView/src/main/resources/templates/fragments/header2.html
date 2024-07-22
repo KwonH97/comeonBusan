@@ -118,7 +118,7 @@ header {
 }
 
 .nav ul li {
-    position: relative; /* 드롭다운을 위한 상대 위치 */
+    position: relative;
 }
 
 .nav ul li a {
@@ -161,17 +161,32 @@ header {
     top: 20px;
     right: 20px;
     z-index: 1000;
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.goog-te-gadget {
+    font-family: Arial, sans-serif !important;
+    font-size: 14px !important;
+}
+
+.goog-te-gadget-simple {
+    background-color: #fff !important;
+    border: 1px solid #ccc !important;
+    padding: 5px !important;
+    border-radius: 4px !important;
+}
+
+/* 구글 번역기 스타일 커스터마이즈 */
+.goog-te-combo {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
 }
 </style>
-<script type="text/javascript">
-    function loadGoogleTranslate() {
-        var script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-        document.head.appendChild(script);
-    }
-    loadGoogleTranslate();
-</script>
 <script src="/js/common.js"></script>
 </head>
 <body>
@@ -214,65 +229,138 @@ header {
                             <a href="/dangerArea">위험안내지도</a>
                         </div>
                     </li>
-                  
                 </ul>
             </div>
         </div>
     </header>
 
     <script>
-        function googleTranslateElementInit() {
-            if (!document.getElementById('google_translate_element').hasChildNodes()) {
-                new google.translate.TranslateElement({
-                    pageLanguage: 'ko',
-                    includedLanguages: 'en,ja,zh-CN',
-                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-                }, 'google_translate_element');
-            }
-        }
+    function loadGoogleTranslate() {
+        console.log('Loading Google Translate script');
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        script.onerror = function() {
+            console.error('Google Translate script failed to load');
+        };
+        document.head.appendChild(script);
+    }
 
-        function setLanguage() {
-            var languageCode = localStorage.getItem('selectedLanguage');
-            if (languageCode) {
-                var intervalId = setInterval(function() {
-                    var selectElement = document.querySelector('.goog-te-combo');
-                    if (selectElement) {
-                        selectElement.value = languageCode;
-                        selectElement.dispatchEvent(new Event('change'));
-                        clearInterval(intervalId);
+    function googleTranslateElementInit() {
+        console.log('Google Translate initialization started');
+        if (window.google && google.translate) {
+            new google.translate.TranslateElement({
+                pageLanguage: 'ko',
+                includedLanguages: 'en,ja,zh-CN',
+                layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL,
+                autoDisplay: true,
+                multilanguagePage: true,
+            }, 'google_translate_element');
+            
+            // 번역 위젯이 완전히 로드될 때까지 기다린 후 changeLanguageNames 호출
+            var checkExist = setInterval(function() {
+                if (document.querySelector('.goog-te-combo')) {
+                    clearInterval(checkExist);
+                    setTimeout(changeLanguageNames, 1000); // 1초 후에 실행
+                }
+            }, 100);
+        } else {
+            console.error('Google Translate object not available');
+        }
+    }
+
+    function changeLanguageNames() {
+        console.log('Changing language names');
+        const langSelect = document.querySelector('.goog-te-combo');
+        if (langSelect) {
+            const options = langSelect.options;
+            const languageMap = {
+                'ko': '한국어',
+                'en': 'English',
+                'ja': '日本語',
+                'zh-CN': '中文'
+            };
+            
+            for (let i = 0; i < options.length; i++) {
+                if (languageMap[options[i].value]) {
+                    options[i].text = languageMap[options[i].value];
+                }
+            }
+            
+            console.log('Language names changed');
+            
+            // MutationObserver를 사용하여 변경 사항을 감지하고 유지
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'childList') {
+                        for (let i = 0; i < options.length; i++) {
+                            if (languageMap[options[i].value]) {
+                                options[i].text = languageMap[options[i].value];
+                            }
+                        }
                     }
+                });
+            });
+            
+            observer.observe(langSelect, { childList: true, subtree: true });
+        } else {
+            console.error('Language select element not found');
+            // 요소가 아직 로드되지 않았다면 100ms 후에 다시 시도
+            setTimeout(changeLanguageNames, 100);
+        }
+    }
+
+    function setLanguage() {
+        var languageCode = localStorage.getItem('selectedLanguage');
+        if (languageCode) {
+            var intervalId = setInterval(function() {
+                var selectElement = document.querySelector('.goog-te-combo');
+                if (selectElement) {
+                    selectElement.value = languageCode;
+                    selectElement.dispatchEvent(new Event('change'));
+                    clearInterval(intervalId);
+                }
+            }, 100);
+        }
+    }
+
+    function forceShowTranslateWidget() {
+        var intervalId = setInterval(function() {
+            var element = document.querySelector('.goog-te-menu-value span:first-child');
+            if (element) {
+                element.click();
+                clearInterval(intervalId);
+                setTimeout(function() {
+                    document.querySelector('.goog-te-menu-frame').style.display = 'block';
                 }, 100);
             }
-        }
+        }, 100);
+    }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            googleTranslateElementInit();
-            setLanguage();
-        });
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOM content loaded, initializing Google Translate');
+        loadGoogleTranslate();
+        setLanguage();
+        setTimeout(() => {
+            changeLanguageNames();
+            forceShowTranslateWidget();
+        }, 2000); // 2초 후에 실행
+    });
 
-        document.body.addEventListener('DOMNodeInserted', function (event) {
-            if (event.target.className === 'goog-te-combo') {
-                event.target.addEventListener('change', function () {
-                    localStorage.setItem('selectedLanguage', event.target.value);
-                });
-            }
-        });
+    function hideSuggestions() {
+        setTimeout(() => {
+            document.getElementById("autoFrame").style.display = "none";
+            document.getElementById("autoFrame").innerHTML = "";
+        }, 200);
+    }
 
-        function hideSuggestions() {
-            setTimeout(() => {
-                document.getElementById("autoFrame").style.display = "none";
-                document.getElementById("autoFrame").innerHTML = "";
-            }, 200);
-        }
+    function showDropdown() {
+        document.querySelector('.dropdown').style.display = 'block';
+    }
 
-        function showDropdown() {
-            document.querySelector('.dropdown').style.display = 'block';
-        }
-
-        function hideDropdown() {
-            document.querySelector('.dropdown').style.display = 'none';
-        }
+    function hideDropdown() {
+        document.querySelector('.dropdown').style.display = 'none';
+    }
     </script>
 </body>
 </html>
-
