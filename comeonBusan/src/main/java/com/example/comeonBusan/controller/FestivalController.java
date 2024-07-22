@@ -21,6 +21,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -532,7 +533,7 @@ public class FestivalController {
 
 	
 	@DeleteMapping("/festivalDelete/{uc_seq}")
-	public String deleteFestival(@PathVariable("uc_seq") String uc_seq, HttpServletRequest request){
+	public ResponseEntity<String> deleteFestival(@PathVariable("uc_seq") String uc_seq, HttpServletRequest request){
 		
 		System.out.println("deleteFestival.........................");
 		
@@ -541,9 +542,14 @@ public class FestivalController {
 		
 		Long uc_seq_long = Long.parseLong(uc_seq);
 		
-		festivalRepository.deleteById(uc_seq_long);
+		if(token != null) {
+			festivalRepository.deleteById(uc_seq_long);
+			
+			return new ResponseEntity<>("게시물이 성공적으로 삭제되었습니다.", HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>("삭제권한이 없습니다.", HttpStatus.FORBIDDEN);
+		}
 		
-		return "게시물이 성공적으로 삭제되었습니다.";
 	}
 	
 }

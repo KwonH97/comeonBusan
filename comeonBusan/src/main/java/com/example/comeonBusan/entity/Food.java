@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -58,6 +59,7 @@ public class Food {
 	private String itemcntnts;
 	
 	@OneToMany(mappedBy = "food", cascade = CascadeType.ALL)
+	@ToString.Exclude
     private List<Likes> likes;
     
     @OneToMany(mappedBy = "food", cascade = CascadeType.ALL)

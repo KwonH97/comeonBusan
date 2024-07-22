@@ -40,6 +40,7 @@ public class Likes {
     @ManyToOne
     @JoinColumn(name = "food_uc_seq", referencedColumnName = "UC_SEQ")
     @JsonBackReference
+    @ToString.Exclude
     private Food food;
 
     private Long likecount;

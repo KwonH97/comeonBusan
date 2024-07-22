@@ -15,8 +15,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -324,5 +326,20 @@ public class TourController {
 			}
 		}
 		return "등록실패";
+	}
+	
+	@DeleteMapping("/tour/{uc_seq}")
+	public ResponseEntity<String> deleteTourList(@PathVariable("uc_seq") String uc_seq, HttpServletRequest request) {
+		
+		String token = request.getHeader("Authorization");
+		System.out.println("토큰 확인: " + token);
+		
+		if(token != null) {
+			tourRepo.deleteById(uc_seq);
+			
+			return new ResponseEntity<>("게시물이 성공적으로 삭제되었습니다.", HttpStatus.OK);
+		} else { 
+			return new ResponseEntity<>("삭제권한이 없습니다.", HttpStatus.FORBIDDEN);
+		}
 	}
 }

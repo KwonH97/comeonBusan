@@ -106,6 +106,7 @@ public class LikeController {
 		}
 	}
 	
+	
 	@GetMapping("/GetlikeTour/{uc_seq}")
 	public Long getLikeTour(@PathVariable("uc_seq")String uc_seq) {
 		
@@ -114,6 +115,7 @@ public class LikeController {
 		System.out.println("디비에서 찾아낸 특정 uc_seq 의 좋아요 수........." + likeCount);
 		return likeCount;
 	}
+	
 	
 	@PostMapping("/doLikeTour/{uc_seq}")
 	public String doLikeTour(@PathVariable("uc_seq")String uc_seq) {
@@ -213,4 +215,5 @@ public class LikeController {
 
 		}
 	}
+	
 }

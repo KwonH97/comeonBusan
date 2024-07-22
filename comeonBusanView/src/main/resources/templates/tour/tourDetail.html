@@ -83,6 +83,7 @@
 <hr>
 
 <button class="hiddenButton" style="display: none;" onclick="gomodifyPage()">수정하기</button>
+<button class="hiddenButton" style="display: none;" onclick="deleteThisPage()">삭제하기</button>
 
 <div class="container">
 	<h3 id="title"></h3>
@@ -236,6 +237,34 @@
 
 	function gomodifyPage() {
 		window.location.href = "/modi_tour?uc_seq=" + uc_seq;
+	}
+	
+	function deleteThisPage(){
+		
+		if(confirm("이 게시글을 삭제하시겠습니까?") == true){
+			cosole.log("아이디 확인: " + uc_seq);
+			
+			const token = localStorage.getItem("Authorization");
+			console.log("토큰: " + token);
+			
+			$.ajax({
+				url: "http://localhost:9002/kibTest/tour/" + uc_seq,
+				method: "DELETE",
+				headers: {
+					"Authorization" : "Bearer " + token
+				},
+				success: function(response){
+					console.log("응답: " + response);
+					alert(response);
+				},
+				error: function(xhr, error, status){
+					console.log("Error: " + error);
+				}
+			});
+		} else {
+			console.log("삭제 취소함");
+			alert("삭제 취소함");
+		}
 	}
 	
 	function doLike(){
