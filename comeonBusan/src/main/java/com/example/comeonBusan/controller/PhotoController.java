@@ -46,7 +46,7 @@ public class PhotoController {
 	private static final String UPLOADED_FOLDER = "src/main/resources/static/images/";
 
 	@PostMapping("/photo")
-	public void photoUpload(@RequestParam(value="file", required= false)MultipartFile file,
+	public ResponseEntity<String> photoUpload(@RequestParam(value="file", required= false)MultipartFile file,
 			@RequestParam("title")String title,
 			@RequestParam("shoot_year")String shoot_year,
 			@RequestParam("shooter")String shooter,
@@ -92,10 +92,15 @@ public class PhotoController {
 				photoRepo.save(photo);
 				
 				//ResponseEntity<String> 사용해보기
+				
+				return new ResponseEntity<>("사진이 등록되었습니다.", HttpStatus.OK);
+			}else {
+				return new ResponseEntity<>("사진 등록과정에서 문제가 생겼습니다", HttpStatus.FORBIDDEN);
 			}
 			
 		}catch(IOException e){
 			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류가 발생했습니다.");
 		}
 	}
 	

@@ -60,11 +60,15 @@
 				data: formData,
 				contentType: false,
 				processData: false,
+				beforeSend: function(xhr) {
+			        xhr.setRequestHeader('Authorization', localStorage.getItem("Authorization"));
+			    },
 				success: function(response){
-					alert("사진 등록이 완료되었습니다.");
+					alert(response);
 				},
 				error: function(error){
 					console.log("Error: " + error);
+					alert(error);
 				}
 			});
 		});
