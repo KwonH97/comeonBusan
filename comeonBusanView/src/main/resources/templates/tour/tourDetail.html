@@ -207,6 +207,7 @@
 				// 지도와 마커를 추가하는 함수 호출
 				initMap(lat, lng);
 				
+				// 좋아요 상태 확인
 				checkIfLiked();
 				
 			},
@@ -215,6 +216,7 @@
 			}
 		});
 		
+		// 좋아요 수 가져오기
 		getLikeCount();
 		
 		var authValue = localStorage.getItem("Authorization");
@@ -242,7 +244,7 @@
 	function deleteThisPage(){
 		
 		if(confirm("이 게시글을 삭제하시겠습니까?") == true){
-			cosole.log("아이디 확인: " + uc_seq);
+			console.log("아이디 확인: " + uc_seq);
 			
 			const token = localStorage.getItem("Authorization");
 			console.log("토큰: " + token);
@@ -256,6 +258,7 @@
 				success: function(response){
 					console.log("응답: " + response);
 					alert(response);
+					window.location.href="/tourList";
 				},
 				error: function(xhr, error, status){
 					console.log("Error: " + error);

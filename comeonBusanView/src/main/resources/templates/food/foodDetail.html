@@ -49,6 +49,7 @@
 <hr>
 
 <button class="hiddenbutton" onclick="modifyFoodTour()" style="display: none;">수정하기</button>
+<button class="hiddenbutton" onclick="deletethisPage()" style="display: none;">삭제하기</button>
 
 <div class="container">
 
@@ -170,6 +171,34 @@
 
 	function modifyFoodTour(){
 		window.location.href="/modi_food?uc_seq=" + uc_seq;
+	}
+	
+	function deletethisPage(){
+		if(confirm("이 게시글을 삭제하시겠습니까?") == true){
+			console.log("아이디 확인: " + uc_seq);
+			
+			const token = localStorage.getItem("Authorization");
+			console.log("토큰: " + token);
+			
+			$.ajax({
+				url: "http://localhost:9002/kibTest/food/" + uc_seq,
+				method: "DELETE",
+				headers: {
+					"Authorization" : "Bearer " + token
+				},
+				success: function(response){
+					console.log("응답: " + response);
+					alert(response);
+					window.location.href="/foodList";
+				},
+				error: function(xhr, error, status){
+					console.log("Error: " + error);
+				}
+			});
+		} else {
+			console.log("삭제 취소함");
+			alert("삭제 취소함");
+		}
 	}
 	
 	function doLike(){
