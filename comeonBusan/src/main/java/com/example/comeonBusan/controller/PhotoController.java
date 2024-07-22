@@ -9,8 +9,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,12 +72,12 @@ public class PhotoController {
 				String thumbnailFilename = "thumb_" + fileName;
 				Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
 				//Files.copy(file.getInputStream(),thumbnailPath , StandardCopyOption.REPLACE_EXISTING);
-				Thumbnails.of(file.getInputStream()).size(200, 200).toFile(thumbnailPath.toFile());
+				Thumbnails.of(file.getInputStream()).size(250, 200).toFile(thumbnailPath.toFile());
 				
 				thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
 			}
 			
-			if(jwt == null) {
+			if(jwt != null) {
 				photo.setTitle(title);
 				photo.setShooter(shooter);
 				photo.setShoot_year(shoot_year);
@@ -128,7 +132,8 @@ public class PhotoController {
 					
 					String thumbnailFileName = "thumb_" + fileName;
 					Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFileName);
-					Files.copy(file.getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
+					//Files.copy(file.getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
+					Thumbnails.of(file.getInputStream()).size(250, 200).toFile(thumbnailPath.toFile());
 					
 					thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFileName;
 					
@@ -159,6 +164,33 @@ public class PhotoController {
 		List<Photo> list= photoRepo.findAll();
 		
 		return list;
-	}	
+	}
+	
+	@GetMapping("/photo/{pno}")
+	public Photo getPhoto(@PathVariable("pno")String pno) {
+		
+		Long pno_db = Long.parseLong(pno);
+		
+		Optional<Photo> result = photoRepo.findById(pno_db);
+		Photo p = result.get();
+		
+		return p;
+	}
+	
+	@DeleteMapping("/photo/{pno}")
+	public ResponseEntity<String> deletePhoto(@PathVariable("pno")String pno, HttpServletRequest request){
+		
+		String token = request.getHeader("Authorization");
+		
+		Long pno_db = Long.parseLong(pno);
+		
+		if(token != null) {
+			photoRepo.deleteById(pno_db);
+			
+			return new ResponseEntity<>("게시물이 성공적으로 삭제되었습니다.", HttpStatus.OK);
+		}else {
+			return new ResponseEntity<>("삭제권한이 없습니다.", HttpStatus.FORBIDDEN);
+		}
+	}
 
 }

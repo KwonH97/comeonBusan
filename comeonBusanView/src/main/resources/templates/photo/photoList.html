@@ -6,12 +6,45 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
+	<style>
+		.heart-button {
+			background-color: transparent;
+			border: none;
+			cursor: pointer;
+			outline: none;
+			padding: 0;
+			width: 50px;
+			height: 50px;
+		}
+		
+		.photo-thumbnail{
+		width: 250px;
+		height: 200px;
+		}
+		
+		.photo-item {
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			padding: 10px;
+			text-align: center;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		
+		.photo-item img{
+			max-width: 100%;
+	        height: auto;
+	        border-radius: 5px;
+	        max-height: 150px; /* 사진 전체 크기 줄이기 */
+		}
+	
+	</style>
 </head>
 <body>
 <header>
         <th:block th:insert="~{/fragments/header2.html}"></th:block>
 </header>
 <h1>부산 관광홍보 사진</h1>
+<button class="hiddenbutton" onclick="addPhoto()" style="display: none;">사진추가</button>
 <hr>
 
 <div id="container"></div>
@@ -22,6 +55,12 @@
 <script>
 
 	$(document).ready(function(){
+		
+		var authValue = localStorage.getItem("Authorization");
+		if(authValue != null){
+			$(".hiddenbutton").css("display", "block");
+		}
+		
 		const itemsPerPage = 12;
 		let currentPage = 1;
 		let PhotoData = [];
@@ -49,16 +88,25 @@
         	const items = PhotoData.slice(start, end);
         	
         	items.forEach(item => {
-        		const photoItem = `
+        		let photoItem = `
         			<div class="photo-item">
-        				<img class="photo-thumbnail" src="${item.main_img_normal}" alt="${item.maintitle}"><br>
+        				<img class="photo-thumbnail" src="${item.main_img_thumb}" alt="${item.maintitle}"><br>
         				<span id="photo_title">${item.title}</span><br>
         				<span class="infoTitle">촬영연도: </span> <span class="info">${item.shoot_year}</span><br>
         				<span class="infoTitle">제공: </span> <span class="info">${item.shooter}</span><br>
         				<span class="infoTitle">소장기관: </span> <span class="info">${item.have_agency}</span><br>
         				<span class="infoTitle">해쉬태그: </span> <span class="info">${item.hashtag}</span><br>
-        			</div>
         		`;
+        		
+        		if (authValue != null) {
+					photoItem += `
+						<button class="hiddenbutton" onclick="modifyPhoto(${item.pno})">수정하기</button><br>
+						<button class="hiddenbutton" onclick="deleteThisPhoto(${item.pno})">삭제하기</button>
+					`;
+				}
+        		
+        		photoItem += `</div>`;
+        		
         		$('#container').append(photoItem);
         	});
 		}
@@ -85,7 +133,46 @@
         	renderPage(currentPage);
         	renderPagination(PhotoData.length, itemsPerPage);
         }
+		
+		
+		
 	});
+	
+	
+	function modifyPhoto(pno){
+		window.location.href="/modi_photo?pno=" + pno;
+	}
+	
+	function deleteThisPhoto(pno){
+		if(confirm("이 게시글을 삭제하시겠습니까?") == true){
+			console.log("아이디 확인: " + pno);
+			
+			const token = localStorage.getItem("Authorization");
+			console.log("토큰: " + token);
+			
+			$.ajax({
+				url: "http://localhost:9002/kibTest/photo/" + pno,
+				method: "DELETE",
+				headers: {
+					"Authorization" : "Bearer " + token
+				},
+				success: function(response){
+					
+					alert(response);
+					window.location.href="/photoList";
+				},
+				error: function(xhr, error, status) {
+					console.log("Error: " + error);
+				}
+			});
+		} else {
+			alert("삭제 취소함.");
+		}
+	}
+	
+	function addPhoto(){
+		window.location.href="/regi_photo";
+	}
 	
 </script>
 </body>

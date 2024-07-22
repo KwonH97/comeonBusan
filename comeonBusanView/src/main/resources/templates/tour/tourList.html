@@ -89,6 +89,7 @@
 </header>
 
 <h1>부산 관광지</h1>
+<button class="hiddenButton" onclick="addTour()" style="display: none;">관광지추가</button>
 <hr>
 <div id="container"></div>
 <div class="pagination"></div>
@@ -134,6 +135,11 @@
             });
         }
 
+        var authValue = localStorage.getItem("Authorization");
+        if (authValue != null) {
+            $(".hiddenButton").css("display", "block");
+        }
+        
         function renderPagination(totalItems, itemsPerPage) {
             $('.pagination').empty();
             const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -175,7 +181,12 @@
             renderPage(currentPage);
             renderPagination(tourData.length, itemsPerPage);
         }
+        
     });
+    
+    function addTour(){
+    	window.location.href="/regi_tour";
+    }
 </script>
 </body>
 </html>
