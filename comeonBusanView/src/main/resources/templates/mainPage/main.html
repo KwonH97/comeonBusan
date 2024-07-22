@@ -168,6 +168,7 @@ footer {
 	padding: 0 10px; /* 여백 추가 (선택 사항) */
 	    padding-top: 20px;
     padding-bottom: 20px;
+	position: relative;
 }
 
 #festival-title h2, #notice-title h2 {
@@ -175,6 +176,19 @@ footer {
 	/*font-size: 1.2em; 글자 크기 조정 (선택 사항) */
 }
 
+.more-button {
+	display: flex;
+	background-color: white;
+	color: black;
+	padding: 5px 10px;
+	border: none;
+	border-radius: 5px solid black;
+	text-decoration: none;
+	font-size: 0.9em;
+	position: absolute; /* 절대 위치 지정 */
+	right: 0; /* 부모 요소의 오른쪽에 맞춰 정렬 */
+	
+}
 .upcoming-tour-thumbnail {
 	
 	width: 247.5px;
@@ -216,6 +230,7 @@ footer {
 				<!-- right -->
 				<div id="notice-title">
 					<h2>공지사항</h2>
+					<a href="/notice/noticeList" class="more-button">더보기</a>
 				</div>
 				<div id="notice-content-container">
 					<table id="notice-table">
