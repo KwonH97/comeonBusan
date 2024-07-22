@@ -198,6 +198,74 @@ footer {
 	width: 247.5px;
 	height: 193.922px;
 }
+
+.photo-container {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+}
+
+.photo-item {
+	margin: 10px;
+	text-align: center;
+}
+
+.photo-thumbnail {
+	width: 250px;
+	height: 200px;
+	object-fit: cover;
+}
+
+.photo-title {
+	margin-top: 5px;
+}
+
+#youtubeView {
+	background-color: #003366;
+	color: white;
+	padding: 20px;
+	text-align: center;
+}
+
+.button-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 20px;
+}
+
+#prevBtn, #nextBtn {
+	background-color: #0055a5;
+	border: none;
+	color: white;
+	padding: 10px 20px;
+	cursor: pointer;
+	margin: 0 10px;
+}
+
+#prevBtn:hover, #nextBtn:hover {
+        background-color: #0073e6;
+}
+
+.dots {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin: 0 10px;
+}
+
+.dot {
+	height: 10px;
+    width: 10px;
+    margin: 0 5px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.active {
+        background-color: #717171;
+}
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
@@ -206,7 +274,7 @@ footer {
 <body>
 
 	<div id="load">
-		<img src="/img/loading.gif" alt="loading">
+		<img src="/img/travel.gif" alt="loading">
 	</div>
 	<!-- loading.gif -->
 	<header>
@@ -250,13 +318,15 @@ footer {
 			<div id="video-container"></div>
 			<div class="button-container">
 				<button id="prevBtn"> 이전 </button>
+				<div class="dots" id="dots-container"></div>
 				<button id="nextBtn"> 다음 </button>
 			</div>
 		</div>
 		
 		<div id="photo-area">
-			<h2 class="section-title">사진관</h2>
-			<div id="photo-container"></div>
+			<span class="section-title">사진관</span> <button class="hiddenButton" onclick="goRegiPhoto()" style="display: none;">사진 추가하기</button>
+			<!-- <a href="/regi_photo"><span>사진 추가하기</span></a> -->
+			<div id="photo-container" class="photo-container"></div>
 		</div>
 	</main>
 
@@ -290,6 +360,7 @@ footer {
                 'showinfo': 0
             }
         });
+        updateDots();
     }
 
     function loadVideo(index) {
@@ -299,7 +370,20 @@ footer {
             		videoId: videoIds[index],
             		startSeconds: 0		
             });
+           updateDots(); 
+            
         }
+    }
+    
+    function updateDots() {
+    	$('#dots-container').empty();
+    	videoIds.forEach(function(_, index){
+    		var dot = $('<div>').addClass('dot').attr('data-index', index);
+    		if (index === currentIndex) {
+    			dot.addClass('active');
+    		}
+    		$('#dots-container').append(dot);
+    	});
     }
 
 	
@@ -632,6 +716,11 @@ footer {
             		console.error("데이터를 불러오는 중 오류가 발생했습니다.", error);
             	}
             });
+            
+            var authValue = localStorage.getItem("Authorization");
+            if (authValue != null) {
+                $(".hiddenButton").css("display", "block");
+            }
 
     });
 </script>
