@@ -29,6 +29,7 @@ import com.example.comeonBusan.repository.HelpRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 
 @RequestMapping("/khj")
 @RestController
@@ -123,7 +124,7 @@ public class NoticeController {
 				// 썸네일 생성 및 저장?
 				String thumbnailFilename = "thumb_" + fileName;
 				Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
-				Files.copy(file.getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
+				Thumbnails.of(file.getInputStream()).size(200, 200).toFile(thumbnailPath.toFile());
 
 				thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
 

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import org.modelmapper.ModelMapper;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +23,8 @@ public class Help {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long hnum;
 	private String title;
+	
+	@Column(length = 1000)
 	private String content;
 	private String himg; // 이미지 URL
 	private String hThumbnailImg; // 썸네일 이미지 URL
