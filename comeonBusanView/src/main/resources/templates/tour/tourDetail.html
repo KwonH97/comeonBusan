@@ -207,6 +207,7 @@
 				// 지도와 마커를 추가하는 함수 호출
 				initMap(lat, lng);
 				
+				// 좋아요 상태 확인
 				checkIfLiked();
 				
 			},
@@ -215,6 +216,7 @@
 			}
 		});
 		
+		// 좋아요 수 가져오기
 		getLikeCount();
 		
 		var authValue = localStorage.getItem("Authorization");
