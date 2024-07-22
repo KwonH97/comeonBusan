@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +29,7 @@ import com.example.comeonBusan.repository.HelpRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 
 @RequestMapping("/khj")
 @RestController
@@ -60,7 +62,7 @@ public class NoticeController {
 		return list;
 
 	}
-	
+
 	@GetMapping("/noticeDetail/{hnum}")
 	public Help getNoticeDetail(@PathVariable("hnum") String hnum) {
 
@@ -122,7 +124,7 @@ public class NoticeController {
 				// 썸네일 생성 및 저장?
 				String thumbnailFilename = "thumb_" + fileName;
 				Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
-				Files.copy(file.getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
+				Thumbnails.of(file.getInputStream()).size(200, 200).toFile(thumbnailPath.toFile());
 
 				thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
 
@@ -148,16 +150,17 @@ public class NoticeController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	
+
 		return "공지가 성공적으로 등록되었습니다.";
 	}
-}
-/*
+
+
 	// 공지사항 수정
 	@PutMapping("/noticeModify/{hnum}")
-	public String noticeModify(@PathVariable("hnum") String hnum, @RequestParam(value = "file", required = false) MultipartFile file,
-			@RequestParam("title") String title, @RequestParam("content") String content, HttpServletRequest request) {
-		
+	public String noticeModify(@PathVariable("hnum") String hnum,
+			@RequestParam(value = "file", required = false) MultipartFile file, @RequestParam("title") String title,
+			@RequestParam("content") String content, HttpServletRequest request) {
+
 		System.out.println("noticeModify...........");
 		System.out.println(title);
 		System.out.println(content);
@@ -167,57 +170,57 @@ public class NoticeController {
 		Long hnum_long = Long.parseLong(hnum);
 
 		try {
-			
+
 			String fileUrl = null;
-			String thumbnailUrl  = null;
-			
+			String thumbnailUrl = null;
+
 			Optional<Help> optionalEntity = helpRepository.findById(hnum_long);
-			
-			if(!optionalEntity.isPresent()) {
-				
+
+			if (!optionalEntity.isPresent()) {
+
 				throw new IllegalArgumentException("공지사항 정보를 찾을 수 없습니다......");
-				
+
 			}
-			
+
 			Help entity = optionalEntity.get();
-			
-			if(file != null && !file.isEmpty()) { // 첨부파일이 있을 경우에만 이미지 URL 업데이트
-				
-				
+
+			if (file != null && !file.isEmpty()) { // 첨부파일이 있을 경우에만 이미지 URL 업데이트
+
 				// 파일 처리 로직 추가
 				String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-				
-						
-				
-				
-				
+				Path targetLocation = Paths.get(UPLOAD_DIR + fileName);
+				Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+				fileUrl = "http://localhost:9002/uploads/" + fileName;
+
+				// 썸네일 생성 및 저장?
+				String thumbnailFilename = "thumb_" + fileName;
+				Path thumbnailPath = Paths.get(UPLOAD_DIR + thumbnailFilename);
+				Files.copy(file.getInputStream(), thumbnailPath, StandardCopyOption.REPLACE_EXISTING);
+
+				thumbnailUrl = "http://localhost:9002/uploads/" + thumbnailFilename;
+
+				// 이미지 URL을 엔티티에 설정
+				entity.setHimg(fileUrl);
+				entity.setHThumbnailImg(thumbnailUrl);
+
 			}
-					
-					
+
+			if (jwt != null) {
+
+				entity.setHnum(hnum_long);
+				entity.setTitle(title);
+				entity.setContent(content);
+				entity.setRegDate(LocalDate.now());
+
+				System.out.println("DB에 저장할 공지사항 엔티티" + entity);
+				helpRepository.save(entity);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error";
 		}
-		
 
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		Help entity = new Help();
-		
-		Long hnum_long = Long.parseLong(hnum);
-		
-		entity.setHnum(hnum_long);
-		
-		
-		helpRepository.save(entity);
-		
-
-		return "";
+		return "success";
 	}
-	}
-*/
+}
