@@ -34,7 +34,7 @@ public class EmailService {
                 mimeMessageHelper.setSubject(emailMessage.getSubject()); 
             
                 // 본문 내용 설정, false는 HTML 형식의 메세지를 사용하지 않음을 나타낸다.
-                mimeMessageHelper.setText(emailMessage.getMessage(), false);
+                mimeMessageHelper.setText(emailMessage.getMessage(), true);
                 
                 // 이메일 발신자 설정
                 mimeMessageHelper.setFrom(new InternetAddress(from));

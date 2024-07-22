@@ -35,12 +35,15 @@ public class AdminController {
 		return "/admin/newsLetter";
 	}
 	
-	@RequestMapping("/setNewPw")
+	// 새 비밀번호 설정 : enterId -> enterEmail -> reset-password
+	
+	@RequestMapping("/enterId")
 	public String setNewPw() {
 		
-		return "/admin/setNewPw";
+		return "/admin/enterId";
 		
 	}
+	
 	@PostMapping("/enterEmail")
 	public String enterEmail(Model model, @RequestParam("username") String username) {
 		
@@ -49,5 +52,15 @@ public class AdminController {
 		return "/admin/enterEmail";
 		
 	}
+	
+	@RequestMapping("/reset-password")
+	public String resetPassword() {
+		
+		
+		return "/admin/resetPassword";
+		
+	}
+	
+	
 	
 }

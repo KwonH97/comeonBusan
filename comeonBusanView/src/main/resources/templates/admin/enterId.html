@@ -2,22 +2,58 @@
 <html>
 
 <head>
-	<meta charset="UTF-8">
-	<title>새 비밀번호 설정 - 아이디 입력</title>
-	<style>
-	</style>
-	<script src="https://code.jquery.com/jquery-3.7.1.js"
-		integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+<title>새 비밀번호 설정 - 아이디 입력</title>
+<style>
+</style>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
 </head>
 
 <body>
 
 	<h3>새 비밀번호 세팅을 위해 아이디를 입력해주세요</h3>
-	<form action="/enterEmail" method="POST">
-		<input type="text" id="username" name="username" placeholder="username" />
+	<form name="frm" id="frm">
+		<input type="text" id="username" name="username"
+			placeholder="username" />
 		<button type="submit">다음</button>
 	</form>
 	<script>
+		document.getElementById('frm').addEventListener(
+				'submit',
+				function(event) {
+					event.preventDefault();
+
+					const formData = new FormData();
+					const userData = {
+						username : document.getElementById('username').value
+					};
+
+					console.log(userData);
+					// JSON 데이터 추가
+					formData.append('username', new Blob([ JSON
+							.stringify(userData) ], {
+						type : 'application/json'
+					}));
+
+					$.ajax({
+						type : 'GET',
+						url : 'http://localhost:9002/findAdminId',
+						data : formData,
+						processData : false,
+						contentType : false,
+						cache : false,
+						success : function(response) {
+							console.log(response);
+						},
+						error : function(e) {
+							console.log("error : ", e);
+
+						}
+					});
+
+				});
 	</script>
 </body>
 
