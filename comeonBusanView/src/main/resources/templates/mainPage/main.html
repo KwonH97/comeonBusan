@@ -244,6 +244,20 @@ footer {
 		</div>
 		<h2 class="section-title">축제 예정</h2>
 		<div id="upcoming-festival-container"></div>
+		
+		<div id="youtubeView">
+			<h2 class="section-title">부산 홍보 영상</h2>
+			<div id="video-container"></div>
+			<div class="button-container">
+				<button id="prevBtn"> 이전 </button>
+				<button id="nextBtn"> 다음 </button>
+			</div>
+		</div>
+		
+		<div id="photo-area">
+			<h2 class="section-title">사진관</h2>
+			<div id="photo-container"></div>
+		</div>
 	</main>
 
 	<footer>
@@ -258,6 +272,36 @@ footer {
             $('#load').fadeOut();
         }, 1000); // 1000ms = 1초
     });
+	
+	var videoIds = ['o_FlQvFotwQ', 'NfdCTa3r1DA', 'QGrnMdi6wrQ', '3gugFrmfhlQ'];
+    var currentIndex = 0;
+    var player;
+
+    // 유튜브 iframe API 준비
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('video-container', {
+            height: '300',
+            width: '400',
+            videoId: videoIds[currentIndex],
+            playerVars: {
+                'autoplay': 0,
+                'controls': 1,
+                'rel': 0,
+                'showinfo': 0
+            }
+        });
+    }
+
+    function loadVideo(index) {
+        if (player) {
+        	player.stopVideo();
+            player.cueVideoById({
+            		videoId: videoIds[index],
+            		startSeconds: 0		
+            });
+        }
+    }
+
 	
     $(document).ready(function() {
     	   	    	
@@ -540,12 +584,55 @@ footer {
             		
             });
             
-            	
-            	
-            }
+           }
             
             noticeList();
         
+            if (window.YT && YT.Player) {
+                onYouTubeIframeAPIReady();
+            } else {
+                var tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+                var firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            }
+
+            $('#nextBtn').click(function() {
+                if (currentIndex < videoIds.length - 1) {
+                    currentIndex++;
+                    loadVideo(currentIndex);
+                }
+            });
+
+            $('#prevBtn').click(function() {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    loadVideo(currentIndex);
+                }
+            });
+            
+            $.ajax({
+            	url: "http://localhost:9002/kibTest/photo",
+            	method: "GET",
+            	success: function(response){
+            		console.log("데이터 불러옴.");
+            		
+            		response.forEach(function(photo){
+            			var imgElement = $('<img>').attr('src', photo.main_img_thumb).addClass('photo-thumbnail');
+            			var titleElement = $('<div>').text(photo.title).addClass('photo-title');
+            			
+            			var containerElement = $('<div>').addClass('photo-item');
+            			containerElement.append(imgElement);
+            			containerElement.append(titleElement);
+						
+            			$('#photo-container').append(containerElement);
+            		});
+            	},
+            	error: function(xhr, status, error) { 
+            		console.error("데이터를 불러오는 중 오류가 발생했습니다.", error);
+            	}
+            });
+
     });
 </script>
 

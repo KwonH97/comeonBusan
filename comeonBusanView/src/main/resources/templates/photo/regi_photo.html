@@ -42,13 +42,14 @@
 <script>
 	
 	$(document).ready(function(){
-		$("form").on("submit", function(event){
+		$("form[name='frm']").on("submit", function(event){
 			event.preventDefault();
+			event.stopPropagation();
 			
 			var formData = new FormData($(this)[0]);
 			
 			if(formData == null){
-				cosole.log("formdata is null");
+				console.log("formdata is null");
 			}else{
 				console.log("formData is not null");
 			}
