@@ -21,6 +21,11 @@ main {
 	align-items: center;
 }
 
+a {
+	text-decoration-line: none;
+	color: black;
+}
+
 .content-header {
 	text-align: center;
 	margin-bottom: 20px;
@@ -166,8 +171,8 @@ footer {
 	height: 20px; /* 기존 높이 유지 */
 	box-sizing: border-box; /* 기존 스타일 유지 */
 	padding: 0 10px; /* 여백 추가 (선택 사항) */
-	    padding-top: 20px;
-    padding-bottom: 20px;
+	padding-top: 20px;
+	padding-bottom: 20px;
 	position: relative;
 }
 
@@ -187,14 +192,12 @@ footer {
 	font-size: 0.9em;
 	position: absolute; /* 절대 위치 지정 */
 	right: 0; /* 부모 요소의 오른쪽에 맞춰 정렬 */
-	
 }
+
 .upcoming-tour-thumbnail {
-	
 	width: 247.5px;
 	height: 193.922px;
 }
-
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
@@ -513,9 +516,15 @@ footer {
             		const noticeTableBody = $('#notice-table tbody');
            			noticeTableBody.empty();
             		response.slice(0, 5).forEach(notice =>{
+            			const maxLength = 50; // 공지사항 제목 자를 최대 길이 설정
+                        let truncatedTitle = notice.title;
+                        if (truncatedTitle.length > maxLength) {
+                            truncatedTitle = truncatedTitle.substring(0, maxLength) + '...';
+                        }
+            			
             			const noticeRow = `
             				<tr>
-            					<td><a href="/notice/noticeDetail?hnum=${notice.hnum}">${notice.title}</a></td>
+            					<td><a href="/notice/noticeDetail?hnum=${notice.hnum}">${truncatedTitle}</a></td>
             					<td>${notice.regDate}</td>       					
             				</tr>       			
             			`;
