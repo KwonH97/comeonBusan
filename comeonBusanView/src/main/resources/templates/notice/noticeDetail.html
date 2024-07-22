@@ -3,120 +3,254 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-<style>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
 
-</style>
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin: 2rem 0;
+        }
+
+        .container {
+            position: relative; /* Added position relative for absolute positioning of buttons */
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 4rem;
+        	margin-top: 4rem;
+        }
+
+        .button-container {
+            position: absolute;
+              top: 1rem; /* Adjusted for desired vertical positioning */
+        right: 1rem; /* Adjusted for desired horizontal positioning */
+        display: flex; /* Align buttons horizontally */
+        gap: 0.5rem; /* Space between buttons */
+        }
+
+        .hiddenButton {
+            display: inline-block;
+            margin: 0 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: white;
+            color: black;
+            border: solid 1px;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .hiddenButton:hover {
+            background-color: #0056b3;
+        }
+
+        #regDate {
+         
+            display: inline;
+            margin-left: 0.5rem;
+        }
+
+        #notice_img {
+            max-width: 100%;
+            height: auto;
+            margin: 1rem 0;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #content {
+            margin-top: 1rem;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Additional styles */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input[type="text"], 
+        .form-group textarea, 
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 0.25rem;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input[type="button"], 
+        .form-group input[type="submit"] {
+            align-self: center;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .form-group input[type="button"]:hover, 
+        .form-group input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-<header>
+	    <header>
         <th:block th:insert="~{/fragments/header2.html}"></th:block>
-</header>
-<h1>공지</h1>
+    </header>
 
-<div class="container">
+    <div class="container">
+        <!-- Button container for positioning buttons -->
+        <div class="button-container">
+            <button class="hiddenButton" style="display: none;" id="modifyButton">수정하기</button>
+            <button class="hiddenButton" style="display: none;" id="deleteButton">삭제하기</button>
+        </div>
+        
+        <h2 id="main_title">공지사항 제목</h2>
+        <div>
+            <span>작성일: </span>
+            <p id="regDate"></p>
+        </div>
 
-	<h2 id="main_title"></h2>
-	<span>작성일   </span><p id="regDate"></p>
-	<button class="hiddenButton" style="display: none;" id="modifyButton">수정하기</button>
-	<button class="hiddenButton" style="display: none;" id="deleteButton">삭제하기</button>
-	
-	<img src="" id="notice_img"><!-- 이미지는 값이 있을 경우에만 출력되도록 처리 -->
-	
-	<div id="content"></div>
-	
-	
-</div>
-  <footer>
-    <th:block th:insert="~{/fragments/footer.html}"></th:block>
-  </footer>
+        <img src="" id="notice_img" alt="공지사항 이미지">
+        <div id="content"></div>
+    </div>
 
-<script>
+    <footer>
+        <th:block th:insert="~{/fragments/footer.html}"></th:block>
+    </footer>
 
 
-	var hnum = "[[${id}]]";
-	
-	$(document).ready(function(){
-		console.log("noticeDetail..............");
-		console.log(hnum);
-		
-		$.ajax({
-			url: "http://localhost:9002/khj/noticeDetail/" + hnum,
-			method: "GET",
-			success: function(response){
-				console.log("데이터 확인 : ", response);
-				
-				document.querySelector("#main_title").textContent = response.title;
-				document.querySelector("#regDate").textContent = response.regDate;
-				
-				if(response.himg){
-					document.querySelector("#notice_img").src = response.himg;
-					document.querySelector("#notice_img").style.display = "block";
-					
-				}else {
-					
-					document.querySelector("#notice_img").style.display = "none";
-				}
-	
-				document.querySelector("#content").textContent = response.content;
-				document.querySelector("#modifyButton").onclick = function(){
-					gomodifyPage(response.hnum);
-				};
-				
-				document.querySelector("#deleteButton").onclick = function(){
-					
-					goDeletePage(response.hnum);
-				};
-			},
-			error : function(error){
-				console.log("Error : ", error);
-			}
-		});
-		
-		var authValue = localStorage.getItem("Authorization");
-		if(authValue != null){
-			$(".hiddenButton").css("display", "block");
-			
+	<script>
+		var hnum = "[[${id}]]";
+
+		$(document)
+				.ready(
+						function() {
+							console.log("noticeDetail..............");
+							console.log(hnum);
+							
+
+							$
+									.ajax({
+										url : "http://localhost:9002/khj/noticeDetail/"
+												+ hnum,
+										method : "GET",
+										success : function(response) {
+											console.log("데이터 확인 : ", response);
+
+											document
+													.querySelector("#main_title").textContent = response.title;
+											document.querySelector("#regDate").textContent = response.regDate;
+
+											if (response.himg) {
+												document
+														.querySelector("#notice_img").src = response.himg;
+												document
+														.querySelector("#notice_img").style.display = "block";
+
+											} else {
+
+												document
+														.querySelector("#notice_img").style.display = "none";
+											}
+
+											document.querySelector("#content").textContent = response.content;
+											document
+													.querySelector("#modifyButton").onclick = function() {
+												gomodifyPage(response.hnum);
+											};
+
+											document
+													.querySelector("#deleteButton").onclick = function() {
+
+												goDeletePage(response.hnum);
+											};
+										},
+										error : function(error) {
+											console.log("Error : ", error);
+										}
+									});
+
+							var authValue = localStorage
+									.getItem("Authorization");
+							if (authValue != null) {
+								$(".hiddenButton").css("display", "block");
+
+							}
+
+						});
+
+		function gomodifyPage(hnum) {
+
+			window.location.href = "/notice/noticeModify?hnum=" + hnum;
+
 		}
-		
-	});
-	
-	function gomodifyPage(hnum){
-		
-		window.location.href="/notice/noticeModify?hnum=" + hnum;
-		
-	}
-	
-	function goDeletePage(hnum){
-		if(confirm("정말로 삭제하시겠습니까?")){
-		
-		console.log(hnum);
-		
-		$.ajax({
-		
-			url: "http://localhost:9002/khj/noticeDelete/" + hnum,
-			method: "DELETE",
-			success: function(response){
-			
-				alert(response);
-				//삭제 후 목록 페이지로 이동
-				window.location.href="/notice/noticeList";
-				
-			},
-			error: function(error){
-				
-				console.log("Error : " , error);
+
+		function goDeletePage(hnum) {
+			if (confirm("정말로 삭제하시겠습니까?")) {
+
+				console.log(hnum);
+
+				$.ajax({
+
+					url : "http://localhost:9002/khj/noticeDelete/" + hnum,
+					method : "DELETE",
+					success : function(response) {
+
+						alert(response);
+						//삭제 후 목록 페이지로 이동
+						window.location.href = "/notice/noticeList";
+
+					},
+					error : function(error) {
+
+						console.log("Error : ", error);
+					}
+				});
+			} else {
+
+				console.log("삭제 취소");
+
 			}
-		});
-		}else{
-			
-			console.log("삭제 취소");
-			
 		}
-	}
-
-
-</script>
+	</script>
 
 
 
