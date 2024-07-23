@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -61,25 +62,27 @@ public class SetPasswordController {
 
 	// UUID 생성 및 이메일 전송
 	@PostMapping("/send-reset-password")
-	public ResponseEntity<SendResetPasswordEmailRes> sendResetPassword(
-			@Validated @ModelAttribute SendResetPasswordEmailReq resetPasswordEmailReq) {
+	public ResponseEntity<?> sendResetPassword(
+            @Validated @ModelAttribute SendResetPasswordEmailReq resetPasswordEmailReq) {
 
-		Optional<UserEntity> user = userRepository.findByEmail(resetPasswordEmailReq.getEmail());
+        Optional<UserEntity> user = userRepository.findByUsernameAndEmail(
+                resetPasswordEmailReq.getUsername(), resetPasswordEmailReq.getEmail());
 
-		if (!user.isPresent()) {
-			return ResponseEntity.badRequest().body(null); // 사용자 찾을 수 없음 처리
-		}
+        if (!user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("회원가입 시 입력한 이메일을 입력해 주세요."); // 사용자 찾을 수 없음 처리
+        }
 
-		String uuid;
+        // 이메일과 유저네임이 일치하면 UUID 생성 및 이메일 전송
+        String uuid;
+        try {
+            uuid = emailService.sendResetPasswordEmail(resetPasswordEmailReq.getEmail());
+        } catch (UnsupportedEncodingException e) {
+            // 예외 처리 로직 추가
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이메일 전송 중 오류가 발생했습니다.");
+        }
 
-		try {
-			uuid = emailService.sendResetPasswordEmail(resetPasswordEmailReq.getEmail());
-		} catch (UnsupportedEncodingException e) {
-			// 예외 처리 로직 추가
-			return ResponseEntity.status(500).body(null);
-		}
-
-		return ResponseEntity.ok(SendResetPasswordEmailRes.builder().uuid(uuid).build());
+        return ResponseEntity.ok(SendResetPasswordEmailRes.builder().uuid(uuid).build());
+    
 	}
 
 	@PostMapping("/resetPassword")

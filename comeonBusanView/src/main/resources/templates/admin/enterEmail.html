@@ -48,11 +48,16 @@
 					alert('Reset password email sent! UUID: ' + response.uuid);
 
 				},
-				error: function (xhr, status, error) {
-					console.error("Error: " + error);
-				    alert('Failed to send reset password email.');
-				}
-			});
+	            error: function (xhr, status, error) {
+	                console.error("Error: " + error);
+	                if (xhr.status === 400) {
+	                    alert('회원가입 시 입력한 이메일을 입력해 주세요.');
+	                } else {
+	                    alert('Failed to send reset password email.');
+	                }
+	            }
+	        });
+
 		});
 	</script>
 </body>
