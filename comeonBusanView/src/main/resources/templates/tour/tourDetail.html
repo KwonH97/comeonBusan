@@ -8,13 +8,37 @@
 	crossorigin="anonymous"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU"></script> <!-- Google Maps API 스크립트 추가 -->
 <style>
+	.container {
+		width: 80%;
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 20px;
+		box-sizing: border-box;
+		background-color: #fff;
+		border-radius: 8px;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	}
+	
+	#title {
+		font-size: 36px;
+		font-weight: bold;
+		color: #0047AB;
+		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+		margin-bottom: 20px;
+		padding: 10px;
+		/*background-color: rgb(0, 71, 171); */
+		border-radius: 5px;
+		text-align: center;
+	}
+
 	#placeInfo{
-		border: 2px solid #D88FD8;
+		border: 4px solid #D88FD8;
 		padding: 10px;
 		margin: 20px 0;
 		display: flex;
 		flex-wrap: wrap;
 		gap: 10px;
+		border-radius: 8px;	
 	}
 	.info-group{
 		flex: 1;
@@ -49,70 +73,139 @@
 	}
 	
 	.heart-button {
-	background-color: transparent;
-	border: none;
-	cursor: pointer;
-	outline: none;
-	padding: 0;
-	width: 50px;
-	height: 50px;
-}
+		background-color: transparent;
+		border: none;
+		cursor: pointer;
+		outline: none;
+		padding: 0;
+		width: 50px;
+		height: 50px;
+	}
 
-.heart-icon {
-	fill: transparent;
-	stroke: black;
-	stroke-width: 1; /*테두리 더 굴게 얇게 조정*/
-	transition: transform 0.2s;
-}
-
-.heart-button:hover .heart-icon {
-	transform: scale(1.1);
-}
-
-.heart-icon.liked {
-	fill: red;
-	stroke: red;
-}
-
-#main_img{
-	width: 500px;
-	height: 450px;
-}
+	.heart-icon {
+		fill: transparent;
+		stroke: black;
+		stroke-width: 1; /*테두리 더 굴게 얇게 조정*/
+		transition: transform 0.2s;
+	}
+	
+	.heart-button:hover .heart-icon {
+		transform: scale(1.1);
+	}
+	
+	.heart-icon.liked {
+		fill: red;
+		stroke: red;
+	}
+	
+	#main_img{
+		width: 500px;
+		height: 450px;
+	}
+	
+	.button-container {
+		display: flex;
+		gap: 10px;
+		margin-top: 20px; 
+	}
+	
+	.hiddenButton {
+		background-color: #e71b85;
+		color: white; /* 버튼 색상에 잘 보이는 흰색 텍스트 */
+	    border: none;
+	    border-radius: 12px; /* 둥근 모서리 */
+	    padding: 8px 16px; /* 버튼 내 여백 (기본 크기보다 20% 작게) */
+	    font-size: 14px; /* 텍스트 크기 (기본 크기보다 20% 작게) */
+	    font-weight: bold; /* 텍스트 굵기 */
+	    cursor: pointer; /* 마우스를 올렸을 때 포인터 아이콘 */
+	    transition: background-color 0.3s ease, color 0.3s ease; /* 부드러운 색상 변화 */
+	    text-align: center; /* 텍스트 가운데 정렬 */
+	}
+	
+	.hiddenButton:hover {
+		background-color: #c2185b;
+		color: white;
+	}
+	
+	#subtitle, #place{
+		text-align: center;
+	}
+	
+	#main_img {
+		display: block;
+		margin: 0 auto;
+		width: 100%;
+		height: auto;
+		max-width: 100%;
+	}
+	
+	.interaction-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 20px;
+	}
+	
+	.left-section {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	
+	.right-section {
+		display: flex;
+		align-items: center;
+	}
+	
+	.right-section button {
+		padding: 10px 20px;
+		background-color: #e71b85;
+		color: white;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		font-size: 16px;
+	}
+	
+	.right-section button:hover {
+		background-color: #d4186b;
+	}
 </style>
 </head>
 <body>
 <header>
         <th:block th:insert="~{/fragments/header2.html}"></th:block>
 </header>
-<h1>관광지 상세페이지</h1>
-<hr>
 
-<button class="hiddenButton" style="display: none;" onclick="gomodifyPage()">수정하기</button>
-<button class="hiddenButton" style="display: none;" onclick="deleteThisPage()">삭제하기</button>
+<div class="button-container">
+	<button class="hiddenButton" style="display: none;" onclick="gomodifyPage()">수정하기</button>
+	<button class="hiddenButton" style="display: none;" onclick="deleteThisPage()">삭제하기</button>
+</div>
 
 <div class="container">
 	<h3 id="title"></h3>
 	<h4 id="subtitle"></h4>
 	<h4 id="place"></h4>
 	<img id="main_img" alt="관광지 홍보사진"><br>
-	조회수 : <span id="viewcount"></span><br>
-	<button class="heart-button" onclick="doLike()">
-		<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
-				<path
-					d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-			</svg>
-	</button>
-	<span>( </span><span id="likecount"></span><span> )</span><br>
-	<p><button onclick="loadBlogPage(uc_seq)">리뷰보기</button></p>
+	
+	<div class="interaction-container">
+		<div class="left-section">
+			조회수 : <span id="viewcount"></span><br>
+			<button class="heart-button" onclick="doLike()">
+				<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
+						<path
+							d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+					</svg>
+			</button>
+			<span>( </span><span id="likecount"></span><span> )</span><br>
+		</div>
+		<div class="right-section">
+			<p><button onclick="loadBlogPage(uc_seq)">리뷰보기</button></p>
+		</div>
+	</div>
+	
 	<span class="info">관광지 배경</span><br>
 	<div id="itemcntnts"><!-- 관광지 설명 --></div>
-	
-	 <!--  
-	<div id="video-container"></div>
-	<video style="width:100%;" src="https://vod.visitbusan.net:8080/upload/encoding/video/2024/06/c0a49b6312a84e2ea5a74ec9efd3f293_media_1280x720.mp4" controls="" controlslist="nodownload" loop="" playsinline="" poster="https://vod.visitbusan.net:8080//upload/encoding/video/2024/06/c0a49b6312a84e2ea5a74ec9efd3f293_mplayer1_3.png"> Sorry, your browser doesn't support embedded videos,
- but don't worry, you can <a href="videofile.ogg">download it</a> and watch it with your favorite video player!
-	</video>
-	-->
 	
 	<div id="placeInfo">
 		<div class="info-section">

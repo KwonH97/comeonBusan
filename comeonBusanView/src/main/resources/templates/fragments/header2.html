@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>온나부산 - 헤더</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
 <style>
 body {
     margin: 0;
@@ -186,6 +189,24 @@ header {
     border: 1px solid #ccc;
     font-size: 14px;
 }
+
+.hiddenButtonHeader {
+    background-color: #e71b85; /* 부산광역시 로고의 분홍색으로 설정 */
+    color: white; /* 버튼 색상에 잘 보이는 흰색 텍스트 */
+    border: none;
+    border-radius: 12px; /* 둥근 모서리 */
+    padding: 10px 20px; /* 버튼 내 여백 */
+    font-size: 16px; /* 텍스트 크기 */
+    font-weight: bold; /* 텍스트 굵기 */
+    cursor: pointer; /* 마우스를 올렸을 때 포인터 아이콘 */
+    transition: background-color 0.3s ease, color 0.3s ease; /* 부드러운 색상 변화 */
+    text-align: center; /* 텍스트 가운데 정렬 */
+}
+
+.hiddenButtonHeader:hover {
+    background-color: #c2185b; /* 버튼 색상에 대한 호버 상태 색상 */
+    color: #fff; /* 호버 상태에서도 텍스트 색상 흰색 유지 */
+}
 </style>
 <script src="/js/common.js"></script>
 </head>
@@ -198,7 +219,9 @@ header {
                     <a href="/main"><img src="/img/onabusan2.png" alt="Logo"></a>
                 </div>
                 <h1 class="title">온 나 부 산</h1>
-                <button class="adminPage" onclick="">관리자 페이지로</button>
+                
+                <button class="hiddenButtonHeader" style="display: none;" onclick="goAdminPage()">관리자 페이지로</button>
+                
                 <div class="search-bar">
                     <form id="form" name="search" method="get" action="searchResult" onsubmit="return handleSubmit(event)">
                         <div>
@@ -232,6 +255,9 @@ header {
                     </li>
                 </ul>
             </div>
+            
+            	<div id="videoPlayHeader"></div>
+            
         </div>
     </header>
 
@@ -361,6 +387,18 @@ header {
 
     function hideDropdown() {
         document.querySelector('.dropdown').style.display = 'none';
+    }
+    
+    $(document).ready(function(){
+    	var authValue = localStorage.getItem("Authorization");
+		if(authValue != null){
+			$(".hiddenButtonHeader").css("display", "block");
+		}
+		
+    });
+    
+    function goAdminPage(){
+    	window.location.href="/adminPage";
     }
     </script>
 </body>
