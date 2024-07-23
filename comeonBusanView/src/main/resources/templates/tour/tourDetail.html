@@ -42,10 +42,19 @@
 	}
 	.info-group{
 		flex: 1;
-		gap: 5px;
+		padding: 10px;
+		position: relative;
 	}
-	.info-group:last-child {
-		margin-right: 0;
+	
+	.info-group:not(last-child)::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		right: 0;
+		height: 100%;
+		width: 1px;
+		background-color: rgba(0, 0, 0, 0.2);
+		border-radius: 2px;
 	}
 	.info-group span{
 		display: block;
@@ -55,16 +64,17 @@
 		display: flex;
 		justify-content: space-between;
 		margin-bottom: 10px;
+		gap: 20px;
 	}
 	.single-info{
-		margin-bottom: 10px;
+		margin-top: 20px;
 	}
 	.addr .tel .homepage_url .dayInfo .useageDay_week_and_time .usage_amount .middle_size_rm .trfc_info{
 		margin-bottom: 10px;
 	}
 	.info{
-		color: blue;
-		font-size: 30px;
+		font-weight: bold;
+		font-size: 20px;
 	}
 	#map {
 		height: 500px; /* 원하는 높이로 설정 */
@@ -152,6 +162,23 @@
 		gap: 10px;
 	}
 	
+	.view-count {
+		margin-right: 20px;
+	}
+	
+	.like-section {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		border-left: 1px solid rgba(0, 0, 0, 0.2);
+		padding-left: 20px;
+	}
+	
+	.heart-text {
+	    font-size: 16px;              /* 좋아요 텍스트의 크기 */
+	    color: #e71b85;               /* 텍스트 색상 */
+	}
+	
 	.right-section {
 		display: flex;
 		align-items: center;
@@ -190,14 +217,17 @@
 	
 	<div class="interaction-container">
 		<div class="left-section">
-			조회수 : <span id="viewcount"></span><br>
-			<button class="heart-button" onclick="doLike()">
-				<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
-						<path
-							d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-					</svg>
-			</button>
-			<span>( </span><span id="likecount"></span><span> )</span><br>
+			<span>조회수 : <span id="viewcount"></span></span>
+			<div class="like-section">
+				<button class="heart-button" onclick="doLike()">
+					<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
+							<path
+								d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+						</svg>
+						<span class="heart-text">좋아요</span>
+				</button>
+				<span>( </span><span id="likecount"></span><span> )</span><br>
+			</div>
 		</div>
 		<div class="right-section">
 			<p><button onclick="loadBlogPage(uc_seq)">리뷰보기</button></p>
@@ -210,22 +240,22 @@
 	<div id="placeInfo">
 		<div class="info-section">
 			<div class="info-group">
-				<span class="info">주소: </span><span class="addr"></span>
-				<span class="info">연락처: </span><span class="tel"></span>
-				<span class="info">홈페이지: </span><span class="homepage_url"></span><br>
+				<span class="info">주소 </span><span class="addr"></span>
+				<span class="info">연락처 </span><span class="tel"></span>
+				<span class="info">홈페이지 </span><span class="homepage_url"></span><br>
 			</div>
 			<div class="info-group">
-				<span class="info">운영일~휴무일: </span><span class="dayInfo"></span>
-				<span class="info">운영 및 시간: </span><span class="useageDay_week_and_time"></span>
-				<span class="info">이용요금: </span><span class="usage_amount"></span><br>
+				<span class="info">운영일~휴무일 </span><span class="dayInfo"></span>
+				<span class="info">운영 및 시간 </span><span class="useageDay_week_and_time"></span>
+				<span class="info">이용요금 </span><span class="usage_amount"></span><br>
 			</div>
 		</div>
 		<div class="single-info">
-			<span class="info">편의 시설: </span><br>
+			<span class="info">편의 시설 </span><br>
 			<span class="middle_size_rm"></span>
 		</div>
 		<div class="single-info">
-			<span class="info">교통정보: </span><br>
+			<span class="info">교통정보 </span><br>
 			<span class="trfc_info"></span>
 		</div>
 	</div>
