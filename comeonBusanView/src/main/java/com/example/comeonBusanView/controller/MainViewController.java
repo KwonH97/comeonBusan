@@ -26,6 +26,12 @@ public class MainViewController {
 		this.restTemplate = restTemplate;
 	}
 	
+	@GetMapping("/")
+	public String root() {
+		
+		return "/mainPage/main";
+	}
+	
 	@GetMapping("/main")
 	public String main() {
 		return "/mainPage/main";
