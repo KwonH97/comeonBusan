@@ -142,7 +142,7 @@ public class TourController {
 		Optional<TourList> result= tourRepo.findById(uc_seq);
 		TourList tour= result.get();
 		
-		System.out.println(tour);
+		//System.out.println(tour);
 		
 		return tour;
 	}
