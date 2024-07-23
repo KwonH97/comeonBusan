@@ -38,7 +38,7 @@ public class BlogSearchController {
 
         return result;
     }
-    
+
     @GetMapping("/blog/tour")
     public Map<String, String> searchTour(@RequestParam(name="uc_seq") Long uc_seq, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
         Map<String, String> result = new HashMap<>();
@@ -52,7 +52,47 @@ public class BlogSearchController {
             result.put("result", response);
             session.setAttribute("blogData", result);
         } else {
-            result.put("result", "No lodgment data found");
+            result.put("result", "No tour data found");
+            session.setAttribute("blogData", result);
+        }
+
+        return result;
+    }
+
+    @GetMapping("/blog/festival")
+    public Map<String, String> searchFestival(@RequestParam(name="uc_seq") Long uc_seq, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
+        Map<String, String> result = new HashMap<>();
+        RestTemplate restTemplate = new RestTemplate();
+        String festivalUrl = "http://localhost:9002/kibTest/festival/" + uc_seq;
+        Map<String, Object> festival = restTemplate.getForObject(festivalUrl, Map.class);
+
+        if (festival != null && festival.containsKey("title")) {
+            String title = festival.get("title").toString();
+            String response = blogService.searchBlog(title, (page - 1) * size + 1, size);
+            result.put("result", response);
+            session.setAttribute("blogData", result);
+        } else {
+            result.put("result", "No festival data found");
+            session.setAttribute("blogData", result);
+        }
+
+        return result;
+    }
+
+    @GetMapping("/blog/restaurant")
+    public Map<String, String> searchRestaurant(@RequestParam(name="uc_seq") Long uc_seq, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
+        Map<String, String> result = new HashMap<>();
+        RestTemplate restTemplate = new RestTemplate();
+        String restaurantUrl = "http://localhost:9002/kibTest/restaurant/" + uc_seq;
+        Map<String, Object> restaurant = restTemplate.getForObject(restaurantUrl, Map.class);
+
+        if (restaurant != null && restaurant.containsKey("title")) {
+            String title = restaurant.get("title").toString();
+            String response = blogService.searchBlog(title, (page - 1) * size + 1, size);
+            result.put("result", response);
+            session.setAttribute("blogData", result);
+        } else {
+            result.put("result", "No restaurant data found");
             session.setAttribute("blogData", result);
         }
 

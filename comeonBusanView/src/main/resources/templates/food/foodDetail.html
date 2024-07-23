@@ -57,7 +57,7 @@
 	<h4 id="subtitle"></h4>
 	
 	<img id="main_img_normal" alt="맛집 홍보사진"><br>
-	
+	<button onclick="loadBlogPage(uc_seq)">리뷰 보기</button><br>
 	조회수 : <span id="viewcount"></span><br>
 	<button class="heart-button" onclick="doLike()">
 		<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
@@ -91,6 +91,10 @@
   </footer>
 <script>
 	var uc_seq = "[[${uc_seq}]]";
+	
+	function loadBlogPage(uc_seq) {
+        window.location.href = `/blog?type=food&uc_seq=${uc_seq}`;
+    }
 	
 	$(document).ready(function(){
 		
