@@ -123,14 +123,14 @@ public class FestivalController {
 
 		for (JsonNode itemNode : itemsNode) {
 
-			System.out.println(itemNode.path("LAT").asText());
+			//System.out.println(itemNode.path("LAT").asText());
 
 			String latString = itemNode.path("LAT").asText();
 
 			// 문자열을 double로 변환
 			double latDouble = Festival.parseDoubleOrDefault(latString, 0.0);
 
-			System.out.println("lat as double:" + latDouble);
+			//System.out.println("lat as double:" + latDouble);
 
 			String lngString = itemNode.path("LNG").asText();
 
@@ -163,8 +163,8 @@ public class FestivalController {
 				endDate = formatter.parse(s_endDate);
 			}
 
-			System.out.println(startDate);
-			System.out.println(endDate);
+			//System.out.println(startDate);
+			//System.out.println(endDate);
 
 			Festival entity = Festival.builder().ucSeq(Long.parseLong(itemNode.path("UC_SEQ").asText()))
 					.mainTitle(itemNode.path("MAIN_TITLE").asText()).gugunNm(itemsNode.path("GUGUN_NM").asText())
@@ -249,7 +249,7 @@ public class FestivalController {
 		entities.add(additionalFestival);
 		
 		List<Festival> list = festivalRepository.findAll();
-		System.out.println(list);
+		//System.out.println(list);
 		if (list != null && !list.isEmpty()) {
 
 			return ResponseEntity.ok(list);
