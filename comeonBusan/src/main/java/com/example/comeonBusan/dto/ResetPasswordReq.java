@@ -2,17 +2,16 @@ package com.example.comeonBusan.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmailMessage {
+public class ResetPasswordReq {
 
-	private String to;
-	private String subject;
-	private String message;
 	
+	private String password;
+	private String uuid;
 }

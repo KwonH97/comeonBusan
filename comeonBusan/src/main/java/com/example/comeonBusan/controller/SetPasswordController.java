@@ -1,17 +1,28 @@
 package com.example.comeonBusan.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Map;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.comeonBusan.dto.EmailMessage;
+import com.example.comeonBusan.dto.ResetPasswordReq;
+import com.example.comeonBusan.dto.SendResetPasswordEmailReq;
+import com.example.comeonBusan.dto.SendResetPasswordEmailRes;
 import com.example.comeonBusan.entity.UserEntity;
 import com.example.comeonBusan.repository.UserRepository;
 import com.example.comeonBusan.service.EmailService;
+import com.example.comeonBusan.service.RedisService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,69 +33,93 @@ public class SetPasswordController {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	private final RedisService redisService;
+
 	private final EmailService emailService;
 
-	@GetMapping("/findAdminId")
-	public ResponseEntity<String> findAdminId(@RequestParam("username") String username) {
+	@PostMapping("/findAdminId")
+	public String findAdminId(@RequestBody Map<String, String> request) {
 
-		return ResponseEntity.ok("I wanna go ");
+		String username = request.get("username");
 
-	}
+		// Boolean result = userRepository.existsByUsername(username);
 
-	@PostMapping("/emailCheck")
-	public ResponseEntity<String> emailCheck(@RequestParam("email") String email,
-			@RequestParam("username") String username) {
-
-		// 폼데이터 받기
-		// db조회
-		// 해당 아이디의 이메일이 맞으면 전송
-		// 해당 아이디에 그런 이메일이 없으면 정확한 이메일을 입력해달라고 하기
-		// 아이디 입력하는 부분에도 db한번 갔다오기(입력한 아이디가 존재하면 패스)
-		//
-
-		System.out.println(email);
-		System.out.println(username);
-
-		String token = generateToken();
-		saveTokenToDatabase(username, token);
-
-		// 비밀번호 설정 링크 생성
-		String resetPasswordLink = "http:/localhost:8080/reset-password?token=" + token;
-
-		String message = "<p>안녕하세요,</p>" + "<p>비밀번호 재설정을 위해 다음 링크를 클릭해주세요:</p>" + "<p><a href=\"" + resetPasswordLink
-				+ "\">비밀번호 재설정 링크</a></p>";
-
-		EmailMessage emailMessage = EmailMessage.builder().to(email).subject("[온나부산] 비밀번호 재설정").message(message)
-				.build();
-
-		try {
-			emailService.sendMail(emailMessage);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return ResponseEntity.status(500).body("이메일 전송 중 오류가 발생했습니다.");
-		}
-
-		return ResponseEntity.ok("해당 이메일에서 새 비밀번호 설정 메일을 확인해주세요");
-
-	}
-
-	private String generateToken() {
-
-		// 토큰 생성 로직
-		return java.util.UUID.randomUUID().toString();
-	}
-
-	private void saveTokenToDatabase(String username, String token) {
-
-		// 토큰 DB에 저장
 		UserEntity user = userRepository.findByUsername(username);
-		if (user != null) {
-			user.setToken(token);
-			userRepository.save(user);
+		if (user.getUsername().equals(username)) {
+
+			return username;
 
 		} else {
-			throw new RuntimeException("User not found");
+
+			return "해당 아이디가 존재하지 않습니다.";
 
 		}
 	}
+
+	// UUID 생성 및 이메일 전송
+	@PostMapping("/send-reset-password")
+	public ResponseEntity<SendResetPasswordEmailRes> sendResetPassword(
+			@Validated @ModelAttribute SendResetPasswordEmailReq resetPasswordEmailReq) {
+
+		Optional<UserEntity> user = userRepository.findByEmail(resetPasswordEmailReq.getEmail());
+
+		if (!user.isPresent()) {
+			return ResponseEntity.badRequest().body(null); // 사용자 찾을 수 없음 처리
+		}
+
+		String uuid;
+
+		try {
+			uuid = emailService.sendResetPasswordEmail(resetPasswordEmailReq.getEmail());
+		} catch (UnsupportedEncodingException e) {
+			// 예외 처리 로직 추가
+			return ResponseEntity.status(500).body(null);
+		}
+
+		return ResponseEntity.ok(SendResetPasswordEmailRes.builder().uuid(uuid).build());
+	}
+
+	@PostMapping("/resetPassword")
+	public String resetPassword(@RequestBody ResetPasswordReq request, RedirectAttributes redirectAttributes) {
+		String password = request.getPassword();
+		String uuid = request.getUuid();
+
+		String email = redisService.getValues(uuid);
+
+		if (email == null) {
+
+			// 유효하지 않은 또는 만료된 토큰
+			// redirectAttributes.addFlashAttribute("errorMessage...", "Invalid or expired
+			// token...");
+
+			return "Invalid or expired Token....";
+		}
+
+		// 이메일 기반으로 사용자 찾기
+		Optional<UserEntity> user = userRepository.findByEmail(email);
+
+		UserEntity result = user.get();
+
+		if (result == null) {
+
+			// 사용자 존재하지 않음
+			return "not found user";
+		}
+
+		// 비밀번호 암호화
+		String encodePassword = passwordEncoder.encode(password);
+
+		// 사용자 비밀번호 업데이트
+		result.setPassword(encodePassword);
+		userRepository.save(result);
+
+		// Redis에서 토큰 삭제
+		redisService.deleteValues(uuid);
+
+		return "새 비밀번호가 설정되었습니다.";
+	}
+
 }

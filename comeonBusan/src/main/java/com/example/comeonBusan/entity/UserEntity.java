@@ -19,4 +19,9 @@ public class UserEntity {
 	private String role;
 	private String email;
 	private String token; // 비밀번호 재설정을 위한 토큰
+	
+	public void updatePassword(String encode) {
+		
+		this.password = encode;
+	}
 }

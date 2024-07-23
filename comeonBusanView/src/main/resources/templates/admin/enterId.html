@@ -16,7 +16,7 @@
 	<h3>새 비밀번호 세팅을 위해 아이디를 입력해주세요</h3>
 	<form name="frm" id="frm">
 		<input type="text" id="username" name="username"
-			placeholder="username" />
+			placeholder="username" required />
 		<button type="submit">다음</button>
 	</form>
 	<script>
@@ -24,28 +24,28 @@
 				'submit',
 				function(event) {
 					event.preventDefault();
-
-					const formData = new FormData();
+					
+					let username = document.getElementById('username').value;
+					
 					const userData = {
-						username : document.getElementById('username').value
+						username : username
 					};
 
 					console.log(userData);
-					// JSON 데이터 추가
-					formData.append('username', new Blob([ JSON
-							.stringify(userData) ], {
-						type : 'application/json'
-					}));
 
 					$.ajax({
-						type : 'GET',
+						type : 'POST',
 						url : 'http://localhost:9002/findAdminId',
-						data : formData,
-						processData : false,
-						contentType : false,
-						cache : false,
+						data : JSON.stringify(userData), // JSON 문자열로 직접 전송
+						contentType : 'application/json', // contentType 설정
 						success : function(response) {
 							console.log(response);
+							
+							if(response == username){
+								
+								window.location.href = "/enterEmail?username=" + username ;
+							}
+						
 						},
 						error : function(e) {
 							console.log("error : ", e);
