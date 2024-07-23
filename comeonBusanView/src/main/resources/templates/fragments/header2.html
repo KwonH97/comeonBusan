@@ -104,11 +104,14 @@ header {
 }
 
 .nav {
-    width: 100%;
-    padding: 10px 0;
+    width: calc(75% - 40px); /* 좌우 공간을 줄이기 위해 수정 */
+    padding: 10px 20px; /* 상하, 좌우 padding 조정 */
     background-color: #f9f9f9;
     display: flex;
     justify-content: center;
+    margin: 0 auto;
+    border-radius: 25px; /* 둥근 모서리 추가 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }
 
 .nav ul {
@@ -141,11 +144,12 @@ header {
 .nav ul .dropdown {
     display: none;
     position: absolute;
-    top: 100%;
-    left: 0;
+    top: 140%;
+    left: 5%;
     background-color: #f9f9f9;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     z-index: 1000;
+    border-radius: 0 0 25px 25px; /* 하단 둥근 모서리 추가 */
 }
 
 .nav ul .dropdown a {
@@ -245,9 +249,9 @@ header {
                     <li><a href="/festivalList">✨축제·행사</a></li>
                     <li><a href="/recommand">🔎AI코스추천</a></li>
                     <li><a href="/cityTour">🚌시티투어</a></li>
-                    <li>
-                        <a href="" onmouseover="showDropdown()">📝관광지도 · 길찾기</a>
-                        <div class="dropdown" onmouseleave="hideDropdown()">
+                    <li class="has-dropdown">
+                        <a href="#">📝관광지도 · 길찾기</a>
+                        <div class="dropdown">
                             <a href="/showTheWay">길찾기</a>
                             <a href="/roadView">로드뷰</a>
                             <a href="/dangerArea">위험안내지도</a>
@@ -256,12 +260,24 @@ header {
                 </ul>
             </div>
             
-            	<div id="videoPlayHeader"></div>
-            
+            <div id="videoPlayHeader"></div>
         </div>
     </header>
 
     <script>
+    $(document).ready(function(){
+        $('.nav ul li.has-dropdown').hover(function() {
+            $(this).find('.dropdown').stop(true, true).slideDown(200);
+        }, function() {
+            $(this).find('.dropdown').stop(true, true).slideUp(200);
+        });
+        
+        var authValue = localStorage.getItem("Authorization");
+        if(authValue != null){
+            $(".hiddenButtonHeader").css("display", "block");
+        }
+    });
+
     function loadGoogleTranslate() {
         console.log('Loading Google Translate script');
         var script = document.createElement('script');
@@ -388,14 +404,6 @@ header {
     function hideDropdown() {
         document.querySelector('.dropdown').style.display = 'none';
     }
-    
-    $(document).ready(function(){
-    	var authValue = localStorage.getItem("Authorization");
-		if(authValue != null){
-			$(".hiddenButtonHeader").css("display", "block");
-		}
-		
-    });
     
     function goAdminPage(){
     	window.location.href="/adminPage";
