@@ -67,9 +67,10 @@
 //        }
 //    }
 //
-//    @Scheduled(fixedRate = 600000) // 10분마다 실행
+//    @Scheduled(fixedRate = 10000) // 10분마다 실행
 //    @Transactional
 //    public void updateViewCountsInDb() {
+//    	System.out.println("실행되나?");
 //        Set<String> keys = redisTemplate.keys(VIEW_COUNT_KEY + "*");
 //        if (keys != null) {
 //            for (String key : keys) {
@@ -87,7 +88,10 @@
 //                                view = new Views();
 //                                TourList tour = new TourList();
 //                                tour.setUc_seq(ucSeq);
+//                                System.out.println(ucSeq);
 //                                view.setTourlist(tour);
+//                                view.setFestival(null);  // 다른 외래키는 null로 설정
+//                                view.setFood(null);
 //                                view.setViewcount(redisViewCount);
 //                            } else {
 //                                view.setViewcount(view.getViewcount() + redisViewCount);
@@ -99,6 +103,8 @@
 //                                Festival festival = new Festival();
 //                                festival.setUcSeq(Long.valueOf(ucSeq));
 //                                view.setFestival(festival);
+//                                view.setTourlist(null);  // 다른 외래키는 null로 설정
+//                                view.setFood(null);
 //                                view.setViewcount(redisViewCount);
 //                            } else {
 //                                view.setViewcount(view.getViewcount() + redisViewCount);
@@ -110,6 +116,8 @@
 //                                Food food = new Food();
 //                                food.setUC_SEQ(ucSeq);
 //                                view.setFood(food);
+//                                view.setTourlist(null);  // 다른 외래키는 null로 설정
+//                                view.setFestival(null);
 //                                view.setViewcount(redisViewCount);
 //                            } else {
 //                                view.setViewcount(view.getViewcount() + redisViewCount);

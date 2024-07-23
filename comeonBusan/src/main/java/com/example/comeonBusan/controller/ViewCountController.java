@@ -13,44 +13,39 @@
 //@RequestMapping("/views")
 //public class ViewCountController {
 //
-//	@Autowired
-//	private ViewCountService viewCountService;
+//    @Autowired
+//    private ViewCountService viewCountService;
 //
-//	// 조회수 증가 엔드포인트
-//	@PostMapping("/tour/{uc_seq}")
-//	public void incrementTourViewCount(@PathVariable("uc_seq") String uc_seq) {
-//		viewCountService.incrementTourViewCount(uc_seq);
-//	}
+//    // 조회수 증가 엔드포인트
+//    @PostMapping("/tour/{ucSeq}")
+//    public void incrementTourViewCount(@PathVariable("ucSeq") String ucSeq) {
+//        viewCountService.incrementTourViewCount(ucSeq);
+//    }
 //
-//	@PostMapping("/festival/{uc_seq}")
-//	public void incrementFestivalViewCount(@PathVariable("uc_seq") Long uc_seq) {
-//		viewCountService.incrementFestivalViewCount(uc_seq);
-//	}
+//    @PostMapping("/festival/{ucSeq}")
+//    public void incrementFestivalViewCount(@PathVariable("ucSeq") Long ucSeq) {
+//        viewCountService.incrementFestivalViewCount(ucSeq);
+//    }
 //
-//	@PostMapping("/food/{uc_seq}")
-//	public void incrementFoodViewCount(@PathVariable("uc_seq") String uc_seq) {
-//		viewCountService.incrementFoodViewCount(uc_seq);
-//	}
+//    @PostMapping("/food/{ucSeq}")
+//    public void incrementFoodViewCount(@PathVariable("ucSeq") String ucSeq) {
+//        viewCountService.incrementFoodViewCount(ucSeq);
+//    }
 //
-//	@GetMapping("/tour/{uc_seq}")
-//	public Long getTourViewCount(@PathVariable("uc_seq") String uc_seq) {
-//		return viewCountService.getViewCountForTour(uc_seq);
-//	}
+//    // 조회수 가져오기 엔드포인트
+//    @GetMapping("/tour/{ucSeq}")
+//    public Long getTourViewCount(@PathVariable("ucSeq") String ucSeq) {
+//        return viewCountService.getViewCountForTour(ucSeq);
+//    }
 //
-//	@GetMapping("/festival/{uc_seq}")
-//	public Long getFestivalViewCount(@PathVariable("uc_seq") Long uc_seq) {
-//		return viewCountService.getViewCountForFestival(uc_seq);
-//	}
+//    @GetMapping("/festival/{ucSeq}")
+//    public Long getFestivalViewCount(@PathVariable("ucSeq") Long ucSeq) {
+//        return viewCountService.getViewCountForFestival(ucSeq);
+//    }
 //
-//	@GetMapping("/food/{uc_seq}")
-//	public Long getFoodViewCount(@PathVariable("uc_seq") String uc_seq) {
-//		return viewCountService.getViewCountForFood(uc_seq);
-//	}
-//
-//	// 조회수 가져오기 엔드포인트
-////	@GetMapping("/count")
-////	public Long getViewCount(@RequestParam String tourlistUcSeq, @RequestParam Long festivalUcSeq,
-////			@RequestParam String foodUcSeq) {
-////		return viewCountService.getViewCount(tourlistUcSeq, festivalUcSeq, foodUcSeq);
-////	}
+//    @GetMapping("/food/{ucSeq}")
+//    public Long getFoodViewCount(@PathVariable("ucSeq") String ucSeq) {
+//        return viewCountService.getViewCountForFood(ucSeq);
+//    }
 //}
+//
