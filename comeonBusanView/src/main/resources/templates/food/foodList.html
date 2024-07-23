@@ -129,7 +129,7 @@
                 const thumbnailSrc = (item.main_img_thumb && item.main_img_thumb !== 'null') ? item.main_img_thumb : 'http://localhost:9002/uploads/restIcon.png';
                 const foodItem = `
                     <div class="foodTour-item">
-                        <a href="/foodDetail?uc_seq=${item.uc_SEQ}">
+                        <a href="/foodDetail?type=food&uc_seq=${item.uc_SEQ}">
                             <img class="foodTour-thumbnail" src="${thumbnailSrc}" alt="${item.maintitle}">
                         </a>
                         <div class="foodTour-title">${item.title}</div>
