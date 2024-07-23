@@ -22,7 +22,7 @@
     <button id="loadMoreButton">더보기</button>
 </body>
 <footer>
-	<th:block th:insert="~{/fragments/footer.html}"></th:block>
+    <th:block th:insert="~{/fragments/footer.html}"></th:block>
 </footer>
 <script>
     let currentPage = 1;
@@ -42,7 +42,7 @@
         } else if (type === 'festival') {
             url = 'http://localhost:9002/blog/festival';
         } else if (type === 'restaurant') {
-            url = 'http://localhost:9002/blog/restaurant';
+            url = 'http://localhost:9002/blog/food';
         }
 
         $.ajax({
@@ -50,27 +50,33 @@
             type: 'GET',
             data: { uc_seq: uc_seq, lid: lid, page: page, size: pageSize },
             success: function(response) {
-                const blogData = JSON.parse(response.result);
-                if (blogData.items && blogData.items.length > 0) {
-                    blogData.items.forEach(function(item) {
-                        const blogLink = item.link;
-                        const blogTitle = item.title;
-                        const blogDescription = item.description;
-                        $('#reviewContainer').append(`
-                            <div class="blog-review" onclick="window.open('${blogLink}', '_blank')">
-                                <h4>${blogTitle}</h4>
-                                <p>${blogDescription}</p>
-                            </div>
-                        `);
-                    });
-                    if (blogData.items.length < pageSize) {
+                console.log(response); // 응답 데이터 확인
+                if (response.result) {
+                    const blogData = JSON.parse(response.result);
+                    if (blogData.items && blogData.items.length > 0) {
+                        blogData.items.forEach(function(item) {
+                            const blogLink = item.link;
+                            const blogTitle = item.title;
+                            const blogDescription = item.description;
+                            $('#reviewContainer').append(`
+                                <div class="blog-review" onclick="window.open('${blogLink}', '_blank')">
+                                    <h4>${blogTitle}</h4>
+                                    <p>${blogDescription}</p>
+                                </div>
+                            `);
+                        });
+                        if (blogData.items.length < pageSize) {
+                            $('#loadMoreButton').hide();
+                        }
+                    } else {
                         $('#loadMoreButton').hide();
+                        if (page === 1) {
+                            $('#reviewContainer').append('<p>No reviews found.</p>');
+                        }
                     }
                 } else {
-                    $('#loadMoreButton').hide();
-                    if (page === 1) {
-                        $('#reviewContainer').append('<p>No reviews found.</p>');
-                    }
+                    console.error('Response result is undefined:', response);
+                    alert('블로그 데이터를 가져오는 중 오류가 발생했습니다.');
                 }
             },
             error: function(error) {

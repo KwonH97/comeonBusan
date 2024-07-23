@@ -40,7 +40,7 @@ public class BlogSearchController {
     }
 
     @GetMapping("/blog/tour")
-    public Map<String, String> searchTour(@RequestParam(name="uc_seq") Long uc_seq, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
+    public Map<String, String> searchTour(@RequestParam(name="uc_seq") String uc_seq, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
         Map<String, String> result = new HashMap<>();
         RestTemplate restTemplate = new RestTemplate();
         String tourUrl = "http://localhost:9002/kibTest/tour/" + uc_seq;
@@ -63,7 +63,7 @@ public class BlogSearchController {
     public Map<String, String> searchFestival(@RequestParam(name="uc_seq") Long uc_seq, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
         Map<String, String> result = new HashMap<>();
         RestTemplate restTemplate = new RestTemplate();
-        String festivalUrl = "http://localhost:9002/kibTest/festival/" + uc_seq;
+        String festivalUrl = "http://localhost:9002/khj/festival2/" + uc_seq;
         Map<String, Object> festival = restTemplate.getForObject(festivalUrl, Map.class);
 
         if (festival != null && festival.containsKey("title")) {
@@ -79,11 +79,11 @@ public class BlogSearchController {
         return result;
     }
 
-    @GetMapping("/blog/restaurant")
-    public Map<String, String> searchRestaurant(@RequestParam(name="uc_seq") Long uc_seq, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
+    @GetMapping("/blog/food")
+    public Map<String, String> searchRestaurant(@RequestParam(name="uc_seq") String uc_seq, @RequestParam(name="page", defaultValue="1") int page, @RequestParam(name="size", defaultValue="10") int size, HttpSession session) {
         Map<String, String> result = new HashMap<>();
         RestTemplate restTemplate = new RestTemplate();
-        String restaurantUrl = "http://localhost:9002/kibTest/restaurant/" + uc_seq;
+        String restaurantUrl = "http://localhost:9002/kibTest/food/" + uc_seq;
         Map<String, Object> restaurant = restTemplate.getForObject(restaurantUrl, Map.class);
 
         if (restaurant != null && restaurant.containsKey("title")) {
