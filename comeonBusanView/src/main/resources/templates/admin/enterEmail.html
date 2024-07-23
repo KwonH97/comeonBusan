@@ -15,8 +15,9 @@
 	<h3>비밀번호 설정 링크를 받으실 이메일을 입력해주세요</h3>
 
 	<form id="set-form" name="set-form">
-		<input type="text" id="email" name="email" placeholder="email" />
-		<input type="submit" value="전송" />
+		<input type="email" id="email" name="email" placeholder="Enter your email" required >
+		<!-- <input type="submit" value="전송" /> -->
+		<button type="submit">전송</button>
 	</form>
 	<script>
 
@@ -30,19 +31,26 @@
 			// form 데이터 추가
 			formData.append('email', document.getElementById('email').value);
 			formData.append('username', username);
-
+			
+			// formData 출력
+		    for (let [key, value] of formData.entries()) {
+		        console.log(key, value);
+		    }
+			
 			$.ajax({
-				url: "http://localhost:9002/emailCheck",
+				url: "http://localhost:9002/send-reset-password",
 				method: 'POST',
 				data: formData, // email, username
 				processData: false,  // 필수: FormData 사용시 false로 설정
 				contentType: false,  // 필수: FormData 사용시 false로 설정
 				success: function (response) {
 					console.log(response);
+					alert('Reset password email sent! UUID: ' + response.uuid);
 
 				},
 				error: function (xhr, status, error) {
 					console.error("Error: " + error);
+				    alert('Failed to send reset password email.');
 				}
 			});
 		});
