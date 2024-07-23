@@ -144,8 +144,9 @@
 	<div class="container">
 		<h3 id="title"></h3>
 		<h4 id="subtitle"></h4>
-		<img id="main_img" alt="축제 홍보사진"><br> 조회수 : <span
-			id="viewcount"></span><br>
+		<img id="main_img" alt="축제 홍보사진"><br>
+		<button onclick="loadBlogPage(uc_seq)">리뷰보기</button><br>
+		조회수 : <span id="viewcount"></span><br>
 		<button class="heart-button" onclick="doLike()">
 			<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
 				<path
@@ -183,109 +184,109 @@
 	<script>
 		var uc_seq = "[[${uc_seq}]]";
 
-		$(document)
-				.ready(
-						function() {
-							console.log("uc_seq = " + uc_seq);
+		function loadBlogPage(uc_seq) {
+	        window.location.href = `/blog?type=festival&uc_seq=${uc_seq}`;
+	    }
+		
+		$(document).ready(
+		function() {
+			console.log("uc_seq = " + uc_seq);
 
-							// 조회수 증가 요청 보내기
-							$
-									.ajax({
-										url : 'http://localhost:9002/views/festival/'
-												+ uc_seq,
-										method : 'POST',
-										success : function() {
-											console
-													.log("View count incremented");
-										},
-										error : function(error) {
-											console
-													.error("Error incrementing view count: "
-															+ error);
-										}
-									});
+			// 조회수 증가 요청 보내기
+			$.ajax({
+				url : 'http://localhost:9002/views/festival/'
+						+ uc_seq,
+				method : 'POST',
+				success : function() {
+					console
+							.log("View count incremented");
+				},
+				error : function(error) {
+					console
+							.error("Error incrementing view count: "
+									+ error);
+				}
+			});
 
-							// 조회수 가져오기
-							$
-									.ajax({
-										url : 'http://localhost:9002/views/festival/'
-												+ uc_seq,
-										method : 'GET',
-										success : function(viewCount) {
-											console.log("Current view count: "
-													+ viewCount);
-											document
-													.querySelector("#viewcount").textContent = viewCount;
-										},
-										error : function(error) {
-											console
-													.error("Error fetching view count: "
-															+ error);
-										}
-									});
+			// 조회수 가져오기
+			$.ajax({
+				url : 'http://localhost:9002/views/festival/'
+						+ uc_seq,
+				method : 'GET',
+				success : function(viewCount) {
+					console.log("Current view count: "
+							+ viewCount);
+					document
+							.querySelector("#viewcount").textContent = viewCount;
+				},
+				error : function(error) {
+					console
+							.error("Error fetching view count: "
+									+ error);
+				}
+			});
 
-							$
-									.ajax({
-										url : 'http://localhost:9002/khj/festival2/'
-												+ uc_seq,
-										method : 'GET',
-										success : function(response) {
-											console.log("찾아온 데이터 : ", response);
-											console.log("정보 조회 테스트 : ",
-													response.trfcInfo);
+			$.ajax({
+				url : 'http://localhost:9002/khj/festival2/'
+						+ uc_seq,
+				method : 'GET',
+				success : function(response) {
+					console.log("찾아온 데이터 : ", response);
+					console.log("정보 조회 테스트 : ",
+							response.trfcInfo);
 
-											// response 데이터 저장
-											const festivalData = response;
-											const title = festivalData.title; // 메인 타이틀
-											const subtitle = festivalData.subtitle; // 부제목
-											const main_img_normal = festivalData.mainImgNormal; // 메인 이미지
-											const itemcntnts = festivalData.itemCntnts; // 내용
-											const addr = festivalData.addr1;
-											const lat = festivalData.lat; // 위도
-											const lng = festivalData.lng; // 경도
+					// response 데이터 저장
+					const festivalData = response;
+					const title = festivalData.title; // 메인 타이틀
+					const subtitle = festivalData.subtitle; // 부제목
+					const main_img_normal = festivalData.mainImgNormal; // 메인 이미지
+					const itemcntnts = festivalData.itemCntnts; // 내용
+					const addr = festivalData.addr1;
+					const lat = festivalData.lat; // 위도
+					const lng = festivalData.lng; // 경도
 
-											console.log(addr);
+					console.log(addr);
 
-											document.querySelector("#title").textContent = title;
-											document.querySelector("#subtitle").textContent = subtitle;
-											document.querySelector("#main_img").src = main_img_normal;
-											document
-													.querySelector("#itemcntnts").textContent = itemcntnts;
+					document.querySelector("#title").textContent = title;
+					document.querySelector("#subtitle").textContent = subtitle;
+					document.querySelector("#main_img").src = main_img_normal;
+					document
+							.querySelector("#itemcntnts").textContent = itemcntnts;
 
-											document.querySelector(".addr").textContent = addr;
-											document.querySelector(".tel").textContent = festivalData.cntctTel;
-											document
-													.querySelector(".homepage_url").textContent = festivalData.homepageUrl;
-											document
-													.querySelector(".usage_amount").textContent = festivalData.usageAmount;
-											document
-													.querySelector(".usageDay_week_and_time").textContent = festivalData.usageDayWeekAndTime;
-											document
-													.querySelector(".trfc_info").textContent = festivalData.trfcInfo;
-											document
-													.querySelector(".middle_size_rm").textContent = festivalData.middleSizeRm1;
+					document.querySelector(".addr").textContent = addr;
+					document.querySelector(".tel").textContent = festivalData.cntctTel;
+					document
+							.querySelector(".homepage_url").textContent = festivalData.homepageUrl;
+					document
+							.querySelector(".usage_amount").textContent = festivalData.usageAmount;
+					document
+							.querySelector(".usageDay_week_and_time").textContent = festivalData.usageDayWeekAndTime;
+					document
+							.querySelector(".trfc_info").textContent = festivalData.trfcInfo;
+					document
+							.querySelector(".middle_size_rm").textContent = festivalData.middleSizeRm1;
 
-											// 지도와 마커를 추가하는 함수 호출
-											initMap(lat, lng);
+					// 지도와 마커를 추가하는 함수 호출
+					initMap(lat, lng);
 
-											// 좋아요 여부 확인 후 하트색 결정하는 함수 호출
-											checkIfLiked();
+					// 좋아요 여부 확인 후 하트색 결정하는 함수 호출
+					checkIfLiked();
 
-										},
-										error : function(error) {
-											console.log("Error : " + error);
-										}
-									});
+				},
+				error : function(error) {
+					console.log("Error : " + error);
+				}
+			});
 
-							// 좋아요 수 조회 함수 호출
-							getLikeCount();
+			// 좋아요 수 조회 함수 호출
+			getLikeCount();
 
-							var authValue = localStorage
-									.getItem("Authorization");
-							if (authValue != null) {
-								$(".hiddenButton").css("display", "block");
-							}
-						});
+			var authValue = localStorage
+					.getItem("Authorization");
+			if (authValue != null) {
+				$(".hiddenButton").css("display", "block");
+			}
+		});
 
 		function gomodifyPage() {
 			window.location.href = "/festivalModify?uc_seq=" + uc_seq;
@@ -335,27 +336,26 @@
 				localStorage.setItem("Like" + uc_seq, uc_seq);
 				let likeToken = localStorage.getItem("Like" + uc_seq);
 				// ajax db에 like count +1
-				$
-						.ajax({
-							type : "POST",
-							url : "http://localhost:9002/like/doLikeFestival/"
-									+ uc_seq,
-							//headers: {
-							//	"likeToken": likeToken,
-							//},
-							success : function(response) {
-								console.log(response);
-								alert(response);
-								// 하트 빨간색으로 바꾸기
-								heartIcon.classList.add('liked');
-
-								// 좋아요 수 업데이트
-								getLikeCount();
-							},
-							error : function(xhr, status, error) {
-								console.error("Error : ", error);
-							}
-						});
+				$.ajax({
+					type : "POST",
+					url : "http://localhost:9002/like/doLikeFestival/"
+							+ uc_seq,
+					//headers: {
+					//	"likeToken": likeToken,
+					//},
+					success : function(response) {
+						console.log(response);
+						alert(response);
+						// 하트 빨간색으로 바꾸기
+						heartIcon.classList.add('liked');
+		
+						// 좋아요 수 업데이트
+						getLikeCount();
+					},
+					error : function(xhr, status, error) {
+						console.error("Error : ", error);
+					}
+				});
 
 			} else {
 				// 좋아요 취소하면
@@ -403,24 +403,23 @@
 		// 좋아요 수 업데이트
 		function getLikeCount() {
 
-			$
-					.ajax({
-						url : 'http://localhost:9002/like/like/' + uc_seq,
-						method : 'GET',
-						success : function(response) {
-							console.log("찾아온 좋아요 수" + response);
-
-							if (response == '') {
-								document.querySelector("#likecount").textContent = 0;
-							} else {
-								document.querySelector("#likecount").textContent = response;
-							}
-
-						},
-						error : function(error) {
-							console.log("Error : " + error);
-						}
-					});
+			$.ajax({
+				url : 'http://localhost:9002/like/like/' + uc_seq,
+				method : 'GET',
+				success : function(response) {
+					console.log("찾아온 좋아요 수" + response);
+		
+					if (response == '') {
+						document.querySelector("#likecount").textContent = 0;
+					} else {
+						document.querySelector("#likecount").textContent = response;
+					}
+		
+				},
+				error : function(error) {
+					console.log("Error : " + error);
+				}
+			});
 		}
 
 		// 페이지 로드될때, localStorage key 유무로 좋아요 하트색 결정
