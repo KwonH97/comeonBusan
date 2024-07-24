@@ -182,6 +182,12 @@
 		display: block;
 		margin-bottom: 5px;
 	}
+	
+	#itemcntnts {
+		white-space: pre-wrap;
+	}
+	
+	
 </style>
 </head>
 <body>
@@ -190,8 +196,8 @@
 </header>
 
 <div class="button-container">
-	<button class="hiddenbutton" onclick="modifyFoodTour()" style="display: none;">수정하기</button>
-	<button class="hiddenbutton" onclick="deletethisPage()" style="display: none;">삭제하기</button>
+	<button class="hiddenButton" onclick="modifyFoodTour()" style="display: none;">수정하기</button>
+	<button class="hiddenButton" onclick="deletethisPage()" style="display: none;">삭제하기</button>
 </div>
 
 <div class="container">
@@ -309,7 +315,7 @@
 		
 		var authValue = localStorage.getItem("Authorization");
 		if(authValue != null){
-			$(".hiddenbutton").css("display", "block");
+			$(".hiddenButton").css("display", "block");
 		}
 	});
 	
