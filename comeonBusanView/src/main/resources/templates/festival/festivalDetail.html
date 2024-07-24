@@ -17,37 +17,169 @@
         h1 {
             text-align: center;
         }
+        
+        .button-container {
+        	display: flex;
+        	gap: 10px;
+        	margin-top: 20px;
+        }
+        
+        .hiddenButton {
+        	background-color: #e71b85;
+        	color: white;
+        	border: none;
+        	border-radius: 12px;
+        	padding: 8px 16px;
+        	font-size: 14px;
+        	font-weight: bold;
+        	cursor: pointer;
+        	transition: background-color 0.3s ease, color 0.3s ease;
+        	text-align: center;
+        }
+        
+        .hiddenButton:hover {
+        	background-color: #c2185b;
+        	color: white;
+        }
 
         .container {
+        	width: 80%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            background-color: #fff;
+            /*border: 1px solid #ccc;*/
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .container img {
+        	display: block;
             max-width: 100%;
             height: auto;
             border-radius: 5px;
-            margin-top: 10px;
+            margin: 0 auto;
+            width: 100%;
         }
+        
+        .interaction-container {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 20px;
+		}
+        
+        .left-section {
+        	display: felx;
+        	align-items: center;
+        	gap: 20px;
+        }
+        
+        .view-count {
+        	margin-right: 20px;
+        }
+
+		.like-section {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			border-left: 1px solid rgba(0, 0, 0, 0.2);
+			padding-left: 20px;
+		}
+		
+		.heart-text {
+			font-size: 16px;
+			color: #e71b85;
+		}
+		
+		.right-section {
+			display: flex;
+			align-items: center;
+		}
+		
+		.right-section button {
+			padding: 10px 20px;
+			background-color: #e71b85;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 16px;
+		}
+		
+		.right-section button:hover {
+			background-color: #d4186b;
+		}
+		
+		.backButton {
+			padding: 10px 20px;
+			background-color: #e71b85;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 16px;
+		}
+		
+		.backButton:hover {
+			background-color: #d4186b;
+		}
+		
+		#placeInfo {
+			border: 4px solid #D88FD8;
+			padding: 10px;
+			margin: 20px 0;
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+			border-radius: 8px;	
+		}
+		
+		.info-group {
+			flex: 1;
+			padding: 10px;
+			position: relative;
+		}
+		
+		.info-group:not(last-child)::after {
+			content: "";
+			position: absolute;
+			top: 0;
+			right: 0;
+			height: 100%;
+			width: 1px;
+			background-color: rgba(0, 0, 0, 0.2);
+			border-radius: 2px;
+		}
+		
+		.info-group span {
+			display: block;
+			margin-bottom: 5px;
+		}
 
         .info-section {
             display: flex;
-            margin-top: 20px;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 20px;
         }
-
+		
+		.info{
+			font-weight: bold;
+			font-size: 20px;
+		}
+		/*
         .info-left, .info-right {
-            flex: 1; /* 균등 너비 설정 */
+            flex: 1;  균등 너비 설정 
             padding: 10px;
         }
 
         .info-left {
             border-right: 1px solid #ccc;
         }
-
+        
+		
         .info-group {
             margin-bottom: 10px;
         }
@@ -59,10 +191,6 @@
         .info-group span {
             display: block;
             margin-bottom: 5px;
-        }
-
-        .hiddenButton {
-            display: none;
         }
 
         .btn {
@@ -78,22 +206,22 @@
             background-color: #ccc;
             cursor: not-allowed;
         }
+        */
+        
 
         #title {
-            font-size: 24px;
-            margin-bottom: 10px;
+            font-size: 36px;
+            font-weight: bold;
+            /*color: 생각중 */
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);  
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
         }
 
         #subtitle {
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: #555;
-        }
-
-        .addr {
-            margin-top: 10px;
-            font-size: 16px;
-            color: #333;
+            text-align: center;
         }
 
         .heart-button {
@@ -133,47 +261,61 @@
 	<header>
 		<th:block th:insert="~{/fragments/header2.html}"></th:block>
 	</header>
-
-	<button class="hiddenButton" style="display: none;"
+	
+	<div class="button-container">
+		<button class="hiddenButton" style="display: none;"
 		onclick="gomodifyPage()">수정하기</button>
-	<button class="hiddenButton" style="display: none;"
-		onclick="goToDelete()">삭제하기</button>
-	<button type="button" value="뒤로가기"
-		onclick="window.location.href = document.referrer;">뒤로가기</button>
-
+		<button class="hiddenButton" style="display: none;"
+			onclick="goToDelete()">삭제하기</button>
+		<button class="backButton" value="뒤로가기"
+			onclick="window.location.href = document.referrer;">뒤로가기</button>
+	</div>
+	
 	<div class="container">
 		<h3 id="title"></h3>
 		<h4 id="subtitle"></h4>
+		
 		<img id="main_img" alt="축제 홍보사진"><br>
-		<button onclick="loadBlogPage(uc_seq)">리뷰보기</button><br>
-		조회수 : <span id="viewcount"></span><br>
-		<button class="heart-button" onclick="doLike()">
-			<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
-				<path
-					d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-			</svg>
-		</button>
-		<span>( </span><span id="likecount"></span><span> )</span>
+		
+		<div class="interaction-container">
+			<div class="left-section">
+				<span>조회수 : <span id="viewcount"></span></span>
+				<div class="like-section">
+					<button class="heart-button" onclick="doLike()">
+						<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
+							<path
+								d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+						</svg>
+						<span class="heart-text">좋아요</span>
+					</button>
+					<span>( </span><span id="likecount"></span><span> )</span>
+				</div>
+			</div>
+			<div class="right-section">
+				<button onclick="loadBlogPage(uc_seq)">리뷰보기</button><br>
+			</div>
+		</div>
+		
+		
+		<span class="info">축제 설명</span><br>
 		<div id="itemcntnts"></div>
 		<!-- 축제 설명 -->
-		<div id="placeInfo">
+		
 		<h3>이용안내</h3>
+		<div id="placeInfo">
 			<!-- 관광지 상세 정보(휴무일, 입장료, 주소, 번호 등등) -->
 			<div class="info-section">
-				<div class="info-left">
-					<div class="info-group">
-						<span class="info">주소 </span><span class="addr" id="addr"></span>
-						<span class="info">홈페이지 </span><span class="homepage_url"></span>
-						<span class="info">이용요금 </span><span class="usage_amount"></span>
-					</div>
+				<div class="info-group">
+					<span class="info">주소 </span><span class="addr" id="addr"></span>
+					<span class="info">홈페이지 </span><span class="homepage_url"></span>
+					<span class="info">이용요금 </span><span class="usage_amount"></span>
 				</div>
-				<div class="info-right">
-					<div class="info-group">
-						<span class="info">전화번호 </span><span class="tel"></span> <span
-							class="info">운영요일 및 시간</span><span class="usageDay_week_and_time"></span>
-						<span class="info">교통정보</span><span class="trfc_info"></span> <span
-							class="info">편의 시설</span><span class="middle_size_rm"></span>
-					</div>
+				
+				<div class="info-group">
+					<span class="info">전화번호 </span><span class="tel"></span>
+					<span class="info">운영요일 및 시간</span><span class="usageDay_week_and_time"></span>
+					<span class="info">교통정보</span><span class="trfc_info"></span> 
+					<span class="info">편의 시설</span><span class="middle_size_rm"></span>
 				</div>
 			</div>
 		</div>
