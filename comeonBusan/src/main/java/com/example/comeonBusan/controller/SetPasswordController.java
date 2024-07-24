@@ -49,7 +49,8 @@ public class SetPasswordController {
 		// Boolean result = userRepository.existsByUsername(username);
 
 		UserEntity user = userRepository.findByUsername(username);
-		if (user.getUsername().equals(username)) {
+		
+		if (user != null) {
 
 			return username;
 
@@ -63,7 +64,7 @@ public class SetPasswordController {
 	// UUID 생성 및 이메일 전송
 	@PostMapping("/send-reset-password")
 	public ResponseEntity<?> sendResetPassword(
-            @Validated @ModelAttribute SendResetPasswordEmailReq resetPasswordEmailReq) {
+            @Validated @RequestBody SendResetPasswordEmailReq resetPasswordEmailReq) {
 
         Optional<UserEntity> user = userRepository.findByUsernameAndEmail(
                 resetPasswordEmailReq.getUsername(), resetPasswordEmailReq.getEmail());
