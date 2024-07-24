@@ -15,11 +15,14 @@
         text-align: center;
     }
 
-    .container {
+    #container {
+    	width: 50%;
         max-width: 1200px;
         margin: 0 auto;
         padding: 20px;
-        border: 1px solid #ccc;
+        box-sizing: border-box;
+        background-color: #fff;
+        /*border: 1px solid #ccc;*/
         border-radius: 5px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
@@ -94,7 +97,7 @@
 				<ul>
 					<li>축제 등록번호</li>
 					<input type="text" name="uc_seq" id="uc_seq" placeholder="축제 ID"
-						readonly />
+						readonly>
 					<br>
 					<li>축제명</li>
 					<input type="text" name="maintitle" id="maintitle"

@@ -16,6 +16,24 @@
         text-align: center;
         margin: 20px 0;
     }
+    
+    .hiddenButton {
+		background-color: #e71b85;
+		color: white; /* 버튼 색상에 잘 보이는 흰색 텍스트 */
+	    border: none;
+	    border-radius: 8px; /* 둥근 모서리 */
+	    padding: 8px 16px; /* 버튼 내 여백 (기본 크기보다 20% 작게) */
+	    font-size: 15px; /* 텍스트 크기 (기본 크기보다 20% 작게) */
+	    font-weight: bold; /* 텍스트 굵기 */
+	    cursor: pointer; /* 마우스를 올렸을 때 포인터 아이콘 */
+	    transition: background-color 0.3s ease, color 0.3s ease; /* 부드러운 색상 변화 */
+	    text-align: center; /* 텍스트 가운데 정렬 */
+	}
+	
+	.hiddenButton:hover {
+		background-color: #c2185b;
+		color: white;
+	}
 
     #container {
         display: grid;

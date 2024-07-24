@@ -7,6 +7,60 @@
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
 <style>
+	#container {
+		width: 50%;
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 20px;
+		box-sizing: border-box;
+		background-color: #fff;
+		border-radius: 8px;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	}
+
+    input[type="text"], textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #a8d0e6; /* 연한 파란색 테두리 */
+        border-radius: 10px; /* 둥근 모서리 */
+        box-sizing: border-box;
+    }
+
+    textarea {
+        height: 150px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    input[type="file"], input[type="submit"] {
+        width: 100%;
+        margin-top: 10px;
+        background-color: #f0f4f8;
+        cursor: pointer;
+    }
+    
+    input[type="submit"] {
+    	background-color: #a8d0e6;
+    	width: 50%;
+    	height: 100px; 
+    	border-radius: 10px;
+    	font-weight: bold;
+    	font-size: 25px;
+    }
+    
+    input[type="submit"]:hover {
+    	background-color: #91b4cc;
+    }
+    
+    li {
+    	font-weight: bold;
+    	margin-top: 7px;
+    }
 </style>
 
 </head>
@@ -15,16 +69,15 @@
 		<th:block th:insert="~{/fragments/header2.html}"></th:block>
 	</header>
 
-	<h1>축제 등록 페이지</h1>
-	<hr>
-
-
+	
 	<div id="container">
 		<div class="content">
+		<h1>축제 등록 페이지</h1>
+		<hr>
 			<form name="frm" id="frm" enctype="multipart/form-data">
 				<ul>
 					<li>축제 등록번호</li>
-					<input type="text" name="uc_seq" id="uc_seq" placeholder="축제 ID" />
+					<input type="text" name="uc_seq" id="uc_seq" placeholder="축제 ID">
 					<br>
 					<li>축제명</li>
 					<input type="text" name="maintitle" id="maintitle"
@@ -47,8 +100,7 @@
 					<input type="file" name="file" id="file">
 					<br>
 					<li>축제 소개</li>
-					<input type="text" name="itemcntnts" id="itemcntnts"
-						placeholder="축제 소개">
+					<textarea name="itemcntnts" id="itemcntnts" placeholder="축제 소개"></textarea>
 					<br>
 					<li>주소1</li>
 					<input type="text" name="addr1" id="addr1" placeholder="주소1">
@@ -74,7 +126,7 @@
 					<br>
 					<li>축제 시작일</li>
 					<input type="date" name="start_date" id="start_date" />
-					<li>~ 축제 종료일</li>
+					<li>축제 종료일</li>
 					<input type="date" name="end_date" id="end_date" />
 					<br>
 					<li>축제 운영일 상세설명</li>
@@ -104,7 +156,7 @@
 					<li>위도</li>
 					<input type="text" name="lng" id="lng" placeholder="위도" required>
 					<br>
-					<input type="submit" value="등록하기">
+					<input type="submit" value="등록하기"><br><br>
 					<button type="button" value="뒤로가기"
 						onclick="window.location.href = document.referrer;">뒤로가기</button>
 				</ul>
