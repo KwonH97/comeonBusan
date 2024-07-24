@@ -11,6 +11,7 @@
             font-family: 'Noto Sans KR', sans-serif;
             padding: 0 0 0 0;
             position: relative;
+            text-align: center;
         }
 
         .footer-content {
@@ -67,24 +68,26 @@
             object-fit: contain;
         }
 
-        .links ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .links ul a {
-            color: black;
-            text-decoration: none;
-            display: block;
-            margin-bottom: 0.3em;
-            transition: all 0.3s;
-            width: 20%;
-        }
-
-        .links ul a:hover {
-            color: white;
-            padding-left: 5px;
-        }
+		.links ul {
+		    list-style-type: none;
+		    padding: 0;
+		    text-align: center; /* 텍스트 가운데 정렬 추가 */
+		}
+		
+		.links ul li a {
+		    color: black;
+		    text-decoration: none;
+		    display: inline-block; /* inline-block으로 변경 */
+		    margin-bottom: 0.3em;
+		    transition: all 0.3s;
+		    padding: 0 5px; /* 좌우 여백 추가 */
+		    text-align: center; /* 텍스트 가운데 정렬 추가 */
+		}
+		
+		.links ul a:hover {
+		    color: white;
+		    padding-left: 5px;
+		}
 
         .contact-form .contact-input {
             background: white;
