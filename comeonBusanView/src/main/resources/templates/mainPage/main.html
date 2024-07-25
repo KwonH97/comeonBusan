@@ -105,11 +105,25 @@ a {
 .upcoming-label {
 	background-color: #ffd700;
 	color: #000;
+	font-weight: bold;
 	padding: 5px 10px;
 	border-radius: 5px;
 	margin-top: 10px;
 	display: inline-block;
+	animation: blink 1s infinite;
 }
+
+ 		@keyframes blink {
+            0% {
+                background-color: #ff6600; /* 시작 배경색 */
+            }
+            50% {
+                background-color: #ff9900; /* 깜빡일 때의 배경색 */
+            }
+            100% {
+                background-color: #ff6600; /* 끝 배경색 (시작과 동일) */
+            }
+        }
 
 footer {
 	background-color: #f1f1f1;
@@ -132,7 +146,9 @@ footer {
 	top: 0;
 	left: 0;
 	position: fixed;
-	display: block;
+	display: flex; /* 중앙 정렬을 위해 flex 레이아웃 사용 */
+	justify-content: center; /* 가로 중앙 정렬 */ 
+	align-items: center; /* 세로 중앙 정렬 */
 	opacity: 0.8;
 	background: white;
 	z-index: 99;
@@ -140,10 +156,8 @@ footer {
 }
 
 #load>img {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	z-index: 100;
+	position: relative;
+	/* 더 이상 위치 조정이 필요 없을 수 있습니다. */
 }
 
 #middle {
@@ -228,10 +242,16 @@ footer {
 }
 
 #youtubeView {
-	background-color: #003366;
-	color: white;
-	padding: 20px;
+	background-color: #dcd0ff;
+	color: black;
+	padding-top: 20px;
+	padding-bottom: 20px;
 	text-align: center;
+	max-width: 1200px; /* 요소의 최대 넓이 설정 (선택 사항) */
+    margin: 0 auto; /* 수평 중앙 정렬 */
+    border-radius: 15px; /* 둥근 모서리 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 선택 사항: 부드러운 그림자 추가 */
+    overflow: hidden; 
 }
 
 .button-container {
@@ -363,8 +383,8 @@ footer {
     // 유튜브 iframe API 준비
     function onYouTubeIframeAPIReady() {
         player = new YT.Player('video-container', {
-            height: '300',
-            width: '400',
+            height: '450',
+            width: '900',
             videoId: videoIds[currentIndex],
             playerVars: {
                 'autoplay': 0,
