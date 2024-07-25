@@ -72,7 +72,6 @@
         cursor: default;
     }
     
-<<<<<<< HEAD
     #button-container {
     	display: flex;
         gap: 10px;
@@ -128,11 +127,7 @@
         	padding-bottom: 10px;
         	margin-top: 0;
         }
-        
-        #ctg {
-        	font-size: 20px;
-        }
-=======
+
     .ctg {
     	font-weight: bold;
     	font-size: 17px;
@@ -167,7 +162,7 @@
     	background-color: #c2185b;
     	color: white;
     } 
->>>>>>> origin/IB
+
 </style>
 </head>
 <body>
@@ -205,34 +200,23 @@
                     response.content.forEach(function(item) {
                         $('#data').append(`
                             <div class="lodgment-item">
-<<<<<<< HEAD
+
                                 <h3 id="title">${item.업체명}</h3>
                                 <p class="infoTitle" id="ctg">${item.카테고리명}</p>
-=======
                                 <h3>${item.업체명}</h3>
                                 <p class="ctg">${item.카테고리명}</p>
->>>>>>> origin/IB
                                 <p class="infoTitle">주소</p>
                                 <p>${item.시도명} ${item.시군구명} ${item.읍면동명} ${item.리명} ${item.번지}</p>
                                 <p class="infoTitle">도로명</p>
                                 <p>${item.도로명} ${item.도로명상세}</p>
                                 <p class="infoTitle">전화번호</p>
                                 <p>${item.전화번호}</p>
-<<<<<<< HEAD
                                 <p class="infoTitle">홈페이지주소</p>
                                 <a href="${item.홈페이지주소}"><p>${item.홈페이지주소}</p></a>
                                 <p><button onclick="loadBlogPage(${item.lid})" id="reviewBtn">리뷰보기</button></p>
                                 <div id="button-container">
 	                                <p><button class="hiddenButton" style="display: none" onclick="editLodgment(${item.lid})">수정</button></p>
 	                                <p><button class="hiddenButton" style="display: none" onclick="deleteLodgment(${item.lid})">삭제</button></p>
-=======
-                                <p class="infoTitle">홈페이지</p>
-                                <a href="${item.홈페이지주소}"><p>${item.홈페이지주소}</p></a>
-                                <p><button onclick="loadBlogPage(${item.lid})" id="reviewBtn">리뷰보기</button></p>
-                                <div id="button-container">
-	                                <button class="hiddenButton" style="display: none" onclick="editLodgment(${item.lid})">수정</button>
-	                                <button class="hiddenButton" style="display: none" onclick="deleteLodgment(${item.lid})">삭제</button>
->>>>>>> origin/IB
 	                            </div>
                             </div>
                         `);
