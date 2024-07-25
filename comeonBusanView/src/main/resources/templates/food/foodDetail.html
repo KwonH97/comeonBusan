@@ -237,7 +237,7 @@
 		
 		<div class="info-group">
 			<span class="info">연락처 </span><span id="cntct_tel"></span>
-			<span class="info">홈페이지 </span><a href="" id="link"><span id="homepage_url"></span></a>
+			<span class="info">홈페이지 </span><a href="" id="link" target="_blank"><span id="homepage_url"></span></a>
 		</div>
 		
 	</div>
@@ -300,7 +300,11 @@
 				document.querySelector("span#usage_day_week_and_time").textContent = response.usage_day_week_and_time;
 				document.querySelector("span#cntct_tel").textContent = response.cntct_tel;
 				document.querySelector("span#homepage_url").textContent = response.homepage_url;
-				document.getElementById("link").href = response.homepage_url;
+				
+				var linkElement = document.getElementById("link");
+				linkElement.href = response.homepage_url;
+				
+				linkElement.target = "_blank";
 
 				// 지도와 마커를 추가하는 함수 호출
 				initMap(response.lat, response.lng);

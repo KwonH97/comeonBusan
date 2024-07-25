@@ -311,7 +311,7 @@
 			<div class="info-section">
 				<div class="info-group">
 					<span class="info">주소 </span><span class="addr" id="addr"></span>
-					<span class="info">홈페이지 </span><a href="" id="link"><span class="homepage_url"></span></a>
+					<span class="info">홈페이지 </span><a href="" id="link" target="_blank"><span class="homepage_url"></span></a>
 					<span class="info">이용요금 </span><span class="usage_amount"></span>
 				</div>
 				
@@ -404,7 +404,10 @@
 					document
 							.querySelector(".homepage_url").textContent = festivalData.homepageUrl;
 					
-					document.getElementById("link").href= festivalData.homepageUrl;
+					var linkElement = document.getElementById("link");
+					linkElement.href= festivalData.homepageUrl;
+					
+					linkElment.target = "_blank";
 					
 					document
 							.querySelector(".usage_amount").textContent = festivalData.usageAmount;
