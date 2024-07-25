@@ -3,9 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>온나부산 - 헤더</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js"
-	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-	crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <style>
 body {
     margin: 0;
@@ -346,11 +344,11 @@ header {
 <body>
     <header>
         <div id="google_translate_element"></div>
-        <button id="translate-icon" onclick="toggleDropdown()">
+        <button id="translate-icon" onclick="toggleDropdown(event)">
 		    <img src="/img/translation.png" alt="Translate">
 		</button>
         <div id="language-dropdown">
-            <a href="#" onclick="setLanguage('ko')">한국어</a>
+            <a href="#" onclick="disableGoogleTranslate()">한국어</a>
             <a href="#" onclick="setLanguage('en')">English</a>
             <a href="#" onclick="setLanguage('ja')">日本語</a>
             <a href="#" onclick="setLanguage('zh-CN')">中文</a>
@@ -410,6 +408,15 @@ header {
     </header>
 
     <script>
+    
+    function disableGoogleTranslate() {
+        // Remove the google translate cookie
+        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        document.cookie = 'googtrans=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        // Reload the page to apply the changes
+        window.location.reload();
+    }
+    
     $(document).ready(function(){
         $('.nav ul li.has-dropdown').hover(function() {
             $(this).find('.dropdown').stop(true, true).slideDown(200);
@@ -505,9 +512,18 @@ header {
             selectElement.value = lang;
             selectElement.dispatchEvent(new Event('change'));
         }
+
+        if (lang === 'ko') {
+            // 구글 번역 초기화
+            var iframe = document.querySelector('.goog-te-menu-frame');
+            if (iframe) {
+                iframe.contentWindow.location.reload();
+            }
+        }
     }
 
-    function toggleDropdown() {
+    function toggleDropdown(event) {
+        event.stopPropagation();
         var dropdown = document.getElementById("language-dropdown");
         if (dropdown.style.display === "none" || dropdown.style.display === "") {
             dropdown.style.display = "block";
@@ -520,6 +536,14 @@ header {
         console.log('DOM content loaded, initializing Google Translate');
         loadGoogleTranslate();
         setLanguage();
+    });
+
+    document.addEventListener('click', function(event) {
+        var dropdown = document.getElementById("language-dropdown");
+        var icon = document.getElementById("translate-icon");
+        if (dropdown.style.display === "block" && !dropdown.contains(event.target) && event.target !== icon) {
+            dropdown.style.display = "none";
+        }
     });
 
     function hideSuggestions() {
