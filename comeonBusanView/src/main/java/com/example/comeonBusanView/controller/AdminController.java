@@ -65,6 +65,11 @@ public class AdminController {
 		
 	}
 	
+	@RequestMapping("/dashboard")
+	public String dashboard() {
+		
+		return "/admin/dashboard";
+	}
 	
 	
 }
