@@ -1,5 +1,7 @@
 package com.example.comeonBusan.service;
 
+import java.util.List;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,32 +31,40 @@ public class JoinService {
 		System.out.println(password);
 		System.out.println(email);
 
-		Boolean isExistUsername = userRepository.existsByUsername(username);
-		Boolean isExistEmail = userRepository.existsByEmail(email);
-		System.out.println("username 존재하는지 불린 결과" + isExistUsername);
+		List<UserEntity> list = userRepository.findAll();
 
-		if (isExistUsername) {
+		if (!list.isEmpty()) {
 
-			return "이미 존재하는 아이디입니다. 다른 아이디를 입력해주세요";
-
+			return "가입된 아이디가 있습니다. \n계정 추가가 필요하다면, 개발자에게 문의하세요.";
 		} else {
 
-			if (isExistEmail) {
+			Boolean isExistUsername = userRepository.existsByUsername(username);
+			Boolean isExistEmail = userRepository.existsByEmail(email);
+			System.out.println("username 존재하는지 불린 결과" + isExistUsername);
 
-				return "이미 가입된 이메일입니다. 다른 이메일을 입력해주세요";
+			if (isExistUsername) {
+
+				return "이미 존재하는 아이디입니다. 다른 아이디를 입력해주세요";
 
 			} else {
 
-				UserEntity data = new UserEntity();
+				if (isExistEmail) {
 
-				data.setUsername(username);
-				data.setPassword(bCryptPasswordEncoder.encode(password));
-				data.setEmail(email);
-				data.setRole("ROLE_ADMIN");
+					return "이미 가입된 이메일입니다. 다른 이메일을 입력해주세요";
 
-				userRepository.save(data);
+				} else {
 
-				return "회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.";
+					UserEntity data = new UserEntity();
+
+					data.setUsername(username);
+					data.setPassword(bCryptPasswordEncoder.encode(password));
+					data.setEmail(email);
+					data.setRole("ROLE_ADMIN");
+
+					userRepository.save(data);
+
+					return "회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.";
+				}
 			}
 		}
 	}

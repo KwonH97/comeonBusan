@@ -381,8 +381,8 @@ body {
              data: JSON.stringify(userData),
              contentType: 'application/json',
              success: function(response) {
-                 console.log(response);
-                 alert('Reset password email sent! UUID: ' + response.uuid);
+                 console.log(response.uuid);
+                 alert('메일이 전송되었습니다. 이메일 속 링크를 확인해주세요');
                  emailModal.style.display = "none";
              },
              error: function(xhr, status, error) {
