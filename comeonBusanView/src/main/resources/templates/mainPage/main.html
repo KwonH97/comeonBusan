@@ -132,7 +132,9 @@ footer {
 	top: 0;
 	left: 0;
 	position: fixed;
-	display: block;
+	display: flex; /* 중앙 정렬을 위해 flex 레이아웃 사용 */
+	justify-content: center; /* 가로 중앙 정렬 */
+	align-items: center; /* 세로 중앙 정렬 */
 	opacity: 0.8;
 	background: white;
 	z-index: 99;
@@ -140,10 +142,8 @@ footer {
 }
 
 #load>img {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	z-index: 100;
+	position: relative;
+	/* 더 이상 위치 조정이 필요 없을 수 있습니다 */
 }
 
 #middle {
