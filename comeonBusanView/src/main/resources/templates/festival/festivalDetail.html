@@ -307,7 +307,7 @@
 			<div class="info-section">
 				<div class="info-group">
 					<span class="info">주소 </span><span class="addr" id="addr"></span>
-					<span class="info">홈페이지 </span><span class="homepage_url"></span>
+					<span class="info">홈페이지 </span><a href="" id="link"><span class="homepage_url"></span></a>
 					<span class="info">이용요금 </span><span class="usage_amount"></span>
 				</div>
 				
@@ -399,6 +399,9 @@
 					document.querySelector(".tel").textContent = festivalData.cntctTel;
 					document
 							.querySelector(".homepage_url").textContent = festivalData.homepageUrl;
+					
+					document.getElementById("link").href= festivalData.homepageUrl;
+					
 					document
 							.querySelector(".usage_amount").textContent = festivalData.usageAmount;
 					document

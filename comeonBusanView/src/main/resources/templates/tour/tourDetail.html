@@ -247,7 +247,7 @@
 			<div class="info-group">
 				<span class="info">주소 </span><span class="addr"></span>
 				<span class="info">연락처 </span><span class="tel"></span>
-				<span class="info">홈페이지 </span><span class="homepage_url"></span><br>
+				<span class="info">홈페이지 </span><a href="" id="link"><span class="homepage_url"></span></a><br>
 			</div>
 			<div class="info-group">
 				<span class="info">운영일~휴무일 </span><span class="dayInfo"></span>
@@ -329,6 +329,7 @@
 				document.querySelector("span.addr").textContent = addr;
 				document.querySelector("span.tel").textContent = response.tel;
 				document.querySelector("span.homepage_url").innerHTML = response.homepage_url;
+				document.getElementById("link").href = response.homepage_url;
 				
 				document.querySelector("span.dayInfo").textContent = "운영일: " + response.usage_day + " / 휴무일: " + response.hldy_info;
 				document.querySelector("span.useageDay_week_and_time").textContent = response.useageDay_week_and_time;
