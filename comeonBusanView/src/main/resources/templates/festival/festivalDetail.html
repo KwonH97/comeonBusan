@@ -255,6 +255,10 @@
             width: 100%;
             margin: 20px 0;
         }
+        
+        #itemcntnts, .trfc_info {
+        	white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
@@ -400,7 +404,11 @@
 					document
 							.querySelector(".homepage_url").textContent = festivalData.homepageUrl;
 					
+<<<<<<< HEAD
 					document.getElementById("link").href = festivalData.homepageUrl;
+=======
+					document.getElementById("link").href= festivalData.homepageUrl;
+>>>>>>> origin/IB
 					
 					document
 							.querySelector(".usage_amount").textContent = festivalData.usageAmount;
