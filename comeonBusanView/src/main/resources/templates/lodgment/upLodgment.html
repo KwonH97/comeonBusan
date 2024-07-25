@@ -34,11 +34,11 @@
 	    }
 	    
 	    .radio-group {
-	    	display: flex;
-        	gap: 10px;
-	    }
-	    
-	    .radio-group input[type="radio"] {
+            display: flex;
+            gap: 10px; /* 라디오 버튼 사이의 간격 조절 */
+        }
+
+        .radio-group input[type="radio"] {
             display: none; /* 기본 라디오 버튼 숨기기 */
         }
 
@@ -59,16 +59,41 @@
             width: 20px;
             height: 20px;
             border: 2px solid #007bff;
-            border-radius: 50%;
             background-color: #fff;
             box-sizing: border-box;
+            border-radius: 4px; /* 네모난 체크박스 */
         }
 
         .radio-group input[type="radio"]:checked + label:before {
-            border-width: 5px;
-            border-color: #007bff;
-            background-color: transparent;
+            background-color: #007bff; /* 선택 시 파란색 배경 */
+            border: none; /* 선택 시 테두리 제거 */
         }
+
+        .radio-group input[type="radio"]:checked + label:after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            box-sizing: border-box;
+        }
+        
+        input[type="submit"] {
+	    	background-color: #a8d0e6;
+	    	width: 50%;
+	    	height: 100px; 
+	    	border-radius: 10px;
+	    	font-weight: bold;
+	    	font-size: 25px;
+	    }
+	    
+	    input[type="submit"]:hover {
+	    	background-color: #91b4cc;
+	    }
 	</style>
 </head>
 <body>
@@ -80,12 +105,11 @@
 		<form id="frm">
 	        <input type="text" name="업체명" placeholder="업체명"><br>
 	        <div class="radio-group">
-	        	<label>
-		        	<input type="radio" name="카테고리명" value="숙박/휴양">숙박/휴양
-		        </label>
-		        <label>
-		        	<input type="radio" name="카테고리명" value="문화관광/명소">문화관광/명소<br>
-		        </label>
+		        <input type="radio" name="카테고리명" value="숙박/휴양" id="숙박/휴양">
+		        <label for="숙박/휴양">숙박/휴양</label>
+		        
+		        <input type="radio" name="카테고리명" value="문화관광/명소" id="문화관광/명소">
+		        <label for="문화관광/명소">문화관광/명소</label>
 	        </div>
 	        <input type="text" name="시도명" value="부산광역시"><br>
 	        <input type="text" name="시군구명" placeholder="시군구명"><br>
