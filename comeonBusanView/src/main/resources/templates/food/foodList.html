@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>맛집 목록</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 <style>
     body.food {
@@ -15,6 +18,10 @@
     h1.food {
         text-align: center;
         margin: 20px 0;
+        font-family: "Dongle", sans-serif;
+		font-weight: 300;
+		font-size: 85px;
+        
     }
     
     .hiddenButton {
@@ -99,6 +106,7 @@
         font-weight: bold;
         cursor: default;
     }
+    
 </style>
 </head>
 <body class="food">
@@ -108,7 +116,6 @@
 
 <h1 class="food">맛집 목록</h1>
 <button class="hiddenButton" onclick="addFood()" style="display: none;">맛집추가</button>
-<hr>
 
 <div id="container-food"></div>
 <div class="pagination-food"></div>
