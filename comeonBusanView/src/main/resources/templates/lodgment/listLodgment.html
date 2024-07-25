@@ -70,6 +70,55 @@
         font-weight: bold;
         cursor: default;
     }
+    
+    #button-container {
+    	display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+    }
+    
+    	.hiddenButton {
+        	background-color: #e71b85;
+        	color: white;
+        	border: none;
+        	border-radius: 12px;
+        	padding: 8px 16px;
+        	font-size: 14px;
+        	font-weight: bold;
+        	cursor: pointer;
+        	transition: background-color 0.3s ease, color 0.3s ease;
+        	text-align: center;
+        }
+        
+        .hiddenButton:hover, #reviewBtn:hover {
+        	background-color: #c2185b;
+        	color: white;
+        }
+        
+        #reviewBtn {
+        	background-color: #007bff;
+        	color: white;
+        	border: none;
+        	border-radius: 12px;
+        	padding: 8px 16px;
+        	font-size: 14px;
+        	font-weight: bold;
+        	cursor: pointer;
+        	transition: background-color 0.3s ease, color 0.3s ease;
+        	text-align: center;
+        	width: 200px;
+        	height: 40px;
+        }
+        
+        #reviewBtn:hover {
+        	background-color: #0056b3;
+        	color: white;
+        }
+        
+        .infoTitle {
+        	font-weight: bold;
+        }
 </style>
 </head>
 <body>
@@ -108,14 +157,20 @@
                         $('#data').append(`
                             <div class="lodgment-item">
                                 <h3>${item.업체명}</h3>
-                                <p>${item.카테고리명}</p>
-                                <p>주소: ${item.시도명} ${item.시군구명} ${item.읍면동명} ${item.리명} ${item.번지}</p>
-                                <p>도로명: ${item.도로명} ${item.도로명상세}</p>
-                                <p>전화번호: ${item.전화번호}</p>
-                                <p>홈페이지: ${item.홈페이지주소}</p>
-                                <p><button onclick="loadBlogPage(${item.lid})">리뷰보기</button></p>
-                                <p><button class="hiddenButton" style="display: none" onclick="editLodgment(${item.lid})">수정</button></p>
-                                <p><button class="hiddenButton" style="display: none" onclick="deleteLodgment(${item.lid})">삭제</button></p>
+                                <p class="infoTitle">${item.카테고리명}</p>
+                                <p class="infoTitle">주소</p>
+                                <p>${item.시도명} ${item.시군구명} ${item.읍면동명} ${item.리명} ${item.번지}</p>
+                                <p class="infoTitle">도로명</p>
+                                <p>${item.도로명} ${item.도로명상세}</p>
+                                <p class="infoTitle">전화번호</p>
+                                <p>${item.전화번호}</p>
+                                <p class="infoTitle">홈페이지주소</p>
+                                <a href="${item.홈페이지주소}"><p>${item.홈페이지주소}</p></a>
+                                <p><button onclick="loadBlogPage(${item.lid})" id="reviewBtn">리뷰보기</button></p>
+                                <div id="button-container">
+	                                <p><button class="hiddenButton" style="display: none" onclick="editLodgment(${item.lid})">수정</button></p>
+	                                <p><button class="hiddenButton" style="display: none" onclick="deleteLodgment(${item.lid})">삭제</button></p>
+	                            </div>
                             </div>
                         `);
                     });
