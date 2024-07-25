@@ -1,81 +1,198 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Page</title>
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .content {
-            flex: 1 0 auto;
-            padding: 20px;
-        }
-        .admin-button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            outline: none;
-            color: #fff;
-            background-color: #4CAF50;
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 9px #999;
-            margin-top: 10px;
-        }
-        .admin-button:hover {background-color: #3e8e41}
-        .admin-button:active {
-            background-color: #3e8e41;
-            box-shadow: 0 5px #666;
-            transform: translateY(4px);
-        }
-        .logout-button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            outline: none;
-            color: #fff;
-            background-color: #f44336;
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 9px #999;
-            margin-top: 10px;
-        }
-        .logout-button:hover {background-color: #d32f2f}
-        .logout-button:active {
-            background-color: #d32f2f;
-            box-shadow: 0 5px #666;
-            transform: translateY(4px);
-        }
-        
-        
-        canvas {
-            width: 300px;
-            height: 300px;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+<meta charset="UTF-8">
+<title>관리자 대시보드</title>
+<style>
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+.content {
+	display: flex;
+	justify-content: space-between;
+	padding: 120px 20px; /*상하 와 좌우*/
+	margin: 0 auto;
+	max-width: 1200px;
+}
+
+.canvas-content {
+	flex: 1; /* 차트 영역이 기본적으로 공간을 차지 */
+	max-width: 50%;
+	margin-right: 20px;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+table, th, td {
+	border: 1px solid #ddd;
+}
+
+th, td {
+	padding: 8px;
+	text-align: left;
+}
+
+th {
+	background-color: #f4f4f4;
+}
+
+/* 작은 화면에서 레이아웃 조정 */
+@media ( max-width : 768px) {
+	.content {
+		flex-direction: column;
+		align-items: center;
+	}
+	.canvas-content, table {
+		max-width: 100%;
+		margin-right: 0;
+	}
+}
+
+
+/* 노멀라이즈 시작 */
+ul, li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+a {
+	color: inherit; /* 부모 엘리먼트의 값을 물려받는다 */
+	text-decoration: none;
+		
+}
+
+/* 노멀라이즈 끝 */
+
+/* 2차 이상의 메뉴를 숨기기*/
+.side-bar>ul ul {
+	display: none;
+}
+
+/* 사이드바의 너비와 높이를 변수를 통해 통제 */
+:root {
+	--side-bar-width: 270px;
+	--side-bar-height: 90vh;
+}
+
+.side-bar {
+    position: fixed;
+    background-color: #164772;
+    width: var(--side-bar-width);
+    min-height: var(--side-bar-height);
+    margin-top: calc((100vh - var(--side-bar-height)) / 2);
+    /* 헤더 영역 위에 고정되도록 수정 */
+    top: 0; /* 헤더 영역 위에 붙이기 */
+    z-index: 1000; /* 다른 요소들 위에 나타나도록 z-index 설정 */
+}
+
+/* 모든 메뉴의 a에 속성값 부여 */
+.side-bar ul>li>a {
+	display: block;
+	color: white;
+	font-size: 1.4rem;
+	font-weight: bold;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 50px;
+}
+
+/* 자식의 position이 absolute일 때 자식을 영역 안에 가두어 준다 */
+.side-bar>ul>li {
+	position: relative;
+}
+
+/* 모든 메뉴가 마우스 인식 시 반응 */
+.side-bar ul>li:hover>a {
+	background-color: #4178A5;
+	border-bottom: 1px solid #999;
+}
+
+/* 1차 메뉴의 항목이 마우스 인식 시에 2차 메뉴 등장 */
+.side-bar>ul>li:hover>ul {
+	display: block;
+	position: absolute;
+	background-color: #888;
+	top: 0; /* 2차 메뉴의 상단을 1차 메뉴의 상단에 고정 */
+	left: 100%; /* 2차 메뉴를 1차 메뉴의 너비만큼 이동 */
+	width: 100%; /* 1차 메뉴의 너비를 상속 */
+}
+
+/* 사이드바 너비의 80%만큼 왼쪽으로 이동 */
+.side-bar {
+	border-radius: 20px;
+	transform: translate(calc(var(--side-bar-width)* -0.8), 0);
+	/* X축 이동, Y축 고정 */
+	transition: .5s;
+}
+
+/* 마우스 인식 시 원래의 위치로 이동 */
+.side-bar:hover {
+	transform: translate(-20px, 0); /* 둥근 모서리의 너비만큼 X축 이동, Y축 고정 */
+}
+
+
+</style>
+
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 </head>
 <body>
-    <header>
-        <th:block th:insert="~{/fragments/header2.html}"></th:block>
-    </header>
+	<header>
+		<th:block th:insert="~{/fragments/header2.html}"></th:block>
+	</header>
+	<aside class="side-bar">
+		<section class="side-bar__icon-box">
+			<section class="side-bar__icon-1">
+				<div></div>
+				<div></div>
+				<div></div>
+			</section>
+		</section>
+		<ul>
+			<li><a href="#"><i class="fa-solid fa-cat"></i> 게시물 등록</a>
+				<ul>
+					<li><a href="#">관광명소 등록</a></li>
+					<li><a href="#">숙박업소 등록</a></li>
+					<li><a href="#">맛집 등록</a></li>
+					<li><a href="#">축제/행사 등록</a></li>
+				</ul></li>
+			<li><a href="#">공지사항 관리</a></li>
+			<li><a href="#">뉴스레터 관리</a></li>
+			<li><a href="#">위험지역 관리</a></li>
+			<li><a href="#">문의사항 관리</a></li>
+			<li><a href="#">로그아웃</a></li>
+		</ul>
+	</aside>
 
-    <div class="content">
-        <h1>Admin Page</h1>
+	<div class="content">
+		<div class="canvas-content">
+			<canvas id="bar-chart" width="300" height="230"></canvas>
+		</div>
+
+		<div class="table-content">
+			<table border="1">
+				<thead>
+					<tr>
+						<th>문의내용</th>
+						<th>등록일</th>
+					</tr>
+				</thead>
+				<tbody>
+
+				</tbody>
+			</table>
+
+		</div>
+
+	</div>
+	<!--         <h1>Admin Page</h1>
         <p>관리자 페이지에 오신 것을 환영합니다!</p>
 
         <div style="margin-top: 20px;">
@@ -90,58 +207,42 @@
         <div style="margin-top: 20px;">
             <button class="logout-button" onclick="logout()">로그아웃</button>
         </div>
-    </div>
-    
-    
-	<canvas id="myChart" width="400" height="400"></canvas>
-    
-    
+-->
 
-    <footer>
-        <th:block th:insert="~{/fragments/footer.html}"></th:block>
-    </footer>
+	<footer>
+		<th:block th:insert="~{/fragments/footer.html}"></th:block>
+	</footer>
 
-    <script>
-        function logout() {
-            localStorage.removeItem("Authorization");
-            window.location.href = "/main";
-        }
-        
-        const ctx = document.getElementById('myChart').getContext('2d');
-        const myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-                datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    </script>
+	<script>
+		function logout() {
+			localStorage.removeItem("Authorization");
+			window.location.href = "/main";
+		}
+
+		new Chart(document.getElementById("bar-chart"), {
+			type : 'bar',
+			data : {
+				labels : [ "Africa", "Asia", "Europe", "Latin America",
+						"North America", "Home", "Academy" ],
+
+				datasets : [ {
+					label : "Population (millions)",
+					backgroundColor : [ "#3e95cd", "#8e5ea2", "#3cba9f",
+							"#e8c3b9", "#c45850", "red", "blue" ],
+
+					data : [ 2478, 5267, 734, 784, 433, 400, 500 ]
+				} ]
+			},
+			options : {
+				legend : {
+					display : false
+				},
+				title : {
+					display : true,
+					text : '온나 부산 주간 방문자 수'
+				}
+			}
+		});
+	</script>
 </body>
 </html>
