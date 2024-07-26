@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -151,15 +152,17 @@ public class NoticeController {
                         System.out.println("공지사항 전송됨: " + help);
                     } catch (IOException e) {
                         deadEmitters.add(emitter);
+                       
                         System.err.println("SSE 클라이언트 제거: " + e.getMessage());
-                    }
+                    } 
                 }
-
+                System.out.println("final 다음..............");
                 // 끊어진 연결 제거
                 clients.removeAll(deadEmitters);
             }
 
         } catch (IOException e) {
+        	 System.out.println("바깥쪽 try 예외처리..................");
             e.printStackTrace();
         }
 
