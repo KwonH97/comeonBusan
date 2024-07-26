@@ -6,8 +6,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
-<script
-	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU"></script>
 <!-- Google Maps API 스크립트 추가 -->
     <style>
         body {
@@ -169,46 +168,7 @@
 			font-weight: bold;
 			font-size: 20px;
 		}
-		/*
-        .info-left, .info-right {
-            flex: 1;  균등 너비 설정 
-            padding: 10px;
-        }
-
-        .info-left {
-            border-right: 1px solid #ccc;
-        }
         
-		
-        .info-group {
-            margin-bottom: 10px;
-        }
-
-        .info-group .info {
-            font-weight: bold;
-        }
-
-        .info-group span {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        */
-        
-
         #title {
             font-size: 36px;
             font-weight: bold;
@@ -390,8 +350,10 @@
 					const addr = festivalData.addr1;
 					const lat = festivalData.lat; // 위도
 					const lng = festivalData.lng; // 경도
-
+					
 					console.log(addr);
+					console.log("축제 위도: " + lat);
+					console.log("축제 경도: " + lng);
 
 					document.querySelector("#title").textContent = title;
 					document.querySelector("#subtitle").textContent = subtitle;
@@ -407,7 +369,7 @@
 					var linkElement = document.getElementById("link");
 					linkElement.href= festivalData.homepageUrl;
 					
-					linkElment.target = "_blank";
+					linkElement.target = "_blank";
 					
 					document
 							.querySelector(".usage_amount").textContent = festivalData.usageAmount;
@@ -538,6 +500,8 @@
 		}
 
 		function initMap(lat, lng) {
+			console.log("initMap 함수 실행.......");
+			
 			var location = {
 				lat : parseFloat(lat),
 				lng : parseFloat(lng)
