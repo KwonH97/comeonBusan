@@ -134,8 +134,25 @@ a {
 .side-bar:hover {
 	transform: translate(-20px, 0); /* 둥근 모서리의 너비만큼 X축 이동, Y축 고정 */
 }
-</style>
 
+/* 에러 메시지 스타일링 */
+.error-message {
+	color: black;
+	text-align: center;
+	padding: 20px;
+	font-size: 1.2rem;
+	
+}
+
+#inquiryContents {
+
+ width: 350px;
+
+}
+</style>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 </head>
@@ -154,15 +171,15 @@ a {
 		<ul>
 			<li><a href="#"><i class="fa-solid fa-cat"></i> 게시물 등록</a>
 				<ul>
-					<li><a href="#">관광명소 등록</a></li>
-					<li><a href="#">숙박업소 등록</a></li>
-					<li><a href="#">맛집 등록</a></li>
-					<li><a href="#">축제/행사 등록</a></li>
+					<li><a href="/regi_tour">관광명소 등록</a></li>
+					<li><a href="/regLodgment">숙박업소 등록</a></li>
+					<li><a href="/regi_food">맛집 등록</a></li>
+					<li><a href="/festivalAdd">축제/행사 등록</a></li>
 				</ul></li>
-			<li><a href="#">공지사항 관리</a></li>
-			<li><a href="#">뉴스레터 관리</a></li>
-			<li><a href="#">위험지역 관리</a></li>
-			<li><a href="#">문의사항 관리</a></li>
+			<li><a href="/notice/noticeList">공지사항 관리</a></li>
+			<li><a href="/newsLetter">뉴스레터 관리</a></li>
+			<li><a href="/dangerArea">위험지역 관리</a></li>
+			<li><a href="/inquiryList">문의사항 관리</a></li>
 			<li><a href="#" id="logout-link">로그아웃</a></li>
 		</ul>
 	</aside>
@@ -173,10 +190,11 @@ a {
 		</div>
 
 		<div class="table-content">
+		<h3>미답변 문의사항</h3>
 			<table border="1">
 				<thead>
 					<tr>
-						<th>문의내용</th>
+						<th id="inquiryContents">문의내용</th>
 						<th>등록일</th>
 					</tr>
 				</thead>
@@ -235,8 +253,19 @@ a {
 				error: function(e){
 					
 					console.error(e);
+					// 화면에서 조회수 없을을 알려주도록 처리
+					displayError("조회수 데이터가 조회되지 않습니다.");
+					
 				}
 			});
+			
+		}
+		
+		// 에러 메시지를 테이블에 표시하는 함수
+		function displayError(message){
+			
+			const place = document.querySelector('.canvas-content'); 
+			place.innerHTML = `<p class="error-message">${message}</p>`;
 			
 		}
 
@@ -361,9 +390,58 @@ a {
 			
 			// 페이지가 로드될때 차트 데이터를 가지고 오는 함수 실행
 			chartData();
-
+			// 페이지가 로드될때 문의사항 데이터를 가지고 오는 함수 실행
+			getInquiryData();
+			
 		});
-	
+		
+		function getInquiryData(){
+			
+			console.log("getInquiryData 실행되었다.......");
+			
+			$.ajax({
+				
+				url: "http://localhost:9002/getInquiryInfo",
+				type:  "GET",
+				success: function(response){
+					
+					console.log(response);
+					makeInquiryTable(response); // 문의사항 테이블 만드는 함수
+					
+				},
+				error: function(e){
+					
+					console.error(e);
+				}
+			});
+			
+			
+			
+		}
+		
+		// 문의사항 테이블 만드는 함수
+		function makeInquiryTable(data){
+			
+			console.log("data in makeinTable" + data);
+			
+			const tableBody = document.querySelector('.table-content tbody');
+			tableBody.innerHTML = ''; // 기존 내용 초기화
+			
+			// data가 배열인지 객체인지 확인
+			
+			if(Array.isArray(data)){
+				data.forEach(item => {
+					let row = `<tr><td>${item.inquiry}</td><td>${item.regDate}</td></tr>`;
+					tableBody.insertAdjacentHTML('beforeend', row);
+				});
+			} else {
+				
+				//객체인 경우 (단일 객체)
+				let row = `<tr><td>${data.inquiry}</td><td>${data.regDate}</td></tr>`;
+				tableBody.innerHTML = row;
+			}
+			
+		}
 		
 		
 // 		// 차트 생성 코드

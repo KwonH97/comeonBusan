@@ -71,5 +71,11 @@ public class AdminController {
 		return "/admin/dashboard";
 	}
 	
+	@RequestMapping("/inquiryList")
+	public String inquiryList() {
+		
+		
+		return "/admin/inquiryList";
+	}
 	
 }
