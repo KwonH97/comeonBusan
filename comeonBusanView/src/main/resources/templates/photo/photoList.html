@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
@@ -41,19 +44,204 @@
 	        border-radius: 5px;
 	        max-height: 150px; /* 사진 전체 크기 줄이기 */
 		}
+		
+		#conTitle {
+			margin: 20px;
+			border-top : 15px; 
+			font-family: "Dongle", sans-serif;
+			font-weight: 300;
+			font-size: 50px;
+			background-color: #ADD8E6;
+			justify-content: center;
+			border-radius: 5px;
+		}
+		
+		.hiddenbutton {
+			background-color: #5DADE2;
+			color: white; /* 버튼 색상에 잘 보이는 흰색 텍스트 */
+		    border: none;
+		    border-radius: 12px; /* 둥근 모서리 */
+		    padding: 8px 16px; /* 버튼 내 여백 (기본 크기보다 20% 작게) */
+		    font-size: 14px; /* 텍스트 크기 (기본 크기보다 20% 작게) */
+		    font-weight: bold; /* 텍스트 굵기 */
+		    cursor: pointer; /* 마우스를 올렸을 때 포인터 아이콘 */
+		    transition: background-color 0.3s ease, color 0.3s ease; /* 부드러운 색상 변화 */
+		    text-align: center; /* 텍스트 가운데 정렬 */
+		    margin: 5px;
+		}
+		
+		.hiddenbutton:hover {
+			background-color: #3498db;
+			color: white;
+		}
+		
+		#photo_title {
+			font-family: "Dongle", sans-serif;
+			font-weight: bold;
+			font-size: 25px;
+		}
+		
+		.pagination {
+	        text-align: center;
+	        margin: 20px 0;
+	        display: flex;
+	        justify-content: center;
+	    }
 	
+	    .pagination button {
+	        margin: 0 5px;
+	        padding: 10px 20px;
+	        border: none;
+	        background-color: white;
+	        color: #007bff;
+	        border-radius: 5px;
+	        cursor: pointer;
+	        transition: background-color 0.3s, color 0.3s;
+	    }
+	
+	    .pagination button:disabled {
+	        background-color: #ccc;
+	        color: #666;
+	        cursor: not-allowed;
+	    }
+	
+	    .pagination button:hover:not(:disabled) {
+	        background-color: #e6f0ff;
+	    }
+	
+	    .pagination button.current {
+	        border: 2px solid #007bff;
+	        color: #007bff;
+	        font-weight: bold;
+	        cursor: default;
+	    }
+	    
+	    .modal {
+	        display: none;
+	        position: fixed;
+	        z-index: 1;
+	        left: 0;
+	        top: 0;
+	        width: 100%;
+	        height: 100%;
+	        overflow: auto;
+	        background-color: rgba(0,0,0,0.4);
+	        justify-content: center;
+	        align-items: center;
+	        padding-top: 60px;
+	    }
+
+	    .modal-content {
+	        background-color: #fefefe;
+	        margin: auto;
+	        padding: 20px;
+	        border: 1px solid #888;
+	        width: 80%;
+	        max-width: 500px;
+	        border-radius: 10px;
+	        display: flex;
+	        flex-direction: column;
+	        align-items: center;
+	    }
+
+	    .close {
+	        color: #aaa;
+	        align-self: flex-end;
+	        font-size: 28px;
+	        font-weight: bold;
+	    }
+
+	    .close:hover,
+	    .close:focus {
+	        color: black;
+	        text-decoration: none;
+	        cursor: pointer;
+	    }
+
+	    .finfo {
+	        margin: 10px 0 5px 0;
+	        font-size: 16px;
+	    }
+
+	    form input[type="text"],
+	    form input[type="date"],
+	    form input[type="file"] {
+	        margin-bottom: 10px;
+	    }
+		
+	    form .finfo + input,
+	    form .finfo + input[type="date"],
+	    form .finfo + input[type="file"] {
+	        margin-top: 5px;
+	    }
+
+	    form .finfo {
+	        margin-bottom: 5px;
+	    }
+	    
+	    input[type="text"] {
+	    	width: 100%;
+	    	padding: 10px;
+	    	margin: 10px 0;
+	    	border: 3px solid #a8d0e6;
+	    	border-radius: 10px;
+	    	box-sizing: border-box;
+	    }
+	    
+	    input[type="submit"] {
+	    	background-color: #a8d0e6;
+	    	width: 50%;
+	    	height: 40px; 
+	    	border-radius: 10px;
+	    	font-weight: bold;
+	    	font-size: 30px;
+	    }
+	    
+	    input[type="submit"]:hover {
+	    	background-color: #91b4cc;
+	    }
 	</style>
 </head>
 <body>
 <header>
         <th:block th:insert="~{/fragments/header2.html}"></th:block>
 </header>
-<h1>부산 관광홍보 사진</h1>
-<button class="hiddenbutton" onclick="addPhoto()" style="display: none;">사진추가</button>
-<hr>
+<span id="conTitle">부산 관광홍보 사진</span>
+<button class="hiddenbutton" onclick="openModal()" style="display: none;">사진추가</button>
 
 <div id="container"></div>
 <div class="pagination"></div>
+
+<div id="photoAddModal" class="modal">
+	<div class="modal-content">
+		<span class="close">&times;</span>
+		<h3>사진 등록</h3>
+		<form name="frm" enctype="multipart/form-data">
+
+			<span class="finfo">사진 제목</span><br>
+			<input type="text" name="title"><br>
+			
+			<span class="finfo">촬영연도</span>
+			<input type="date" name="shoot_year"><br>
+			
+			<span class="finfo">촬영 기관/ 개인</span><br>
+			<input type="text" name="shooter"><br>
+			
+			<span class="finfo">소장기관</span><br>
+			<input type="text" name="have_agency"><br>
+			
+			<span class="finfo">해쉬태그</span><br>
+			<input type="text" name="hashtag"><br>
+			
+			<span class="finfo">이미지 파일</span><br>
+			<input type="file" name="file"><br>
+			
+			<input type="submit" value="등록">	
+		
+		</form>
+	</div>
+</div>
+
   <footer>
     <th:block th:insert="~{/fragments/footer.html}"></th:block>
   </footer>
@@ -139,10 +327,55 @@
         	renderPagination(PhotoData.length, itemsPerPage);
         }
 		
-		
-		
+		$("form[name='frm']").on("submit", function(event){
+			event.preventDefault();
+			event.stopPropagation();
+			
+			var formData = new FormData($(this)[0]);
+			
+			if(formData == null){
+				console.log("formdata is null");
+			}else{
+				console.log("formData is not null");
+			}
+			
+			$.ajax({
+				url: "http://localhost:9002/kibTest/photo",
+				method: "POST",
+				data: formData,
+				contentType: false,
+				processData: false,
+				beforeSend: function(xhr) {
+			        xhr.setRequestHeader('Authorization', localStorage.getItem("Authorization"));
+			    },
+				success: function(response){
+					alert(response);
+				},
+				error: function(error){
+					console.log("Error: " + error);
+					alert(error);
+				}
+			});
+		});
 	});
 	
+	function openModal() {
+	    $('#photoAddModal').css('display', 'flex');
+	}
+
+	function closeModal() {
+	    $('#photoAddModal').css('display', 'none');
+	}
+	
+	$('.close').on('click', function() {
+	    closeModal();
+	});
+	
+	$(window).on('click', function(event) {
+	    if ($(event.target).is('#photoAddModal')) {
+	        closeModal();
+	    }
+	});
 	
 	function modifyPhoto(pno){
 		window.location.href="/modi_photo?pno=" + pno;
