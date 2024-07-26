@@ -13,7 +13,8 @@ import lombok.ToString;
 
 @Data
 @Entity
-public class Views {
+@ToString(callSuper = true)
+public class Views extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
