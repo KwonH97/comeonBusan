@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>관리자 대시보드</title>
+<style>
+</style>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+</head>
+<body>
+	<header>
+		<th:block th:insert="~{/fragments/header2.html}"></th:block>
+	</header>
+	
+	<h1>문의사항 목록</h1>
+	<p>미답변 문의사항</p>
+	<table>
+		<thead>
+			<tr>
+				<th></th><!-- 체크박스 -->
+				<th>문의내용</th>
+				<th>회신할 이메일 주소</th>
+				<th>문의 등록일</th>
+				<th>답변 상태</th>
+				<th></th><!-- 답변완료 버튼 -->
+			</tr>
+		</thead>
+		<tbody>
+			
+		</tbody>
+	</table>
+	
+	
+	
+	
+	
+	
+	<footer>
+		<th:block th:insert="~{/fragments/footer.html}"></th:block>
+	</footer>
+
+	<script>
+		
+	</script>
+</body>
+</html>
