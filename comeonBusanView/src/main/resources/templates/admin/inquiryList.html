@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>관리자 대시보드</title>
-<style>
-</style>
-<script src="https://code.jquery.com/jquery-3.7.1.js"
-	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-	crossorigin="anonymous"></script>
+	<meta charset="UTF-8">
+	<title>관리자 대시보드</title>
+	<style>
+	</style>
+	<script src="https://code.jquery.com/jquery-3.7.1.js"
+		integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
+
 <body>
 	<header>
 		<th:block th:insert="~{/fragments/header2.html}"></th:block>
 	</header>
-	
+
 	<h1>문의사항 목록</h1>
 	<p>미답변 문의사항</p>
-	<table>
+	<table border="1">
 		<thead>
 			<tr>
 				<th></th><!-- 체크박스 -->
@@ -27,22 +28,88 @@
 				<th></th><!-- 답변완료 버튼 -->
 			</tr>
 		</thead>
-		<tbody>
-			
+		<tbody id="inquiryTableBody">
+			<!-- 데이터가 여기에 추가됩니다 -->
 		</tbody>
 	</table>
 	
-	
-	
-	
-	
-	
+	<p>답변완료한 문의사항</p>
+	<table border="1">
+		<thead>
+			<tr>
+				<th></th><!--체크박스-->
+				<th>문의내용</th>
+				<th>회신한 이메일 주소</th>
+				<th>문의 등록일</th>
+				<th>회신한 날짜</th>
+				<th>상태</th><!--답변완룐-->
+			</tr>
+			
+		</thead>
+		<tbody id="resultTableBody">
+			
+		</tbody>
+		
+	</table>
 	<footer>
 		<th:block th:insert="~{/fragments/footer.html}"></th:block>
 	</footer>
 
 	<script>
-		
-	</script>
-</body>
+		$(document).ready(function () {
+
+			$.ajax({
+				url: "http://localhost:9002/getInquiryInfo",
+				type: 'GET',
+				success: function (response) {
+					console.log(response);
+
+					// Assuming response is an array of inquiries
+					var $tbody = $('#inquiryTableBody');
+					$tbody.empty(); // Clear existing rows
+
+					$.each(response, function (index, inquiry) {
+						var row = '<tr>' +
+							'<td><input type="checkbox" name="inquiryCheckbox" value="' + inquiry.ino + '"></td>' +
+							'<td>' + inquiry.inquiry + '</td>' +
+							'<td><a href="mailto:' + inquiry.email + '">' + inquiry.email + '</a></td>' +
+							'<td>' + inquiry.regDate + '</td>' +
+							'<td>' + (inquiry.answered ? '답변 완료' : '미답변') + '</td>' +
+							'<td><button data-id="' + inquiry.ino + '" class="completeButton">답변완료</button></td>' +
+							'</tr>';
+						$tbody.append(row);
+					});
+				},
+				error: function (xhr, status, error) {
+					console.error("Error: " + error);
+				}
+			});
+			
+		// Event delegation to handle dynamically added buttons
+					$('#inquiryTableBody').on('click', '.completeButton', function () {
+						var inquiryId = $(this).data('ino');
+						var $button = $(this);
+						console.log(inquiryId);
+						if (confirm('답변완료 처리를 하시겠습니까?')) {
+							$.ajax({
+								url: 'http://localhost:9002/markAsAnswered',
+								type: 'POST',
+								data: JSON.stringify({ id: inquiryId }),
+								contentType: 'application/json',
+								success: function (response) {
+									alert('답변 완료 처리되었습니다.');
+									// Update the row to show "답변 완료"
+									$button.closest('tr').find('td:eq(4)').text('답변 완료');
+								},
+								error: function (xhr, status, error) {
+									console.error("Error: " + error);
+									alert('답변 완료 처리 중 오류가 발생했습니다.');
+								}
+							});
+						}
+					});
+				});
+			</script>
+		</body>
+
 </html>
