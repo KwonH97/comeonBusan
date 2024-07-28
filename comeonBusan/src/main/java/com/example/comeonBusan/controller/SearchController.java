@@ -17,27 +17,24 @@ import com.example.comeonBusan.service.SearchService;
 @RestController
 public class SearchController {
 
-	@Autowired
-	private KeywordService keywordService;
-	
-	@Autowired
+    @Autowired
+    private KeywordService keywordService;
+    
+    @Autowired
     private SearchService searchService;
-	
-	@GetMapping("/autocomplete/{query}")
-	public List<SearchKeyword> autocomplete(@PathVariable(name ="query") String query){
-		
-		return keywordService.getSuggestions(query);
-	}
-	
-	@PostMapping("/search/{query}")
-	public List<SearchKeyword> search(@PathVariable(name ="query") String query) {
-		
-		keywordService.saveOrUpdateSearchKeyword(query);
-		
+    
+    @GetMapping("/autocomplete/{query}")
+    public List<SearchKeyword> autocomplete(@PathVariable(name ="query") String query) {
         return keywordService.getSuggestions(query);
     }
-	
-	@GetMapping("/search")
+    
+    @PostMapping("/search/{query}")
+    public List<SearchKeyword> search(@PathVariable(name ="query") String query) {
+        keywordService.saveOrUpdateSearchKeyword(query);
+        return keywordService.getSuggestions(query);
+    }
+    
+    @GetMapping("/search")
     public List<SearchResult> search2(@RequestParam(name = "query") String query) {
         return searchService.search(query);
     }

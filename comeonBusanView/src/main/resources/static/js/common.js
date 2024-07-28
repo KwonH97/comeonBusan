@@ -4,7 +4,7 @@ function showSuggestions(query) {
         document.getElementById("autoFrame").innerHTML = "";
         return;
     }
-    
+
     fetch("http://localhost:9002/autocomplete/" + encodeURIComponent(query), {
         method: "GET",
         headers: {
@@ -18,6 +18,7 @@ function showSuggestions(query) {
         document.getElementById("autoFrame").innerHTML = suggestions;
     });
 }
+
 
 function selectSuggestion(suggestion) {
     document.getElementById("search-input").value = suggestion;
@@ -33,7 +34,6 @@ function f(query) {
         }
     })
     .then(response => response.json());
-    
 }
 
 function handleSubmit(event) {

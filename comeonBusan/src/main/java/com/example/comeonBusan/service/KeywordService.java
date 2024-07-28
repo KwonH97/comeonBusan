@@ -11,16 +11,15 @@ import com.example.comeonBusan.repository.SearchKeywordRepository;
 @Service
 public class KeywordService {
 
-	@Autowired
-	private SearchKeywordRepository searchKeywordRepository;
-	
-	public List<SearchKeyword> getSuggestions(String query){
-		
-		return searchKeywordRepository.findBykeywordStartingWith(query);
-	}
-	
-	public void saveOrUpdateSearchKeyword(String keyword) {
-		System.out.println("Keyword저장---------------------------");
+    @Autowired
+    private SearchKeywordRepository searchKeywordRepository;
+    
+    public List<SearchKeyword> getSuggestions(String query) {
+        return searchKeywordRepository.findByKeywordStartingWithOrderBySearchCountDesc(query);
+    }
+    
+    public void saveOrUpdateSearchKeyword(String keyword) {
+        System.out.println("Keyword저장---------------------------");
         SearchKeyword searchKeyword = searchKeywordRepository.findByKeyword(keyword)
                 .orElse(new SearchKeyword());
         if (searchKeyword.getSid() == null) {
