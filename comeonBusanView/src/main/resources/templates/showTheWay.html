@@ -182,195 +182,199 @@
     </style>
 </head>
 <body class="custom-body">
-    <header>
-        <th:block th:insert="~{/fragments/header2.html}"></th:block>
-    </header>
-    
-    <div class="custom-container-fluid">
-        <div class="custom-content-wrapper">
-            <div class="custom-controls-container">
-                <h3 class="custom-h3">경로 찾기</h3>
-                <input id="busan-start" type="text" placeholder="출발지" class="custom-form-control">
-                <input id="busan-end" type="text" placeholder="도착지" class="custom-form-control">
-                <select id="busan-mode" class="custom-form-select">
-                    <option value="TRANSIT">대중교통</option>
-                </select>
-                <button onclick="calculateAndDisplayRoute()" class="custom-btn custom-btn-primary">경로 찾기</button>
-                <button onclick="resetRoute()" class="custom-btn custom-btn-secondary">경로 초기화</button>
-            </div>
-            <div class="custom-map-container">
-                <div id="busan-map"></div>
-            </div>
-            <div id="busan-directions-panel" style="display: none;"></div>
+<header>
+    <th:block th:insert="~{/fragments/header2.html}"></th:block>
+</header>
+
+<div class="custom-container-fluid">
+    <div class="custom-content-wrapper">
+        <div class="custom-controls-container">
+            <h3 class="custom-h3">경로 찾기</h3>
+            <input id="busan-start" type="text" placeholder="출발지" class="custom-form-control">
+            <input id="busan-end" type="text" placeholder="도착지" class="custom-form-control">
+            <select id="busan-mode" class="custom-form-select">
+                <option value="TRANSIT">대중교통</option>
+            </select>
+            <button onclick="calculateAndDisplayRoute()" class="custom-btn custom-btn-primary">경로 찾기</button>
+            <button onclick="resetRoute()" class="custom-btn custom-btn-secondary">경로 초기화</button>
         </div>
+        <div class="custom-map-container">
+            <div id="busan-map"></div>
+        </div>
+        <div id="busan-directions-panel" style="display: none;"></div>
     </div>
+</div>
 
-    <footer>
-        <th:block th:insert="~{/fragments/footer.html}"></th:block>
-    </footer>
+<footer>
+    <th:block th:insert="~{/fragments/footer.html}"></th:block>
+</footer>
 
-    <script>
-        let map;
-        let markers = [];
-        let allData = {
-            lodgment: [],
-            food: [],
-            tour: []
-        };
-        let directionsService;
-        let directionsRenderer;
-        let startSelected = false;
-        let infoWindow;
+<script>
+    let map;
+    let markers = [];
+    let allData = {
+        lodgment: [],
+        food: [],
+        tour: []
+    };
+    let directionsService;
+    let directionsRenderer;
+    let startSelected = false;
+    let infoWindow;
 
-        function initMap() {
-            const busan = { lat: 35.1796, lng: 129.0756 };
-            map = new google.maps.Map(document.getElementById("busan-map"), {
-                center: busan,
-                zoom: 12,
-                language: 'ko'
-            });
+    function initMap() {
+        const busan = { lat: 35.1796, lng: 129.0756 };
+        map = new google.maps.Map(document.getElementById("busan-map"), {
+            center: busan,
+            zoom: 12,
+            language: 'ko'
+        });
 
-            directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer({
-                map: map,
-                panel: null
-            });
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer({
+            map: map,
+            panel: null
+        });
 
-            infoWindow = new google.maps.InfoWindow();
+        infoWindow = new google.maps.InfoWindow();
 
-            loadLodgments();
-            loadFoodData();
-            loadTourData();
-            createLegend();
-        }
+        loadLodgments();
+        loadFoodData();
+        loadTourData();
+        createLegend();
+    }
 
-        function createLegend() {
-            const legend = document.createElement('div');
-            legend.id = 'map-legend';
-            const items = [
-                { type: 'lodgment', label: '숙박', color: 'blue' },
-                { type: 'food', label: '음식점', color: 'red' },
-                { type: 'tour', label: '관광지', color: 'green' }
-            ];
+    function createLegend() {
+        const legend = document.createElement('div');
+        legend.id = 'map-legend';
+        const items = [
+            { type: 'lodgment', label: '숙박', color: 'blue' },
+            { type: 'food', label: '음식점', color: 'red' },
+            { type: 'tour', label: '관광지', color: 'green' }
+        ];
 
-            items.forEach(item => {
-                const div = document.createElement('div');
-                div.innerHTML = `
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.innerHTML = `
                     <img src="http://maps.google.com/mapfiles/ms/icons/${item.color}-dot.png" alt="${item.label}">
                     <span>${item.label}</span>
                 `;
-                legend.appendChild(div);
-            });
+            legend.appendChild(div);
+        });
 
-            map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
-        }
+        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
+    }
 
-        function loadLodgments() {
-            $.ajax({
-                url: "http://localhost:9002/lodgment/page",
-                type: 'GET',
-                data: {
-                    page: 1,
-                    size: 100
-                },
-                success: function(response) {
-                    console.log("Lodgment data loaded:", response);
-                    allData.lodgment = response.content;
-                    response.content.forEach(item => {
-                        if (item.위도 && item.경도) {
-                            addMarker(item, 'lodgment');
-                        }
-                    });
-                },
-                error: function(error) {
-                    console.error('Error fetching lodgments:', error);
-                }
-            });
-        }
-
-        function loadFoodData() {
-            $.ajax({
-                url: "http://localhost:9002/kibTest/food",
-                method: "GET",
-                success: function(response) {
-                    console.log("Food data loaded:", response);
-                    allData.food = response;
-                    response.forEach(item => {
-                        if (item.lat && item.lng) {
-                            addMarker(item, 'food');
-                        }
-                    });
-                },
-                error: function(error) {
-                    console.error('Error fetching food data:', error);
-                }
-            });
-        }
-
-        function loadTourData() {
-            $.ajax({
-                url: "http://localhost:9002/kibTest/tourList",
-                type: 'GET',
-                success: function(response) {
-                    console.log("Tour data loaded:", response);
-                    allData.tour = response;
-                    response.forEach(item => {
-                        if (item.lat && item.lng) {
-                            addMarker(item, 'tour');
-                        }
-                    });
-                },
-                error: function(error) {
-                    console.error('Error fetching tour data:', error);
-                }
-            });
-        }
-
-        function addMarker(item, type) {
-            let position;
-            if (type === 'lodgment') {
-                position = new google.maps.LatLng(item.위도, item.경도);
-            } else {
-                position = new google.maps.LatLng(parseFloat(item.lat), parseFloat(item.lng));
+    function loadLodgments() {
+        $.ajax({
+            url: "http://localhost:9002/lodgment/page",
+            type: 'GET',
+            data: {
+                page: 1,
+                size: 100
+            },
+            success: function(response) {
+                console.log("Lodgment data loaded:", response);
+                allData.lodgment = response.content;
+                response.content.forEach(item => {
+                    if (item.위도 && item.경도) {
+                        addMarker(item, 'lodgment');
+                    }
+                });
+            },
+            error: function(error) {
+                console.error('Error fetching lodgments:', error);
             }
-            
-            console.log(`Adding marker for ${type}:`, position);
+        });
+    }
 
-            const marker = new google.maps.Marker({
-                position: position,
-                map: map,
-                icon: getMarkerIcon(type)
-            });
-
-            marker.addListener('click', () => {
-                showInfo(item, type, marker);
-            });
-
-            markers.push(marker);
-        }
-
-        function getMarkerIcon(type) {
-            switch(type) {
-                case 'lodgment':
-                    return 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
-                case 'food':
-                    return 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
-                case 'tour':
-                    return 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
-                default:
-                    return 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+    function loadFoodData() {
+        $.ajax({
+            url: "http://localhost:9002/kibTest/food",
+            method: "GET",
+            success: function(response) {
+                console.log("Food data loaded:", response);
+                allData.food = response;
+                response.forEach(item => {
+                    if (item.lat && item.lng) {
+                        addMarker(item, 'food');
+                    }
+                });
+            },
+            error: function(error) {
+                console.error('Error fetching food data:', error);
             }
+        });
+    }
+
+    function loadTourData() {
+        $.ajax({
+            url: "http://localhost:9002/kibTest/tourList",
+            type: 'GET',
+            success: function(response) {
+                console.log("Tour data loaded:", response);
+                allData.tour = response;
+                response.forEach(item => {
+                    if (item.lat && item.lng) {
+                        addMarker(item, 'tour');
+                    }
+                });
+            },
+            error: function(error) {
+                console.error('Error fetching tour data:', error);
+            }
+        });
+    }
+
+    function addMarker(item, type) {
+        let position;
+        if (type === 'lodgment') {
+            position = new google.maps.LatLng(item.위도, item.경도);
+        } else {
+            position = new google.maps.LatLng(parseFloat(item.lat), parseFloat(item.lng));
         }
 
-        function showInfo(item, type, marker) {
-            let content = '';
-            let name, lat, lng;
-            
-            if (type === 'lodgment') {
-                name = item.업체명;
-                lat = item.위도;
-                lng = item.경도;
-                content = `
+        console.log(`Adding marker for ${type}:`, position);
+
+        const marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            icon: getMarkerIcon(type)
+        });
+
+        marker.addListener('click', () => {
+            showInfo(item, type, marker);
+        });
+
+        markers.push(marker);
+    }
+
+    function getMarkerIcon(type) {
+        switch(type) {
+            case 'lodgment':
+                return 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png';
+            case 'food':
+                return 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+            case 'tour':
+                return 'http://maps.google.com/mapfiles/ms/icons/green-dot.png';
+            case 'start':
+                return 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'; // 시작 마커에 대한 아이콘
+            case 'end':
+                return 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'; // 도착 마커에 대한 아이콘
+            default:
+                return 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+        }
+    }
+
+    function showInfo(item, type, marker) {
+        let content = '';
+        let name, lat, lng;
+
+        if (type === 'lodgment') {
+            name = item.업체명;
+            lat = item.위도;
+            lng = item.경도;
+            content = `
                     <div class="busan-card card">
                         <div class="busan-card-body">
                             <h5 class="busan-card-title">${name}</h5>
@@ -379,11 +383,11 @@
                         </div>
                     </div>
                 `;
-            } else if (type === 'food' || type === 'tour') {
-                name = type === 'tour' ? item.place : (item.main_title || item.maintitle || '이름 없음');
-                lat = item.lat;
-                lng = item.lng;
-                content = `
+        } else if (type === 'food' || type === 'tour') {
+            name = type === 'tour' ? item.place : (item.main_title || item.maintitle || '이름 없음');
+            lat = item.lat;
+            lng = item.lng;
+            content = `
                     <div class="busan-card card">
                         <img src="${item.main_img_thumb || '#'}" class="busan-card-img" alt="${name}">
                         <div class="busan-card-body">
@@ -393,67 +397,94 @@
                         </div>
                     </div>
                 `;
-            }
-
-            console.log(`Showing info for ${type}:`, item);
-
-            infoWindow.setContent(content);
-            infoWindow.open(map, marker);
         }
 
-        function selectLocation(type, info) {
-            if (type === 'start') {
-                document.getElementById('busan-start').value = info;
-                startSelected = true;
-            } else {
-                document.getElementById('busan-end').value = info;
-            }
-            infoWindow.close();
+        console.log(`Showing info for ${type}:`, item);
+
+        infoWindow.setContent(content);
+        infoWindow.open(map, marker);
+    }
+
+    function selectLocation(type, info) {
+        if (type === 'start') {
+            document.getElementById('busan-start').value = info;
+            startSelected = true;
+        } else {
+            document.getElementById('busan-end').value = info;
+        }
+        infoWindow.close();
+    }
+
+    function calculateAndDisplayRoute() {
+        const start = document.getElementById('busan-start').value;
+        const end = document.getElementById('busan-end').value;
+        const mode = document.getElementById('busan-mode').value;
+
+        const startCoords = extractCoordinates(start);
+        const endCoords = extractCoordinates(end);
+
+        if (!startCoords || !endCoords) {
+            window.alert('올바른 출발지와 도착지를 선택해주세요.');
+            return;
         }
 
-        function calculateAndDisplayRoute() {
-            const start = document.getElementById('busan-start').value;
-            const end = document.getElementById('busan-end').value;
-            const mode = document.getElementById('busan-mode').value;
+        directionsService.route(
+            {
+                origin: startCoords,
+                destination: endCoords,
+                travelMode: google.maps.TravelMode[mode],
+                provideRouteAlternatives: false
+            },
+            function(response, status) {
+                if (status === 'OK') {
+                    directionsRenderer.setDirections(response);
+                    showRouteDetails(response);
+                    adjustLayout();
 
-            const startCoords = extractCoordinates(start);
-            const endCoords = extractCoordinates(end);
-
-            if (!startCoords || !endCoords) {
-                window.alert('올바른 출발지와 도착지를 선택해주세요.');
-                return;
-            }
-
-            directionsService.route(
-                {
-                    origin: startCoords,
-                    destination: endCoords,
-                    travelMode: google.maps.TravelMode[mode],
-                    provideRouteAlternatives: false
-                },
-                function(response, status) {
-                    if (status === 'OK') {
-                        directionsRenderer.setDirections(response);
-                        showRouteDetails(response);
-                        adjustLayout();
-                    } else {
-                        window.alert('경로를 찾을 수 없습니다: ' + status);
-                    }
+                    // 모든 마커 숨기기
+                    hideAllMarkers();
+                    // 출발지와 도착지 마커 표시
+                    showMarker(startCoords, 'start');
+                    showMarker(endCoords, 'end');
+                } else {
+                    window.alert('경로를 찾을 수 없습니다: ' + status);
                 }
-            );
-        }
+            }
+        );
+    }
 
-        function extractCoordinates(value) {
-            const match = value.match(/\(([-\d.]+),\s*([-\d.]+)\)/);
-            return match ? new google.maps.LatLng(parseFloat(match[1]), parseFloat(match[2])) : null;
-        }
+    function hideAllMarkers() {
+        markers.forEach(marker => {
+            marker.setMap(null);
+        });
+    }
 
-        function showRouteDetails(response) {
-            const route = response.routes[0];
-            let detailsHtml = '<h3>대중교통 경로 정보</h3>';
+    function showAllMarkers() {
+        markers.forEach(marker => {
+            marker.setMap(map);
+        });
+    }
 
-            const leg = route.legs[0];
-            detailsHtml += `
+    function showMarker(position, type) {
+        const marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            icon: getMarkerIcon(type)
+        });
+        markers.push(marker);
+    }
+
+    function extractCoordinates(value) {
+        const match = value.match(/\(([-\d.]+),\s*([-\d.]+)\)/);
+        return match ? new google.maps.LatLng(parseFloat(match[1]), parseFloat(match[2])) : null;
+    }
+
+    function showRouteDetails(response) {
+        const route = response.routes[0];
+        let detailsHtml = '<h3>대중교통 경로 정보</h3>';
+
+        const leg = route.legs[0];
+        detailsHtml += `
                 <div class="route-detail">
                     <p><strong>출발:</strong> ${leg.start_address}</p>
                     <p><strong>도착:</strong> ${leg.end_address}</p>
@@ -463,14 +494,14 @@
                     <ol>
             `;
 
-            leg.steps.forEach((step, index) => {
-                if (step.travel_mode === "TRANSIT") {
-                    const vehicle = step.transit.line.vehicle.name;
-                    const line = step.transit.line.short_name || step.transit.line.name;
-                    const departureTime = new Date(step.transit.departure_time.value);
-                    const arrivalTime = new Date(step.transit.arrival_time.value);
-                    
-                    detailsHtml += `
+        leg.steps.forEach((step, index) => {
+            if (step.travel_mode === "TRANSIT") {
+                const vehicle = step.transit.line.vehicle.name;
+                const line = step.transit.line.short_name || step.transit.line.name;
+                const departureTime = new Date(step.transit.departure_time.value);
+                const arrivalTime = new Date(step.transit.arrival_time.value);
+
+                detailsHtml += `
                         <li>
                             <strong>${vehicle} - ${line}</strong><br>
                             출발: ${departureTime.toLocaleTimeString()} (${step.transit.departure_stop.name})<br>
@@ -478,43 +509,44 @@
                             소요 시간: ${step.duration.text}
                         </li>
                     `;
-                } else {
-                    detailsHtml += `
+            } else {
+                detailsHtml += `
                         <li>
                             ${step.instructions} (${step.distance.text}, ${step.duration.text})
                         </li>
                     `;
-                }
-            });
+            }
+        });
 
-            detailsHtml += '</ol></div>';
+        detailsHtml += '</ol></div>';
 
-            $('#busan-directions-panel').html(detailsHtml).css('overflow-y', 'hidden').show();
-        }
+        $('#busan-directions-panel').html(detailsHtml).css('overflow-y', 'hidden').show();
+    }
 
-        function adjustLayout() {
-            $('#busan-directions-panel').show();
-        }
+    function adjustLayout() {
+        $('#busan-directions-panel').show();
+    }
 
-        function resetRoute() {
-            directionsRenderer.setDirections({routes: []});
-            document.getElementById('busan-start').value = '';
-            document.getElementById('busan-end').value = '';
-            $('#busan-directions-panel').hide();
-            startSelected = false;
-        }
-        
-        function googleMapAPI(){
-            const script = document.createElement('script');
-            script.src= '/proxy/maps-api?callback=initMap&libraries=places&language=ko';
-            script.defer = true;
-            document.head.appendChild(script);
-        }
+    function resetRoute() {
+        directionsRenderer.setDirections({routes: []});
+        document.getElementById('busan-start').value = '';
+        document.getElementById('busan-end').value = '';
+        $('#busan-directions-panel').hide();
+        startSelected = false;
+        showAllMarkers();
+    }
 
-        window.initMap = initMap;
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', googleMapAPI);
-    </script>
+    function googleMapAPI(){
+        const script = document.createElement('script');
+        script.src= '/proxy/maps-api?callback=initMap&libraries=places&language=ko';
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+
+    window.initMap = initMap;
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', googleMapAPI);
+</script>
 </body>
 </html>
