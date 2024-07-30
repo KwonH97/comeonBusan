@@ -9,13 +9,20 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.comeonBusan.entity.Inquiry;
 
+import jakarta.transaction.Transactional;
+
 public interface InquiryRepository extends JpaRepository<Inquiry, Long>{
 
 	@Query("SELECT i FROM Inquiry i WHERE i.state = 0")
     List<Inquiry> findInquiryStateIsZero();
 	
+	
+	@Query("SELECT i FROM Inquiry i WHERE i.state = 1")
+	List<Inquiry> findInquiryStateIsOne();
+	
+	@Transactional
 	@Modifying
-	@Query("UPDATE Inquiry i SET i.state = 1 WHERE i.ino =:ino")
-	void updateStateByIno(@Param("ino") Long ino);
+	@Query("UPDATE Inquiry i SET i.state = 1, i.answerDate = CURRENT_DATE WHERE i.ino =:ino")
+	void updateStateAndAnswerDateByIno(@Param("ino") Long ino);
 	
 }

@@ -1,55 +1,117 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
 <head>
-	<meta charset="UTF-8">
-	<title>관리자 대시보드</title>
-	<style>
-	</style>
-	<script src="https://code.jquery.com/jquery-3.7.1.js"
-		integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
-</head>
+<meta charset="UTF-8">
+<title>관리자 대시보드</title>
+<style>
+body {
+	font-family: Arial, sans-serif;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
 
+header, footer {
+	width: 100%;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+p {
+	text-align: center;
+}
+
+table {
+	width: 80%;
+	margin: 20px auto;
+	border-collapse: collapse;
+}
+
+th, td {
+	padding: 10px;
+	border: 1px solid #ddd;
+	text-align: center;
+}
+
+th {
+	background-color: #f2f2f2;
+	font-weight: bold;
+}
+
+.completeButton {
+	padding: 5px 10px;
+	background-color: #3D709E;
+	color: white;
+	border: none;
+	cursor: pointer;
+}
+
+.completeButton:hover {
+	background-color: white;
+	color: black;
+	border: 1px solid #3D709E;
+}
+
+.no-data {
+	text-align: center;
+	font-size: 1.2em;
+	margin-top: 20px;
+}
+
+a {
+    color: inherit; /* 부모의 색상 상속 */
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+</style>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous"></script>
+</head>
 <body>
 	<header>
 		<th:block th:insert="~{/fragments/header2.html}"></th:block>
 	</header>
 
-	<h1>문의사항 목록</h1>
-	<p>미답변 문의사항</p>
+	<h2>미답변 문의사항</h2>
+	<div id="unansweredInquiries">
+		<table border="1">
+			<thead>
+				<tr>
+					<th><input type="checkbox" id="selectAllUnanswered"></th>
+					<th>문의내용</th>
+					<th>회신할 이메일 주소</th>
+					<th>문의 등록일</th>
+					<th>답변 상태</th>
+					<th>답변완료 버튼</th>
+					<!-- 답변완료 버튼 -->
+				</tr>
+			</thead>
+			<tbody id="inquiryTableBody">
+				<!-- 데이터가 여기에 추가됩니다 -->
+			</tbody>
+		</table>
+		<p id="noUnanswered" class="no-data" style="display: none;">미답변
+			문의사항이 없습니다.</p>
+	</div>
+	<h2>답변완료한 문의사항</h2>
 	<table border="1">
 		<thead>
 			<tr>
-				<th></th><!-- 체크박스 -->
-				<th>문의내용</th>
-				<th>회신할 이메일 주소</th>
-				<th>문의 등록일</th>
-				<th>답변 상태</th>
-				<th></th><!-- 답변완료 버튼 -->
-			</tr>
-		</thead>
-		<tbody id="inquiryTableBody">
-			<!-- 데이터가 여기에 추가됩니다 -->
-		</tbody>
-	</table>
-	
-	<p>답변완료한 문의사항</p>
-	<table border="1">
-		<thead>
-			<tr>
-				<th></th><!--체크박스-->
+				<!-- <th><input type="checkbox" id="selectAllAnswered"></th> -->
 				<th>문의내용</th>
 				<th>회신한 이메일 주소</th>
 				<th>문의 등록일</th>
 				<th>회신한 날짜</th>
-				<th>상태</th><!--답변완룐-->
+				<th>답변 상태</th>
+
 			</tr>
-			
+
 		</thead>
-		<tbody id="resultTableBody">
-			
+		<tbody id="AnsweredTableBody">
+
 		</tbody>
-		
+
 	</table>
 	<footer>
 		<th:block th:insert="~{/fragments/footer.html}"></th:block>
@@ -68,26 +130,65 @@
 					var $tbody = $('#inquiryTableBody');
 					$tbody.empty(); // Clear existing rows
 
-					$.each(response, function (index, inquiry) {
-						var row = '<tr>' +
-							'<td><input type="checkbox" name="inquiryCheckbox" value="' + inquiry.ino + '"></td>' +
-							'<td>' + inquiry.inquiry + '</td>' +
-							'<td><a href="mailto:' + inquiry.email + '">' + inquiry.email + '</a></td>' +
-							'<td>' + inquiry.regDate + '</td>' +
-							'<td>' + (inquiry.answered ? '답변 완료' : '미답변') + '</td>' +
-							'<td><button data-id="' + inquiry.ino + '" class="completeButton">답변완료</button></td>' +
-							'</tr>';
-						$tbody.append(row);
-					});
+					
+					if(response.length === 0){
+						$('#noUnanswered').show(); // 미답변 문의사항이 없습니다. 보여주기
+						$('#unansweredInquiries table').hide(); //미답변 문의사항 테이블 숨기기
+						
+					}else {
+						
+						$('#noUnanswered').hide(); // 문의사항이 없습니다 숨기기
+						$('#unansweredInquiried table').show();
+						$.each(response, function (index, inquiry) {
+							var row = '<tr>' +
+								'<td><input type="checkbox" name="inquiryCheckbox" value="' + inquiry.ino + '"></td>' +
+								'<td>' + inquiry.inquiry + '</td>' +
+								'<td><a href="mailto:' + inquiry.email + '">' + inquiry.email + '</a></td>' +
+								'<td>' + inquiry.regDate + '</td>' +
+								'<td>' + (inquiry.answered ? '답변 완료' : '미답변') + '</td>' +
+								'<td><button data-id="' + inquiry.ino + '" class="completeButton">답변완료</button></td>' +
+								'</tr>';
+							$tbody.append(row);
+						});
+					}
 				},
 				error: function (xhr, status, error) {
 					console.error("Error: " + error);
 				}
 			});
 			
+			$.ajax({
+				url: "http://localhost:9002/getAnsweredInquiry",
+				type: 'GET',
+				success: function(response){
+					console.log(response);
+					
+					var $tbody = $('#AnsweredTableBody');
+					$tbody.empty();
+					
+					$.each(response, function (index, inquiry) {
+						var row = '<tr>' + 
+						//'<td><input type="checkbox" name="answeredCheckbox" value="' + inquiry.ino + '"></td>' +
+						'<td>' + inquiry.inquiry + '</td>' +
+						'<td>' + inquiry.email + '</td>' +
+						'<td>' + inquiry.regDate + '</td>' + 
+						'<td>' + inquiry.answerDate + '</td>' + 
+						'<td>' + '답변 완료' + '</td>' +
+						'</tr>';
+						
+						$tbody.append(row);
+					});
+					
+				},
+				error: function(xhr, status, error){
+					console.log("Error: " + error);
+				}
+			});
+			
+			
 		// Event delegation to handle dynamically added buttons
 					$('#inquiryTableBody').on('click', '.completeButton', function () {
-						var inquiryId = $(this).data('ino');
+						var inquiryId = $(this).data('id');
 						var $button = $(this);
 						console.log(inquiryId);
 						if (confirm('답변완료 처리를 하시겠습니까?')) {
@@ -99,7 +200,9 @@
 								success: function (response) {
 									alert('답변 완료 처리되었습니다.');
 									// Update the row to show "답변 완료"
-									$button.closest('tr').find('td:eq(4)').text('답변 완료');
+									//$button.closest('tr').find('td:eq(4)').text('답변 완료');
+									window.location.href = window.location.href;
+								
 								},
 								error: function (xhr, status, error) {
 									console.error("Error: " + error);
@@ -108,8 +211,21 @@
 							});
 						}
 					});
-				});
+		
+		
+		// 미답변 상태의 문의사항 테이블 체크박스 선택/선택해제
+		$('#selectAllUnanswered').click(function(){
+			$('input[name="inquiryCheckbox"]').prop('checked', this.checked);
+		});
+		
+		// 답변완료 상태의 문의사항 테이블 체크박스 선택/선택해제
+		//$('#selectAllAnswered').click(function(){
+		//	$('input[name="answeredCheckbox"]').prop('checked', this.checked);
+		//	
+		//});
+		});
+
 			</script>
-		</body>
+</body>
 
 </html>
