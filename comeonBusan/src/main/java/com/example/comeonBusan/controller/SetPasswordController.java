@@ -3,6 +3,7 @@
 //import java.io.UnsupportedEncodingException;
 //import java.util.Map;
 //import java.util.Optional;
+//import java.util.concurrent.TimeUnit;
 //
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.http.HttpStatus;
@@ -77,6 +78,9 @@
 //        String uuid;
 //        try {
 //            uuid = emailService.sendResetPasswordEmail(resetPasswordEmailReq.getEmail());
+//         // Redis에 UUID 저장, 만료 시간 30분 설정
+//            redisService.setValuesWithTimeout(uuid, resetPasswordEmailReq.getEmail(), TimeUnit.MINUTES.toMillis(30));
+//        
 //        } catch (UnsupportedEncodingException e) {
 //            // 예외 처리 로직 추가
 //            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이메일 전송 중 오류가 발생했습니다.");

@@ -43,7 +43,7 @@
 //		String content = "<p>안녕하세요,</p>" + 
 //        "<p>비밀번호 재설정을 위해 다음 링크를 클릭해주세요:</p>" + 
 //        "<p><a href=\"" + resetPasswordLink + "/" + uuid + "\">비밀번호 재설정 링크</a></p>" + "<br><br>"
-//        + "해당 링크는 24시간 동안만 유효합니다." + "<br>"; // 이메일 내용 삽입
+//        + "해당 링크는 30분 동안만 유효합니다." + "<br>"; // 이메일 내용 삽입
 //        
 //		EmailMessage emailMessage = new EmailMessage(email, title, content);
 //		mailSend(emailMessage);
