@@ -19,28 +19,27 @@
         text-align: center;
         margin: 20px 0;
         font-family: "Dongle", sans-serif;
-		font-weight: 300;
-		font-size: 85px;
-        
+        font-weight: 300;
+        font-size: 85px;
     }
     
     .hiddenButton {
-		background-color: #e71b85;
-		color: white; /* 버튼 색상에 잘 보이는 흰색 텍스트 */
-	    border: none;
-	    border-radius: 8px; /* 둥근 모서리 */
-	    padding: 8px 16px; /* 버튼 내 여백 (기본 크기보다 20% 작게) */
-	    font-size: 15px; /* 텍스트 크기 (기본 크기보다 20% 작게) */
-	    font-weight: bold; /* 텍스트 굵기 */
-	    cursor: pointer; /* 마우스를 올렸을 때 포인터 아이콘 */
-	    transition: background-color 0.3s ease, color 0.3s ease; /* 부드러운 색상 변화 */
-	    text-align: center; /* 텍스트 가운데 정렬 */
-	}
-	
-	.hiddenButton:hover {
-		background-color: #c2185b;
-		color: white;
-	}
+        background-color: #e71b85;
+        color: white; /* 버튼 색상에 잘 보이는 흰색 텍스트 */
+        border: none;
+        border-radius: 8px; /* 둥근 모서리 */
+        padding: 8px 16px; /* 버튼 내 여백 (기본 크기보다 20% 작게) */
+        font-size: 15px; /* 텍스트 크기 (기본 크기보다 20% 작게) */
+        font-weight: bold; /* 텍스트 굵기 */
+        cursor: pointer; /* 마우스를 올렸을 때 포인터 아이콘 */
+        transition: background-color 0.3s ease, color 0.3s ease; /* 부드러운 색상 변화 */
+        text-align: center; /* 텍스트 가운데 정렬 */
+    }
+    
+    .hiddenButton:hover {
+        background-color: #c2185b;
+        color: white;
+    }
 
     #container-food {
         display: grid;
@@ -137,7 +136,7 @@
             success: function(response){
                 foodData = response;
                 renderPage(currentPage);
-                renderPagination(foodData.length, itemsPerPage);
+                renderPagination(Math.ceil(foodData.length / itemsPerPage), currentPage);
             },
             error: function(error){
                 console.log("Error: " + error); 
@@ -165,19 +164,15 @@
             });
         }
 
-        function renderPagination(totalItems, itemsPerPage) {
+        function renderPagination(totalPages, currentPage) {
             $('.pagination-food').empty();
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
             const totalGroups = Math.ceil(totalPages / pagesPerGroup);
             const currentGroup = Math.floor((currentPage - 1) / pagesPerGroup);
             const startPage = currentGroup * pagesPerGroup + 1;
             const endPage = Math.min(startPage + pagesPerGroup - 1, totalPages);
 
-            if (currentPage > 1) {
-                $('.pagination-food').append(`<button onclick="changePage(1)"><<</button>`);
-            }
-
             if (currentGroup > 0) {
+                $('.pagination-food').append(`<button onclick="changePage(1)"><<</button>`);
                 $('.pagination-food').append(`<button onclick="changeGroup(${currentGroup - 1})"><</button>`);
             }
 
@@ -187,9 +182,6 @@
 
             if (currentGroup < totalGroups - 1) {
                 $('.pagination-food').append(`<button onclick="changeGroup(${currentGroup + 1})">></button>`);
-            }
-
-            if (currentPage < totalPages) {
                 $('.pagination-food').append(`<button onclick="changePage(${totalPages})">>></button>`);
             }
         }
@@ -198,16 +190,16 @@
             if(page < 1 || page > Math.ceil(foodData.length / itemsPerPage)) return;
             currentPage = page;
             renderPage(currentPage);
-            renderPagination(foodData.length, itemsPerPage);
+            renderPagination(Math.ceil(foodData.length / itemsPerPage), currentPage);
         }
 
         window.changeGroup = function(group) {
             currentGroup = group;
             currentPage = currentGroup * pagesPerGroup + 1;
             renderPage(currentPage);
-            renderPagination(foodData.length, itemsPerPage);
+            renderPagination(Math.ceil(foodData.length / itemsPerPage), currentPage);
         }
-        
+
         var authValue = localStorage.getItem("Authorization");
         if (authValue != null) {
             $(".hiddenButton").css("display", "block");
@@ -215,7 +207,7 @@
     });
     
     function addFood(){
-    	window.location.href="/regi_food";
+        window.location.href="/regi_food";
     }
 </script>
 </body>

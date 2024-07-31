@@ -126,9 +126,9 @@
 <button class="hiddenButton" onclick="addTour()" style="display: none;">관광지추가</button>
 <div id="container"></div>
 <div class="pagination"></div>
-  <footer>
+<footer>
     <th:block th:insert="~{/fragments/footer.html}"></th:block>
-  </footer>
+</footer>
 <script>
     $(document).ready(function(){
         const itemsPerPage = 12;
@@ -161,7 +161,7 @@
                 	<a href="/tourDetail?type=tour&uc_seq=${item.uc_seq}">
                             <img class="tour-thumbnail" src="${item.main_img_thumb}" alt="${item.maintitle}">
                         </a>
-                        <div class="tour-title">${item.title}</div>
+                        <div class="tour-title">${item.maintitle}</div>
                     </div>
                 `;
                 $('#container').append(tourItem);
@@ -172,37 +172,32 @@
         if (authValue != null) {
             $(".hiddenButton").css("display", "block");
         }
-        
+
         function renderPagination(totalItems, itemsPerPage) {
             $('.pagination').empty();
             const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const totalGroups = Math.ceil(totalPages / 10);
+            const currentGroup = Math.floor((currentPage - 1) / 10);
+            const startPage = currentGroup * 10 + 1;
+            const endPage = Math.min(startPage + 9, totalPages);
 
-            const currentGroup = Math.ceil(currentPage / 10);
-
-            if (currentPage > 1) {
+            if (currentGroup > 0) {
                 const firstButton = `<button onclick="changePage(1)"><<</button>`;
                 $('.pagination').append(firstButton);
-            }
 
-            if (currentGroup > 1) {
-                const prevButton = `<button onclick="changePage(${(currentGroup - 1) * 10})"><</button>`;
-                $('.pagination').append(prevButton);
+                const prevGroupButton = `<button onclick="changeGroup(${currentGroup - 1})"><</button>`;
+                $('.pagination').append(prevGroupButton);
             }
-
-            const startPage = (currentGroup - 1) * 10 + 1;
-            const endPage = Math.min(startPage + 9, totalPages);
 
             for(let i = startPage; i <= endPage; i++){
                 const pageButton = `<button onclick="changePage(${i})" class="${i === currentPage ? 'current' : ''}">${i}</button>`;
                 $('.pagination').append(pageButton);
             }
 
-            if (currentGroup * 10 < totalPages) {
-                const nextButton = `<button onclick="changePage(${currentGroup * 10 + 1})">></button>`;
-                $('.pagination').append(nextButton);
-            }
+            if (currentGroup < totalGroups - 1) {
+                const nextGroupButton = `<button onclick="changeGroup(${currentGroup + 1})">></button>`;
+                $('.pagination').append(nextGroupButton);
 
-            if (currentPage < totalPages) {
                 const lastButton = `<button onclick="changePage(${totalPages})">>></button>`;
                 $('.pagination').append(lastButton);
             }
@@ -214,9 +209,13 @@
             renderPage(currentPage);
             renderPagination(tourData.length, itemsPerPage);
         }
-        
+
+        window.changeGroup = function(group) {
+            const page = group * 10 + 1;
+            changePage(page);
+        }
     });
-    
+
     function addTour(){
     	window.location.href="/regi_tour";
     }

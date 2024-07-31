@@ -292,7 +292,7 @@
         const startPage = currentGroup * pagesPerGroup;
         const endPage = Math.min(startPage + pagesPerGroup, totalPages);
 
-        if (currentPage > 1) {
+        if (currentPage > 9) {
             $('#pagination').append(`<button onclick="changePage(0)"><<</button>`);
         }
 
@@ -308,7 +308,7 @@
             $('#pagination').append(`<button onclick="changeGroup(${currentGroup + 1})">></button>`);
         }
 
-        if (currentPage < totalPages - 1) {
+        if (currentPage < totalPages - 9) {
             $('#pagination').append(`<button onclick="changePage(${totalPages - 1})">>></button>`);
         }
     }
