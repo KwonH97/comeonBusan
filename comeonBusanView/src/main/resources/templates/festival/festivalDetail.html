@@ -6,6 +6,9 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"
 	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
 	crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dongle&display=swap" rel="stylesheet">
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB1VqsvOxs4dsglMk3wCxxB-_y58G3zyzU"></script>
 <!-- Google Maps API 스크립트 추가 -->
     <style>
@@ -219,6 +222,14 @@
         #itemcntnts, .trfc_info {
         	white-space: pre-wrap;
         }
+        
+        #pageinfo {
+        	text-align: center;
+        	font-size: 50px;
+        	font-family: "Dongle", sans-serif;
+    		font-weight: 300;
+    		margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -236,6 +247,7 @@
 	</div>
 	
 	<div class="container">
+		<h4 id="pageinfo">축제</h4>
 		<h3 id="title"></h3>
 		<h4 id="subtitle"></h4>
 		
