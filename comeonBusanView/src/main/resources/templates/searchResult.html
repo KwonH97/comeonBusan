@@ -4,16 +4,57 @@
 <meta charset="UTF-8">
 <title>검색 결과</title>
 <style>
+    body {
+        font-family: Arial, sans-serif;
+    }
     .div1 {
         text-align: center;
     }
+    .filter-buttons {
+        text-align: center;
+        margin: 20px 0;
+    }
+    .filter-buttons button {
+        margin: 0 10px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+    .filter-buttons button:hover {
+        background-color: #0056b3;
+    }
     .result-section {
         margin: 20px 0;
+        display: none;
     }
     .result-section h2 {
         background-color: #f5f5f5;
         padding: 10px;
         border-radius: 5px;
+    }
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px;
+    }
+    .result-item {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .result-item img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        max-height: 150px;
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.js"
@@ -25,19 +66,30 @@
         <th:block th:insert="~{/fragments/header2.html}"></th:block>
     </header>
     <div class="div1"><h1>검색 결과</h1></div>
+    <div class="filter-buttons">
+        <button onclick="filterResults('all')">전체</button>
+        <button onclick="filterResults('Lodgment')">호텔</button>
+        <button onclick="filterResults('Festival')">축제</button>
+        <button onclick="filterResults('Food')">맛집</button>
+        <button onclick="filterResults('TourList')">관광명소</button>
+    </div>
     <span id="query-display"></span>
     <div id="results">
         <div id="lodgment-results" class="result-section">
             <h2>숙박</h2>
+            <div class="result-grid"></div>
         </div>
         <div id="festival-results" class="result-section">
             <h2>축제</h2>
+            <div class="result-grid"></div>
         </div>
         <div id="food-results" class="result-section">
             <h2>음식</h2>
+            <div class="result-grid"></div>
         </div>
         <div id="tourlist-results" class="result-section">
             <h2>관광명소</h2>
+            <div class="result-grid"></div>
         </div>
     </div>
     <footer>
@@ -59,25 +111,24 @@
     }
 
     function displayResults(results) {
-        const lodgmentResultsDiv = document.getElementById('lodgment-results');
-        const festivalResultsDiv = document.getElementById('festival-results');
-        const foodResultsDiv = document.getElementById('food-results');
-        const tourlistResultsDiv = document.getElementById('tourlist-results');
+        const lodgmentResultsDiv = document.querySelector('#lodgment-results .result-grid');
+        const festivalResultsDiv = document.querySelector('#festival-results .result-grid');
+        const foodResultsDiv = document.querySelector('#food-results .result-grid');
+        const tourlistResultsDiv = document.querySelector('#tourlist-results .result-grid');
 
         // Clear previous results
-        lodgmentResultsDiv.innerHTML = '<h2>숙박</h2>';
-        festivalResultsDiv.innerHTML = '<h2>축제</h2>';
-        foodResultsDiv.innerHTML = '<h2>음식</h2>';
-        tourlistResultsDiv.innerHTML = '<h2>관광명소</h2>';
+        lodgmentResultsDiv.innerHTML = '';
+        festivalResultsDiv.innerHTML = '';
+        foodResultsDiv.innerHTML = '';
+        tourlistResultsDiv.innerHTML = '';
 
         results.forEach(result => {
-            console.log(result.description); // description 값을 출력
-
             const div = document.createElement('div');
+            div.className = 'result-item';
             const imgUrl = result.description;
             const imgTag = imgUrl ? `<img src="${imgUrl}" alt="${result.name}" onerror="this.style.display='none';">` : '';
 
-            div.innerHTML = `${imgTag}<h2>${result.name}</h2>`;
+            div.innerHTML = `${imgTag}<h3>${result.name}</h3>`;
 
             if (result.type === 'Lodgment') {
                 lodgmentResultsDiv.appendChild(div);
@@ -89,6 +140,23 @@
                 tourlistResultsDiv.appendChild(div);
             }
         });
+
+        filterResults('all');
+    }
+
+    function filterResults(type) {
+        const sections = document.querySelectorAll('.result-section');
+        sections.forEach(section => {
+            section.style.display = 'none';
+        });
+
+        if (type === 'all') {
+            sections.forEach(section => {
+                section.style.display = 'block';
+            });
+        } else {
+            document.getElementById(`${type.toLowerCase()}-results`).style.display = 'block';
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
