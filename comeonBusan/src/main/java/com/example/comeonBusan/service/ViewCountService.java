@@ -67,7 +67,7 @@ public class ViewCountService {
         }
     }
 
-    @Scheduled(fixedRate = 10000) // 10분마다 실행
+    @Scheduled(fixedRate = 600000) // 10분마다 실행
     @Transactional
     public void updateViewCountsInDb() {
         Set<String> keys = redisTemplate.keys(VIEW_COUNT_KEY + "*");
