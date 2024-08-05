@@ -170,6 +170,12 @@
 	
 	.view-count {
 		margin-right: 20px;
+		font-size: 24px; /* 조회수 폰트 크기 */
+	}
+	
+	#viewcount {
+		font-size: 24px; /* 조회수 폰트 크기 */
+		
 	}
 	
 	.like-section {
@@ -178,11 +184,13 @@
 		gap: 10px;
 		border-left: 1px solid rgba(0, 0, 0, 0.2);
 		padding-left: 20px;
+		font-size: 24px; /* 좋아요 폰트 크기 */
+		font-weight: bold; /* 좋아요 폰트 굵기 */
 	}
 	
 	.heart-text {
-	    font-size: 16px;              /* 좋아요 텍스트의 크기 */
-	    color: #e71b85;               /* 텍스트 색상 */
+	    font-size: 16px; /* 좋아요 텍스트의 크기 */
+	    color: #e71b85; /* 텍스트 색상 */
 	}
 	
 	.right-section {
@@ -253,7 +261,7 @@
 	
 	<div class="interaction-container">
 		<div class="left-section">
-			<span>조회수 : <span id="viewcount"></span></span>
+			<span class="view-count">조회수 : <span id="viewcount"></span></span>
 			<div class="like-section">
 				<button class="heart-button" onclick="doLike()">
 					<svg class="heart-icon" viewBox="0 0 24 24" width="50" height="50">
@@ -272,7 +280,6 @@
 	
 	<span class="info-tourTitle">관광지 배경</span><br>
 	<div id="itemcntnts"><!-- 관광지 설명 --></div>
-	
 	<div id="placeInfo">
 		<div class="info-section">
 			<div class="info-group">
@@ -310,30 +317,30 @@
 	$(document).ready(function(){
 		console.log("id값: " + uc_seq);
 		
-// 		// 조회수 증가 요청 보내기
-// 		$.ajax({
-// 			url: 'http://localhost:9002/views/tour/' + uc_seq,
-// 			method: 'POST',
-// 			success: function() {
-// 				console.log("View count incremented");
-// 			},
-// 			error: function(error) {
-// 				console.error("Error incrementing view count: " + error);
-// 			}
-// 		});
+		// 조회수 증가 요청 보내기
+		$.ajax({
+			url: 'http://localhost:9002/views/tour/' + uc_seq,
+			method: 'POST',
+			success: function() {
+				console.log("View count incremented");
+			},
+			error: function(error) {
+				console.error("Error incrementing view count: " + error);
+			}
+		});
 
-// 		// 조회수 가져오기
-// 		$.ajax({
-// 			url: 'http://localhost:9002/views/tour/' + uc_seq,
-// 			method: 'GET',
-// 			success: function(viewCount) {
-// 				console.log("Current view count: " + viewCount);
-// 				document.querySelector("#viewcount").textContent = viewCount;
-// 			},
-// 			error: function(error) {
-// 				console.error("Error fetching view count: " + error);
-// 			}
-// 		});
+		// 조회수 가져오기
+		$.ajax({
+			url: 'http://localhost:9002/views/tour/' + uc_seq,
+			method: 'GET',
+			success: function(viewCount) {
+				console.log("Current view count: " + viewCount);
+				document.querySelector("#viewcount").textContent = viewCount;
+			},
+			error: function(error) {
+				console.error("Error fetching view count: " + error);
+			}
+		});
 		
 		$.ajax({
 			url: "http://localhost:9002/kibTest/tour/" + uc_seq,
