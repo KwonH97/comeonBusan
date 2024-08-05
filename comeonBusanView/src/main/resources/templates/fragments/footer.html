@@ -200,7 +200,20 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('newsletter-form').addEventListener('submit', subscribeNewsletter);
         	document.getElementById('contact-form').addEventListener('submit', submitContactForm);
-			});
+			
+        	
+        	document.querySelector('.admin_login a').addEventListener('click', function(event) {
+                event.preventDefault();
+                if (localStorage.getItem('Authorization')) {
+                    window.location.href = '/adminPage';
+                } else {
+                    window.location.href = '/loginForm';
+                }
+            });
+        
+        
+        
+        });
     </script>
 </head>
 <body>
